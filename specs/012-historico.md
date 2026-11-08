@@ -1,6 +1,6 @@
 # 012 · Histórico del inmueble
 
-Estado: borrador · Paquetes: `packages/domain` (filtros y agrupación), `apps/api` (registro de actividad), `apps/web`
+Estado: aprobada · Paquetes: `packages/domain` (filtros y agrupación), `apps/api` (registro de actividad), `apps/web`
 
 ## Objetivo
 
@@ -33,7 +33,6 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 - **R6** — **Filtros**, combinables: inquilino (uno o varios), tipo de gasto (uno o varios, y "Alquiler"), grupo de actividad (R2), estado de pago (pagado o pendiente) y rango de fechas. Los filtros activos se ven siempre y se quitan con un toque.
 - **R7** — Con filtros, arriba aparece un resumen de lo filtrado: total cobrado y total pendiente. Por ejemplo, filtrando por Alex y "Luz" se ve lo que ha pagado y lo que debe de luz.
 - **R8** — Al pulsar una actividad se abre su detalle: la ventana del cobro, de la factura o de la liquidación (specs 006 y 011), con el cálculo y el PDF cuando corresponda.
-- **R9** — Se puede **exportar** lo filtrado a CSV para el gestor o para resolver una duda.
 
 **Inquilinos y RGPD**
 
@@ -53,7 +52,6 @@ Piso Centro con Alex y Jorge. En octubre: cobros de alquiler de los dos; luz de 
 | C4 | Filtros combinados y resumen (R6, R7) | Alex + "Luz": pagado 20 €, pendiente 0 € |
 | C5 | Cambio de importe (R4) | "Renta de octubre de Jorge: 400 € → 380 €" |
 | C6 | Solo lectura (R3) | No hay forma de editar ni borrar una actividad |
-| C7 | Exportar (R9) | El CSV contiene exactamente las actividades filtradas |
 | C8 | Vista del inquilino (R10) | Jorge ve sus cobros, su parte de la luz y sus pagos; no ve los de Alex ni la edición interna |
 | C9 | Inquilino borrado (R11) | Sus actividades aparecen como "Inquilino 1" con los mismos importes |
 
@@ -61,18 +59,12 @@ Piso Centro con Alex y Jorge. En octubre: cobros de alquiler de los dos; luz de 
 
 - Histórico de toda la cuenta mezclando inmuebles.
 - Deshacer acciones desde el histórico.
-- Exportar a PDF.
-
-## Preguntas abiertas
-
-- **P1** — ¿Te sirve que el inquilino vea solo su histórico de dinero (R10), sin los cambios internos?
-- **P2** — ¿Hace falta exportar a CSV en el MVP (R9), o lo dejamos para más adelante?
+- Exportar el histórico (CSV o PDF); se valorará si hace falta.
 
 ## Tareas
 
 - [ ] Registro de actividad en la API (cada acción de las specs 003-011 escribe su actividad)
 - [ ] Dominio: filtros combinados y resumen de lo filtrado
 - [ ] Pantalla de histórico con filtros y detalle
-- [ ] Exportación a CSV
 - [ ] Histórico del inquilino en su enlace
-- [ ] Tests C1–C9
+- [ ] Tests C1–C6, C8 y C9

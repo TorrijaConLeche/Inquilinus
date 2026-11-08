@@ -36,4 +36,4 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [009 · Panel principal y cobros del inmueble](009-panel-cobros.md) | aprobada |
 | [010 · Planes y suscripciones](010-planes-suscripciones.md) | aprobada |
 | [011 · Liquidaciones](011-liquidaciones.md) | aprobada |
-| [012 · Histórico del inmueble](012-historico.md) | borrador |
+| [012 · Histórico del inmueble](012-historico.md) | aprobada |
