@@ -27,7 +27,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 **Seguridad y abuso**
 
 - **R11** — Tras 5 intentos fallidos en 15 minutos (por cuenta o por IP), se bloquean los intentos durante 15 minutos. El mensaje de error es genérico: "Email o contraseña incorrectos".
-- **R12** — Cada cuenta tiene un límite de 100 facturas leídas por IA al mes, para acotar el coste. Al alcanzarlo, se pueden seguir subiendo facturas y rellenarlas a mano.
+- **R12** — Cada cuenta tiene un máximo de facturas leídas por IA al mes según su plan (spec 010): 2 en Gratis y 100 como uso razonable en Propietaria. Al alcanzarlo, se pueden seguir subiendo facturas y rellenarlas a mano.
 
 **Datos de la cuenta (RGPD)**
 
@@ -59,9 +59,9 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 - Varias personas por cuenta (copropietarios, gestorías).
 - Inicio de sesión con Apple u otros proveedores.
 
-## Preguntas abiertas
+## Envío de emails
 
-- **P1** — Servicio de envío de emails (verificación y recuperación) alojado en la UE: por decidir al montar la infraestructura.
+Verificación y recuperación con **Amazon SES** en Frankfurt (misma cuenta y DPA de AWS). Requiere dominio propio con registros SPF, DKIM y DMARC y salir del modo de pruebas de SES.
 
 ## Tareas
 

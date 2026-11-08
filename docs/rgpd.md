@@ -32,7 +32,10 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 | --- | --- | --- | --- |
 | Vercel | Web y API | Funciones en Frankfurt | DPA |
 | Neon | Base de datos | Región UE | DPA |
-| AWS | Ficheros (S3) e IA (Bedrock, perfil EU) | Regiones UE | DPA; Bedrock no entrena con los datos |
+| AWS | Ficheros (S3), IA (Bedrock, perfil EU) y emails (SES, Frankfurt) | Regiones UE | DPA; Bedrock no entrena con los datos |
+| Stripe | Cobro de suscripciones (spec 010) | UE y EE. UU. | DPA y cláusulas tipo ⚖️; la app no guarda datos de tarjeta |
+| Programa de facturación (por decidir, p. ej. Quaderno) | Facturas Verifactu de las suscripciones | Por confirmar | DPA ⚖️ |
+| Google | Inicio de sesión con Google (spec 008) | — | Elegido por la usuaria; solo email y perfil básico |
 
 Los tres son proveedores estadounidenses con datos alojados en la UE; las garantías de transferencia (cláusulas tipo o marco UE-EE. UU.) se comprueban al aceptar cada DPA ⚖️.
 

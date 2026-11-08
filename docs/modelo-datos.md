@@ -9,7 +9,7 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | Entidad | Campos principales | Notas |
 | --- | --- | --- |
 | **usuaria** | email, nombre | Gestionada por Better Auth |
-| **inmueble** | usuaria, nombre, dirección (opcional), modalidad (`entero` \| `habitaciones`), meses_parciales (`prorrateo` \| `mes_completo`), dia_cobro (1–28, por defecto 1), archivado | La modalidad no se puede cambiar en la v1. Por defecto, mes completo |
+| **inmueble** | usuaria, nombre, dirección (opcional), modalidad (`entero` \| `habitaciones`), meses_parciales (`prorrateo` \| `mes_completo`), dia_cobro (1–28, por defecto 1), archivado, solo_lectura | La modalidad no se puede cambiar en la v1. Por defecto, mes completo |
 | **habitacion** | inmueble, nombre, archivada | Un piso entero = una sola habitación. Se archiva, no se borra, si tiene historial |
 | **precio_habitacion** | habitación, desde_mes (`YYYY-MM`), precio_mensual | Historial de precios; el vigente en un mes es el último con `desde_mes` igual o anterior (spec 007) |
 | **inquilino** | inmueble, nombre, anonimizado | Solo se guarda el nombre (spec 007). Al borrarlo se anonimiza como "Inquilino N". Pertenece al inmueble. Si se muda a otro inmueble de la misma propietaria, se cierran sus cuentas en el primero y se crea un inquilino nuevo en el segundo |
@@ -19,6 +19,9 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **reparto** | factura, calculado_en, detalle | Foto fija del cálculo de la spec 001. `detalle`: tramos de días con los presentes, para la vista del inquilino (spec 004) |
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
 | **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, fecha_cobro, origen (`auto` \| `manual`), editado, desactualizado, quitado_en, pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes, incluidos los quitados, para que el proceso no los recree (spec 005) |
+| **suscripcion** | usuaria, plan (`gratis` \| `propietaria`), estado, stripe_cliente_id, stripe_suscripcion_id, periodo_fin, cancela_al_final | Solo cambia por webhooks de Stripe (spec 010) |
+| **evento_stripe** | id del evento, tipo, procesado_en | Para procesar cada webhook una sola vez |
+| **uso_ia** | usuaria, mes, facturas_leidas | Contador mensual de facturas leídas por IA |
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
 | **documento** | inquilino, tipo (`contrato` \| `justificante_fianza`), fichero | Solo estos dos tipos; no se guardan DNI ni nóminas. Nunca pasa por la IA |
 | **fichero** | usuaria, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |

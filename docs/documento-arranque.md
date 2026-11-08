@@ -112,6 +112,15 @@ También hay apps más nuevas como ToRoomy y Hoozzee.
 
 Pendiente: probar a fondo Homming y RentPackage para ver hasta dónde llega su gestión de suministros.
 
+## Monetización
+
+Freemium con precio fijo por cuenta (spec 010):
+
+- **Gratis:** 1 inmueble y 2 facturas leídas por IA al mes.
+- **Propietaria:** 4,99 €/mes con IVA incluido, sin límites prácticos.
+
+Cobro con **Stripe** y facturas automáticas con un programa adaptado a **Verifactu**. Para cobrar hace falta darse de alta como autónoma o crear una sociedad (a confirmar con un gestor).
+
 ## Viabilidad
 
 Técnicamente es muy viable y barata; como negocio es moderada y depende de destacar en el nicho.

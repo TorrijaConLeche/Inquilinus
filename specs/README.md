@@ -34,3 +34,4 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [007 · Gestión de inmuebles, habitaciones, inquilinos y ocupaciones](007-gestion-inmuebles.md) | aprobada |
 | [008 · Cuenta e inicio de sesión](008-cuenta-sesion.md) | aprobada |
 | [009 · Panel principal y cobros del inmueble](009-panel-cobros.md) | aprobada |
+| [010 · Planes y suscripciones](010-planes-suscripciones.md) | borrador |
