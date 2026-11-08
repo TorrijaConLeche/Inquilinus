@@ -158,7 +158,7 @@ Primero una versión mínima para uso propio; solo cuando funcione en el día a 
 
 ## Metodología
 
-Spec-driven development con un formato propio y ligero: una carpeta `specs/` con un único fichero por funcionalidad (objetivo, reglas, casos de prueba, fuera de alcance, tareas). Convenciones en `specs/README.md`. Flujo de Git en `docs/flujo-git.md`. El modelo de datos está en `docs/modelo-datos.md`.
+Spec-driven development con un formato propio y ligero: una carpeta `specs/` con un único fichero por funcionalidad (objetivo, reglas, casos de prueba, fuera de alcance, tareas). Convenciones en `specs/README.md`. Flujo de Git en `docs/flujo-git.md`. Plan por fases y tareas en `docs/plan.md`. El modelo de datos está en `docs/modelo-datos.md`.
 
 ## Preguntas abiertas
 
