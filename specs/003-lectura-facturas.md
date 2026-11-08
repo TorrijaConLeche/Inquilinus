@@ -1,6 +1,6 @@
 # 003 · Lectura de facturas con IA
 
-Estado: borrador · Paquetes: `packages/domain` (validaciones, duplicados), `apps/api` (subida y extracción)
+Estado: aprobada · Paquetes: `packages/domain` (validaciones, duplicados), `apps/api` (subida y extracción)
 
 ## Objetivo
 
