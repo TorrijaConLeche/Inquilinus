@@ -2,7 +2,7 @@
 
 Plataforma web (y más adelante móvil) para que propietarias gestionen sus alquileres. El diferencial: leer facturas de suministros con IA y repartirlas por días entre los inquilinos, con un desglose transparente.
 
-Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/modelo-datos.md`. RGPD en `docs/rgpd.md`.
+Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/modelo-datos.md`. RGPD en `docs/rgpd.md`. Flujo de Git en `docs/flujo-git.md`.
 
 ## Cómo trabajamos: spec-driven development
 
@@ -10,6 +10,10 @@ Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/mode
 - Solo se implementa una spec en estado `aprobada`. Al terminar, pasa a `implementada`.
 - Si al implementar una regla resulta ambigua o hay que cambiarla, **se actualiza la spec primero** y se avisa a la usuaria; nunca se decide en silencio en el código.
 - Cada caso de prueba de la spec (C1, C2…) es un test con el mismo nombre.
+
+## Git
+
+Flujo en `docs/flujo-git.md`: `main` siempre estable, una rama corta por cambio (`spec/`, `feat/`, `fix/`, `docs/`, `chore/`), código siempre con PR y CI en verde, squash merge, commits `tipo(spec): descripción` en español.
 
 ## Estructura
 
