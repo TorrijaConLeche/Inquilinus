@@ -17,7 +17,8 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **factura** | tipo_gasto, fichero (PDF), periodo_inicio, periodo_fin, importe_total, estado, propuesta_ia | Estados: `subida` → `propuesta` (o `error_extraccion`) → `confirmada` → `repartida`. `propuesta_ia` guarda lo que propuso la IA (spec 003) |
 | **reparto** | factura, calculado_en, detalle | Foto fija del cálculo de la spec 001. `detalle`: tramos de días con los presentes, para la vista del inquilino (spec 004) |
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
-| **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, origen (`auto` \| `manual`), desactualizado, pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes (spec 005) |
+| **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, fecha_cobro, origen (`auto` \| `manual`), editado, desactualizado, pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes (spec 005) |
+| **generacion_cobros** | inmueble, mes, ejecutada_en | Una por inmueble y mes: evita que el proceso automático repita la generación o recree cobros quitados (spec 005) |
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
 | **documento** | inquilino, tipo (`contrato` \| `dni` \| `nomina` \| `otro`), año, fichero, notas | Nunca pasa por la IA |
 | **fichero** | usuaria, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |
@@ -39,5 +40,5 @@ usuaria ── inmueble ─┬─ habitacion ── ocupacion ──┐
 - **Inquilinos por inmueble:** el cambio de inmueble es un caso raro; se resuelve cerrando la estancia y creando un inquilino nuevo. Así todo lo de un inmueble queda autocontenido.
 - **Cálculos congelados:** un reparto o un cobro se guarda como foto fija. Si después se corrige una fecha de ocupación, no cambia solo: la app avisa de que está desactualizado y la usuaria decide si recalcular.
 - **Pagos en la línea:** pagado o pendiente es `pagado_en` (vacío = pendiente), sin tabla de pagos aparte. No se registra el pago de la propietaria a la compañía.
-- **Cobros de alquiler:** se generan automáticamente el día de cobro de cada inmueble (por defecto el 1) para cada inquilino presente ese mes, y también se pueden generar a mano. Ambas vías usan el mismo cálculo y son idempotentes: si el cobro de ese inquilino y mes ya existe, no se duplica. Un cobro generado antes de conocer una salida a mitad de mes queda marcado como desactualizado.
+- **Cobros de alquiler:** se generan automáticamente el día de cobro de cada inmueble (por defecto el 1) para cada inquilino presente ese mes, una sola vez por mes, y también se pueden generar a mano. Nunca se duplican. La propietaria puede cambiar, mover o quitar cualquier cobro. Si cambian ocupaciones o precios, los cobros afectados quedan desactualizados (spec 005).
 - **Borrado RGPD:** borrar un inquilino elimina sus documentos, fianza y ficheros, y anonimiza su nombre en repartos y cobros para que los importes históricos sigan cuadrando.

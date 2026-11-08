@@ -15,7 +15,7 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 
 - **R1** — Eje horizontal de días en la parte inferior, con una rayita por día. Las rayitas del día 1 y del 15 son más largas y llevan etiqueta ("1 sep", "15 sep").
 - **R2** — Filas, de arriba abajo: Alquiler; una fila por tipo de gasto (en orden de creación); una fila por inquilino. Las etiquetas de fila se quedan fijas a la izquierda al desplazarse.
-- **R3** — **Alquiler**: una chincheta por mes, el día en que se genera el cobro (spec 005), con su importe.
+- **R3** — **Alquiler**: una chincheta por cobro, en su fecha de cobro (spec 005; por defecto el día de cobro del inmueble, o la fecha a la que se haya movido), con su importe.
 - **R4** — **Factura**: una barra desde el inicio hasta el fin de su periodo, con su importe dentro.
 - **R5** — **Inquilino**: una línea desde la entrada hasta la salida, con un punto verde en la entrada y uno rojo en la salida, cada uno con su fecha. Sin salida, la línea llega hasta el borde derecho. Si un inquilino tiene varias ocupaciones, se dibuja un tramo por cada una.
 - **R6** — Zoom: mes (rayita por día), trimestre (por semana) y año (por mes). Se desliza en horizontal, también en el móvil. Por defecto se muestra el mes en curso y el anterior.

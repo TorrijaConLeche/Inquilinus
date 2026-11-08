@@ -29,5 +29,5 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [002 · Cálculo del alquiler mensual](002-calculo-alquiler.md) | implementada |
 | [003 · Lectura de facturas con IA](003-lectura-facturas.md) | aprobada |
 | [004 · Enlace y vista del inquilino](004-enlace-inquilino.md) | aprobada |
-| [005 · Generación de cobros de alquiler](005-generacion-cobros.md) | borrador |
+| [005 · Generación de cobros de alquiler](005-generacion-cobros.md) | aprobada |
 | [006 · Timeline del inmueble](006-timeline.md) | aprobada |
