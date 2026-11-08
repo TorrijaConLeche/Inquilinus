@@ -18,3 +18,13 @@ pnpm --filter @inquilinus/api test
 | `GET /openapi.json` | Documento OpenAPI generado desde `@inquilinus/contracts`. |
 
 Los errores nunca devuelven ni registran el mensaje original (RGPD).
+
+## Base de datos
+
+PostgreSQL en Neon (Frankfurt) con [Drizzle](https://orm.drizzle.team). Esquema en `src/bd/esquema.ts`, según `docs/modelo-datos.md`; migraciones en `drizzle/`.
+
+1. Copia `.env.example` como `.env` y pon las cadenas de conexión de Neon. El `.env` nunca se sube.
+2. Tras cambiar el esquema: `pnpm --filter @inquilinus/api bd:generar --name <descripcion>` crea la migración (se revisa y se sube con el cambio).
+3. `pnpm --filter @inquilinus/api bd:migrar` la aplica en la base de datos del `.env`.
+
+Los tests aplican las migraciones en PostgreSQL en memoria ([PGlite](https://pglite.dev)), sin conexión a Neon. Con `DATABASE_URL`, el chequeo de salud consulta la base de datos.
