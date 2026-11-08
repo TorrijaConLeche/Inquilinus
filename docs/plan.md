@@ -10,8 +10,8 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 | --- | --- | --- |
 | 0 · Definición y dominio | Specs 001-011, documentación y lógica de negocio probada | ✅ Hecha |
 | 1 · Infraestructura | La app desplegada en Vercel, conectada a la base de datos | ✅ Hecha |
-| 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | ⏳ Siguiente |
-| 3 · Inmuebles e inquilinos | Tus pisos dados de alta | Pendiente |
+| 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | ✅ Hecha (falta la revisión legal, 2.9) |
+| 3 · Inmuebles e inquilinos | Tus pisos dados de alta | ⏳ Siguiente |
 | 4 · Cobros y panel | Un mes de cobros gestionado con la app | Pendiente |
 | 5 · Facturas con IA y reparto | Una factura real leída y repartida | Pendiente |
 | 6 · Timeline y enlace del inquilino | MVP para uso propio: `v0.1.0` | Pendiente |
@@ -45,7 +45,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 - [x] **1.8 · Claude + Tú** — Proyecto en Vercel conectado a GitHub, funciones en Frankfurt, variables de entorno y previsualizaciones por PR · `chore/vercel`
 - [x] **1.9 · Claude** — Registro de errores sin datos personales (RGPD) · `chore/logs`
 
-## Fase 2 · Cuenta e inicio de sesión (spec 008)
+## Fase 2 · Cuenta e inicio de sesión (spec 008) ✅
 
 Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la previsualización.
 
