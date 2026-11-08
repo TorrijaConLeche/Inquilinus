@@ -47,4 +47,6 @@ Eventos: `peticion`, `error_no_controlado` y `base_datos_no_responde`. En la API
 - Tablas `usuario`, `sesion`, `metodo_acceso` y `verificacion`; los nombres de Better Auth se traducen a las columnas en español.
 - Email y contraseña con verificación obligatoria (R2), mínimo de 12 caracteres sin reglas (R5), recuperación con enlace de un solo uso válido 1 hora (R6) y aceptación de la versión vigente de los términos (R4, `VERSION_TERMINOS` en `@inquilinus/contracts`).
 - Emails por Amazon SES (`src/correo/`) en el idioma del usuario. Si SES falla, el registro sigue y solo el tipo de error va al log.
+- Google (R1, R3): solo email y perfil básico, sin foto. Se vincula a una cuenta existente solo si Google confirma el email y la cuenta ya lo tenía verificado. Una cuenta nueva con Google exige que la web pase la versión de los términos en `additionalData` al iniciar el flujo (pantalla de registro); si no, se redirige a `errorCallbackURL?error=TERMINOS_NO_ACEPTADOS`.
+- Google no funciona en las previsualizaciones de Vercel: su dirección cambia en cada rama y Google solo acepta direcciones registradas. Se prueba en local y en producción.
 - `src/configuracion.ts` monta todo desde las variables de entorno (`.env.example`). Sin alguna de ellas, la API funciona pero sin cuentas.

@@ -64,6 +64,10 @@ export function dependenciasDesdeEntorno(
     urlBase: urlPublica(entorno, opciones.urlPorDefecto),
     rutaBase: `${opciones.rutaBase}/auth`,
     origenesConfiables: origenesVercel(entorno),
+    // Google es opcional: sin sus dos variables, solo email y contraseña.
+    ...(entorno["GOOGLE_CLIENT_ID"] && entorno["GOOGLE_CLIENT_SECRET"]
+      ? { google: { idCliente: entorno["GOOGLE_CLIENT_ID"], secreto: entorno["GOOGLE_CLIENT_SECRET"] } }
+      : {}),
     correo: crearEnviadorSes({
       region: entorno["APP_AWS_REGION"]!,
       idClave: entorno["APP_AWS_ACCESS_KEY_ID"]!,
