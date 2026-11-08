@@ -35,7 +35,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 
 Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app vacía con su estilo y un chequeo de salud que consulta la base de datos.
 
-- [x] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO): se queda Inquilinus. Los dominios pasan a la tarea 2.0
+- [x] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO): se queda Inquilinus. Los dominios pasan a la tarea 6.9
 - [x] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
 - [x] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
@@ -49,9 +49,8 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 
 Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la previsualización.
 
-- [ ] **2.0 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa). Hace falta para los emails de la 2.1
-- [ ] **2.1 · Tú** — Verificar el dominio en Amazon SES (SPF, DKIM, DMARC) y pedir salir del modo de pruebas
-- [ ] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud
+- [ ] **2.1 · Tú** — Verificar tu email en Amazon SES (modo de pruebas, sin dominio) para enviar los emails de la cuenta. Hasta tener dominio (6.9) pueden llegar a spam
+- [ ] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud, en modo de pruebas con tu cuenta como usuaria de prueba
 - [ ] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
 - [ ] **2.4 · Claude** — Inicio de sesión con Google y vinculación de cuentas · `feat/008-google`
 - [ ] **2.5 · Claude** — Límite de intentos, sesión de 30 días y doble factor · `feat/008-seguridad`
@@ -107,6 +106,8 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
 - [ ] **6.7 · Tú** — Revisar la cláusula informativa y entregarla a tus inquilinos
 - [ ] **6.8 · Claude** — Etiqueta `v0.1.0`
+- [ ] **6.9 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.3)
+- [ ] **6.10 · Claude** — Dominio en Vercel, remitente de los emails y direcciones de Google con el dominio nuevo · `chore/dominio`
 
 ## Fase 7 · Uso real y validación
 
