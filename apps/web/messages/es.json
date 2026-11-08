@@ -1,0 +1,11 @@
+{
+  "Metadatos": {
+    "titulo": "Inquilinus",
+    "descripcion": "Gestiona tus alquileres y reparte las facturas de suministros entre tus inquilinos."
+  },
+  "Inicio": {
+    "titulo": "Inquilinus",
+    "lema": "Tus alquileres en orden, con las facturas repartidas de forma clara.",
+    "estado": "En construcción"
+  }
+}

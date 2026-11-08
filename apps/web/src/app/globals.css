@@ -1,0 +1,81 @@
+/* Tokens de la paleta Salvia (docs/estilo.md). Los componentes solo usan
+   estas variables, nunca colores sueltos. */
+:root {
+  color-scheme: light;
+  --primario: #2f7d6b;
+  --primario-suave: #e6f2ee;
+  --primario-texto: #1e5447;
+  --acento: #e9b872;
+  --fondo: #f7f6f2;
+  --superficie: #ffffff;
+  --texto: #1f2a27;
+  --texto-suave: #5e6b67;
+  --borde: color-mix(in srgb, var(--texto) 12%, transparent);
+
+  --radio-control: 8px;
+  --radio-tarjeta: 12px;
+  --radio-ventana: 16px;
+}
+
+/* Modo oscuro: sigue al dispositivo salvo que la usuaria fije el claro
+   (data-tema="claro"), o se fuerza con data-tema="oscuro". */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    color-scheme: dark;
+    --primario: #5cc0a6;
+    --primario-suave: #24433b;
+    --primario-texto: #bfebdd;
+    --fondo: #141a18;
+    --superficie: #1c2421;
+    --texto: #eef3f1;
+    --texto-suave: #9daea8;
+  }
+}
+
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+  --primario: #5cc0a6;
+  --primario-suave: #24433b;
+  --primario-texto: #bfebdd;
+  --fondo: #141a18;
+  --superficie: #1c2421;
+  --texto: #eef3f1;
+  --texto-suave: #9daea8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente-figtree), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+strong {
+  font-weight: 600;
+}
+
+a {
+  color: var(--primario);
+}
+
+/* Importes y tablas: cifras del mismo ancho para que las columnas se alineen. */
+.cifras {
+  font-variant-numeric: tabular-nums;
+}
