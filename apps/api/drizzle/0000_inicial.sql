@@ -97,7 +97,7 @@ CREATE TABLE "fianza" (
 --> statement-breakpoint
 CREATE TABLE "fichero" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"usuaria_id" uuid NOT NULL,
+	"usuario_id" uuid NOT NULL,
 	"clave_s_3" text NOT NULL,
 	"nombre_original" text NOT NULL,
 	"mime" text NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE "habitacion" (
 --> statement-breakpoint
 CREATE TABLE "inmueble" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"usuaria_id" uuid NOT NULL,
+	"usuario_id" uuid NOT NULL,
 	"nombre" text NOT NULL,
 	"direccion" text,
 	"modalidad" "modalidad" NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE "reparto_linea" (
 --> statement-breakpoint
 CREATE TABLE "suscripcion" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"usuaria_id" uuid NOT NULL,
+	"usuario_id" uuid NOT NULL,
 	"plan" "plan" NOT NULL,
 	"periodicidad" "periodicidad" NOT NULL,
 	"estado" text NOT NULL,
@@ -215,7 +215,7 @@ CREATE TABLE "suscripcion" (
 	"activo_elegido_en" timestamp with time zone,
 	"creado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"actualizado_en" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "suscripcion_usuariaId_unique" UNIQUE("usuaria_id"),
+	CONSTRAINT "suscripcion_usuarioId_unique" UNIQUE("usuario_id"),
 	CONSTRAINT "suscripcion_paddleSuscripcionId_unique" UNIQUE("paddle_suscripcion_id")
 );
 --> statement-breakpoint
@@ -231,22 +231,22 @@ CREATE TABLE "tipo_gasto" (
 --> statement-breakpoint
 CREATE TABLE "uso_ia" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"usuaria_id" uuid NOT NULL,
+	"usuario_id" uuid NOT NULL,
 	"mes" text NOT NULL,
 	"facturas_leidas" integer DEFAULT 0 NOT NULL,
 	"creado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"actualizado_en" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "uso_ia_usuariaId_mes_unique" UNIQUE("usuaria_id","mes"),
+	CONSTRAINT "uso_ia_usuarioId_mes_unique" UNIQUE("usuario_id","mes"),
 	CONSTRAINT "uso_ia_mes" CHECK ("uso_ia"."mes" ~ '^[0-9]{4}-(0[1-9]|1[0-2])$')
 );
 --> statement-breakpoint
-CREATE TABLE "usuaria" (
+CREATE TABLE "usuario" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" text NOT NULL,
 	"nombre" text NOT NULL,
 	"creado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"actualizado_en" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "usuaria_email_unique" UNIQUE("email")
+	CONSTRAINT "usuario_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 ALTER TABLE "actividad" ADD CONSTRAINT "actividad_inmueble_id_inmueble_id_fk" FOREIGN KEY ("inmueble_id") REFERENCES "public"."inmueble"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -261,9 +261,9 @@ ALTER TABLE "factura" ADD CONSTRAINT "factura_fichero_id_fichero_id_fk" FOREIGN 
 ALTER TABLE "factura" ADD CONSTRAINT "factura_liquidacion_id_liquidacion_id_fk" FOREIGN KEY ("liquidacion_id") REFERENCES "public"."liquidacion"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "fianza" ADD CONSTRAINT "fianza_inquilino_id_inquilino_id_fk" FOREIGN KEY ("inquilino_id") REFERENCES "public"."inquilino"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "fianza" ADD CONSTRAINT "fianza_fichero_id_fichero_id_fk" FOREIGN KEY ("fichero_id") REFERENCES "public"."fichero"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "fichero" ADD CONSTRAINT "fichero_usuaria_id_usuaria_id_fk" FOREIGN KEY ("usuaria_id") REFERENCES "public"."usuaria"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "fichero" ADD CONSTRAINT "fichero_usuario_id_usuario_id_fk" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "habitacion" ADD CONSTRAINT "habitacion_inmueble_id_inmueble_id_fk" FOREIGN KEY ("inmueble_id") REFERENCES "public"."inmueble"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "inmueble" ADD CONSTRAINT "inmueble_usuaria_id_usuaria_id_fk" FOREIGN KEY ("usuaria_id") REFERENCES "public"."usuaria"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "inmueble" ADD CONSTRAINT "inmueble_usuario_id_usuario_id_fk" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "inquilino" ADD CONSTRAINT "inquilino_inmueble_id_inmueble_id_fk" FOREIGN KEY ("inmueble_id") REFERENCES "public"."inmueble"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "liquidacion" ADD CONSTRAINT "liquidacion_inmueble_id_inmueble_id_fk" FOREIGN KEY ("inmueble_id") REFERENCES "public"."inmueble"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "ocupacion" ADD CONSTRAINT "ocupacion_habitacion_mismo_inmueble" FOREIGN KEY ("habitacion_id","inmueble_id") REFERENCES "public"."habitacion"("id","inmueble_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -272,17 +272,17 @@ ALTER TABLE "precio_habitacion" ADD CONSTRAINT "precio_habitacion_habitacion_id_
 ALTER TABLE "reparto" ADD CONSTRAINT "reparto_factura_id_factura_id_fk" FOREIGN KEY ("factura_id") REFERENCES "public"."factura"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reparto_linea" ADD CONSTRAINT "reparto_linea_reparto_id_reparto_id_fk" FOREIGN KEY ("reparto_id") REFERENCES "public"."reparto"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reparto_linea" ADD CONSTRAINT "reparto_linea_inquilino_id_inquilino_id_fk" FOREIGN KEY ("inquilino_id") REFERENCES "public"."inquilino"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "suscripcion" ADD CONSTRAINT "suscripcion_usuaria_id_usuaria_id_fk" FOREIGN KEY ("usuaria_id") REFERENCES "public"."usuaria"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "suscripcion" ADD CONSTRAINT "suscripcion_usuario_id_usuario_id_fk" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "suscripcion" ADD CONSTRAINT "suscripcion_inmueble_activo_id_inmueble_id_fk" FOREIGN KEY ("inmueble_activo_id") REFERENCES "public"."inmueble"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tipo_gasto" ADD CONSTRAINT "tipo_gasto_inmueble_id_inmueble_id_fk" FOREIGN KEY ("inmueble_id") REFERENCES "public"."inmueble"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "uso_ia" ADD CONSTRAINT "uso_ia_usuaria_id_usuaria_id_fk" FOREIGN KEY ("usuaria_id") REFERENCES "public"."usuaria"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "uso_ia" ADD CONSTRAINT "uso_ia_usuario_id_usuario_id_fk" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "actividad_inmueble_id_ocurrida_en_index" ON "actividad" USING btree ("inmueble_id","ocurrida_en");--> statement-breakpoint
 CREATE INDEX "documento_inquilino_id_index" ON "documento" USING btree ("inquilino_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "enlace_inquilino_vigente" ON "enlace_inquilino" USING btree ("inquilino_id") WHERE "enlace_inquilino"."revocado_en" is null;--> statement-breakpoint
 CREATE INDEX "factura_tipo_gasto_id_index" ON "factura" USING btree ("tipo_gasto_id");--> statement-breakpoint
 CREATE INDEX "factura_lote_index" ON "factura" USING btree ("lote");--> statement-breakpoint
 CREATE INDEX "fianza_inquilino_id_index" ON "fianza" USING btree ("inquilino_id");--> statement-breakpoint
-CREATE INDEX "inmueble_usuaria_id_index" ON "inmueble" USING btree ("usuaria_id");--> statement-breakpoint
+CREATE INDEX "inmueble_usuario_id_index" ON "inmueble" USING btree ("usuario_id");--> statement-breakpoint
 CREATE INDEX "ocupacion_habitacion_id_index" ON "ocupacion" USING btree ("habitacion_id");--> statement-breakpoint
 CREATE INDEX "ocupacion_inquilino_id_index" ON "ocupacion" USING btree ("inquilino_id");--> statement-breakpoint
 CREATE INDEX "reparto_linea_reparto_id_index" ON "reparto_linea" USING btree ("reparto_id");--> statement-breakpoint

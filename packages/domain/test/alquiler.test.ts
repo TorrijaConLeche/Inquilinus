@@ -27,13 +27,13 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
   it('C1 · prorrateo, entrada a mitad', () => {
     const r = calcular({ ocupaciones: [occ('H1', 'A', '2026-09-11')] });
     expect(importes(r)).toEqual({ A: 33333 });
-    expect(r.propietaria).toBe(86667);
+    expect(r.propietario).toBe(86667);
   });
 
   it('C2 · mes completo, entrada a mitad', () => {
     const r = calcular({ mesesParciales: 'mes_completo', ocupaciones: [occ('H1', 'A', '2026-09-11')] });
     expect(importes(r)).toEqual({ A: 50000 });
-    expect(r.propietaria).toBe(70000);
+    expect(r.propietario).toBe(70000);
   });
 
   it('C3 · entero, habitación vacía todo el mes', () => {
@@ -43,7 +43,7 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
     });
     expect(importes(r)).toEqual({ A: 65000, B: 55000 });
     expect(r.lineas[0]).toEqual({ inquilinoId: 'A', renta: 50000, recargoVacios: 15000, importe: 65000 });
-    expect(r.propietaria).toBe(0);
+    expect(r.propietario).toBe(0);
   });
 
   it('C4 · entero, habitación vacía 10 días', () => {
@@ -57,13 +57,13 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
   it('C5 · por habitaciones con vacío', () => {
     const r = calcular({ ocupaciones: [occ('H1', 'A', '2026-01-01'), occ('H2', 'B', '2026-01-01')] });
     expect(importes(r)).toEqual({ A: 50000, B: 40000 });
-    expect(r.propietaria).toBe(30000);
+    expect(r.propietario).toBe(30000);
   });
 
   it('C6 · entero sin nadie algunos días', () => {
     const r = calcular({ modalidad: 'entero', ocupaciones: [occ('H1', 'A', '2026-09-16')] });
     expect(r.lineas).toEqual([{ inquilinoId: 'A', renta: 25000, recargoVacios: 35000, importe: 60000 }]);
-    expect(r.propietaria).toBe(60000);
+    expect(r.propietario).toBe(60000);
   });
 
   it('C7 · vivienda completa', () => {
@@ -80,7 +80,7 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
       ocupaciones: [occ('H1', 'A', '2026-01-01', '2026-09-15'), occ('H1', 'B', '2026-09-15')],
     });
     expect(importes(r)).toEqual({ A: 23333, B: 26667 });
-    expect(r.propietaria).toBe(70000);
+    expect(r.propietario).toBe(70000);
   });
 
   it('C9 · renta total informativa (R10)', () => {
@@ -94,7 +94,7 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
       modalidad: 'entero',
       ocupaciones: [occ('H1', 'A', '2026-02-03', '2026-02-17'), occ('H1', 'D', '2026-02-17'), occ('H2', 'B', '2026-02-09')],
     });
-    const suma = r.lineas.reduce((s, l) => s + l.importe, 0) + r.propietaria;
+    const suma = r.lineas.reduce((s, l) => s + l.importe, 0) + r.propietario;
     expect(suma).toBe(r.rentaTotal);
   });
 });

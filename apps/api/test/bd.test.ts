@@ -19,19 +19,19 @@ beforeAll(async () => {
 }, 30_000);
 
 let contador = 0;
-async function nuevaUsuaria() {
+async function nuevoUsuario() {
   contador += 1;
   const [u] = await bd
-    .insert(t.usuaria)
+    .insert(t.usuario)
     .values({ email: `prueba${contador}@ejemplo.test`, nombre: "Prueba" })
     .returning();
   return u!;
 }
 
-async function nuevoInmueble(usuariaId?: string) {
+async function nuevoInmueble(usuarioId?: string) {
   const [i] = await bd
     .insert(t.inmueble)
-    .values({ usuariaId: usuariaId ?? (await nuevaUsuaria()).id, nombre: "Piso", modalidad: "habitaciones" })
+    .values({ usuarioId: usuarioId ?? (await nuevoUsuario()).id, nombre: "Piso", modalidad: "habitaciones" })
     .returning();
   return i!;
 }
@@ -84,7 +84,7 @@ describe("migraciones", () => {
         "suscripcion",
         "tipo_gasto",
         "uso_ia",
-        "usuaria",
+        "usuario",
       ].sort(),
     );
   });
@@ -103,18 +103,18 @@ describe("migraciones", () => {
 
 describe("reglas de la base de datos", () => {
   it("el día de cobro está entre 1 y 28", async () => {
-    const { id } = await nuevaUsuaria();
+    const { id } = await nuevoUsuario();
     expect(
       await errorDe(
-        bd.insert(t.inmueble).values({ usuariaId: id, nombre: "X", modalidad: "entero", diaCobro: 29 }),
+        bd.insert(t.inmueble).values({ usuarioId: id, nombre: "X", modalidad: "entero", diaCobro: 29 }),
       ),
     ).toMatch(/inmueble_dia_cobro/);
   });
 
   it("una ocupación no puede mezclar habitación e inquilino de inmuebles distintos", async () => {
-    const usuaria = await nuevaUsuaria();
-    const a = await nuevoInmueble(usuaria.id);
-    const b = await nuevoInmueble(usuaria.id);
+    const usuario = await nuevoUsuario();
+    const a = await nuevoInmueble(usuario.id);
+    const b = await nuevoInmueble(usuario.id);
     const habitacionA = await nuevaHabitacion(a.id);
     const inquilinoB = await nuevoInquilino(b.id);
 
@@ -182,10 +182,10 @@ describe("reglas de la base de datos", () => {
     ).toMatch(/enlace_inquilino_vigente/);
   });
 
-  it("borrar una usuaria borra en cascada sus inmuebles y lo que cuelga de ellos", async () => {
-    const usuaria = await nuevaUsuaria();
+  it("borrar un usuario borra en cascada sus inmuebles y lo que cuelga de ellos", async () => {
+    const usuario = await nuevoUsuario();
     const otra = await nuevoInmueble();
-    const inmueble = await nuevoInmueble(usuaria.id);
+    const inmueble = await nuevoInmueble(usuario.id);
     const habitacion = await nuevaHabitacion(inmueble.id);
     const inquilino = await nuevoInquilino(inmueble.id);
     await bd.insert(t.ocupacion).values({
@@ -195,12 +195,12 @@ describe("reglas de la base de datos", () => {
       entrada: "2026-01-01",
     });
 
-    await bd.delete(t.usuaria).where(eq(t.usuaria.id, usuaria.id));
+    await bd.delete(t.usuario).where(eq(t.usuario.id, usuario.id));
 
     expect(await bd.select().from(t.inmueble).where(eq(t.inmueble.id, inmueble.id))).toEqual([]);
     expect(await bd.select().from(t.inquilino).where(eq(t.inquilino.id, inquilino.id))).toEqual([]);
     expect(await bd.select().from(t.ocupacion).where(eq(t.ocupacion.inmuebleId, inmueble.id))).toEqual([]);
-    // Los datos de otras usuarias no se tocan.
+    // Los datos de otros usuarios no se tocan.
     expect(await bd.select().from(t.inmueble).where(eq(t.inmueble.id, otra.id))).toHaveLength(1);
   });
 });

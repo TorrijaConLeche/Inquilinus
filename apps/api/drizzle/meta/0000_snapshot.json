@@ -1,5 +1,5 @@
 {
-  "id": "8b051a71-f65a-4bb3-8fe1-3ee20bbcdb8c",
+  "id": "ac70de2c-7952-402f-b45e-df3ba438cc25",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -816,8 +816,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "usuaria_id": {
-          "name": "usuaria_id",
+        "usuario_id": {
+          "name": "usuario_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -869,12 +869,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "fichero_usuaria_id_usuaria_id_fk": {
-          "name": "fichero_usuaria_id_usuaria_id_fk",
+        "fichero_usuario_id_usuario_id_fk": {
+          "name": "fichero_usuario_id_usuario_id_fk",
           "tableFrom": "fichero",
-          "tableTo": "usuaria",
+          "tableTo": "usuario",
           "columnsFrom": [
-            "usuaria_id"
+            "usuario_id"
           ],
           "columnsTo": [
             "id"
@@ -984,8 +984,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "usuaria_id": {
-          "name": "usuaria_id",
+        "usuario_id": {
+          "name": "usuario_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1061,11 +1061,11 @@
         }
       },
       "indexes": {
-        "inmueble_usuaria_id_index": {
-          "name": "inmueble_usuaria_id_index",
+        "inmueble_usuario_id_index": {
+          "name": "inmueble_usuario_id_index",
           "columns": [
             {
-              "expression": "usuaria_id",
+              "expression": "usuario_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1078,12 +1078,12 @@
         }
       },
       "foreignKeys": {
-        "inmueble_usuaria_id_usuaria_id_fk": {
-          "name": "inmueble_usuaria_id_usuaria_id_fk",
+        "inmueble_usuario_id_usuario_id_fk": {
+          "name": "inmueble_usuario_id_usuario_id_fk",
           "tableFrom": "inmueble",
-          "tableTo": "usuaria",
+          "tableTo": "usuario",
           "columnsFrom": [
-            "usuaria_id"
+            "usuario_id"
           ],
           "columnsTo": [
             "id"
@@ -1688,8 +1688,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "usuaria_id": {
-          "name": "usuaria_id",
+        "usuario_id": {
+          "name": "usuario_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1768,12 +1768,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "suscripcion_usuaria_id_usuaria_id_fk": {
-          "name": "suscripcion_usuaria_id_usuaria_id_fk",
+        "suscripcion_usuario_id_usuario_id_fk": {
+          "name": "suscripcion_usuario_id_usuario_id_fk",
           "tableFrom": "suscripcion",
-          "tableTo": "usuaria",
+          "tableTo": "usuario",
           "columnsFrom": [
-            "usuaria_id"
+            "usuario_id"
           ],
           "columnsTo": [
             "id"
@@ -1797,11 +1797,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "suscripcion_usuariaId_unique": {
-          "name": "suscripcion_usuariaId_unique",
+        "suscripcion_usuarioId_unique": {
+          "name": "suscripcion_usuarioId_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "usuaria_id"
+            "usuario_id"
           ]
         },
         "suscripcion_paddleSuscripcionId_unique": {
@@ -1916,8 +1916,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "usuaria_id": {
-          "name": "usuaria_id",
+        "usuario_id": {
+          "name": "usuario_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1952,12 +1952,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "uso_ia_usuaria_id_usuaria_id_fk": {
-          "name": "uso_ia_usuaria_id_usuaria_id_fk",
+        "uso_ia_usuario_id_usuario_id_fk": {
+          "name": "uso_ia_usuario_id_usuario_id_fk",
           "tableFrom": "uso_ia",
-          "tableTo": "usuaria",
+          "tableTo": "usuario",
           "columnsFrom": [
-            "usuaria_id"
+            "usuario_id"
           ],
           "columnsTo": [
             "id"
@@ -1968,11 +1968,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "uso_ia_usuariaId_mes_unique": {
-          "name": "uso_ia_usuariaId_mes_unique",
+        "uso_ia_usuarioId_mes_unique": {
+          "name": "uso_ia_usuarioId_mes_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "usuaria_id",
+            "usuario_id",
             "mes"
           ]
         }
@@ -1986,8 +1986,8 @@
       },
       "isRLSEnabled": false
     },
-    "public.usuaria": {
-      "name": "usuaria",
+    "public.usuario": {
+      "name": "usuario",
       "schema": "",
       "columns": {
         "id": {
@@ -2028,8 +2028,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "usuaria_email_unique": {
-          "name": "usuaria_email_unique",
+        "usuario_email_unique": {
+          "name": "usuario_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"

@@ -19,7 +19,7 @@ describe("chequeo de salud", () => {
   it("responde 503 sin detalles cuando la base de datos falla", async () => {
     const app = crearApp({
       comprobarBaseDatos: async () => {
-        throw new Error("postgres://usuaria:secreto@host/bd");
+        throw new Error("postgres://usuario:secreto@host/bd");
       },
     });
     const respuesta = await app.request("/salud");

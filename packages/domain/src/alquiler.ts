@@ -32,8 +32,8 @@ export interface LineaAlquiler {
 
 export interface ResultadoAlquilerMes {
   lineas: LineaAlquiler[];
-  /** Renta de habitaciones vacías que asume la propietaria, en céntimos. */
-  propietaria: number;
+  /** Renta de habitaciones vacías que asume el propietario, en céntimos. */
+  propietario: number;
   /** Suma de los precios de las habitaciones; solo informativa (R10). */
   rentaTotal: number;
 }
@@ -98,7 +98,7 @@ export function calcularAlquilerMes(entrada: EntradaAlquilerMes): ResultadoAlqui
 
   const renta = new Map<string, bigint>();
   const recargo = new Map<string, bigint>();
-  let propietaria = 0n;
+  let propietario = 0n;
   const sumar = (m: Map<string, bigint>, id: string, v: bigint) => m.set(id, (m.get(id) ?? 0n) + v);
 
   for (const r of repartos) {
@@ -112,15 +112,15 @@ export function calcularAlquilerMes(entrada: EntradaAlquilerMes): ResultadoAlqui
         const parte = (r.precio * L) / BigInt(presentes.size);
         for (const id of presentes) sumar(recargo, id, parte);
       } else {
-        // R5 sin presentes, o R6 (por habitaciones): lo asume la propietaria.
-        propietaria += r.precio * L;
+        // R5 sin presentes, o R6 (por habitaciones): lo asume el propietario.
+        propietario += r.precio * L;
       }
     }
   }
 
   const orden = ordenInquilinos(tramos);
   const redondeados = repartirMayorResto(
-    [...orden.flatMap((id) => [renta.get(id) ?? 0n, recargo.get(id) ?? 0n]), propietaria],
+    [...orden.flatMap((id) => [renta.get(id) ?? 0n, recargo.get(id) ?? 0n]), propietario],
     M * L,
   );
 
@@ -130,7 +130,7 @@ export function calcularAlquilerMes(entrada: EntradaAlquilerMes): ResultadoAlqui
       const v = redondeados[2 * i + 1]!;
       return { inquilinoId: id, renta: r, recargoVacios: v, importe: r + v };
     }),
-    propietaria: redondeados[orden.length * 2]!,
+    propietario: redondeados[orden.length * 2]!,
     rentaTotal: entrada.habitaciones.reduce((s, h) => s + h.precioMensual, 0),
   };
 }

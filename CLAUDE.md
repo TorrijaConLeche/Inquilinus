@@ -32,6 +32,7 @@ La app móvil (Expo) está fuera del MVP; todo lo reutilizable va en `packages/`
 ## Convenciones
 
 - Código y nombres de dominio en **español**. La interfaz está en **español e inglés** desde el MVP: ningún texto va escrito en los componentes, todo sale de las traducciones (`es`, `en`). Ver `docs/estilo.md`.
+- **Nombres en masculino genérico** en todo el código: tablas, columnas, tipos, funciones, variables y comentarios (`usuario`, `propietario`, `inquilino`). La documentación puede hablar de "la usuaria" o "la propietaria" al referirse a la persona.
 - Estilo: paleta Salvia, tipografía Figtree, modo oscuro desde el inicio. Colores siempre por tokens (`docs/estilo.md`).
 - Importes siempre en **céntimos enteros**; nunca `number` con decimales para dinero.
 - Fechas de negocio como día natural `YYYY-MM-DD`, sin hora ni zona horaria.
