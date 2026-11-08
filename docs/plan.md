@@ -37,7 +37,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 
 - [ ] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO) y registrar `inquilinus.es` e `inquilinus.com`
 - [ ] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
-- [ ] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
+- [x] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
 - [ ] **1.5 · Claude** — Esqueleto de `apps/web` (Next.js, tokens Salvia, Figtree, modo oscuro, traducciones es/en) · `chore/web-esqueleto`
 - [ ] **1.6 · Claude** — `packages/contracts` con Zod y generación de OpenAPI · `chore/contracts`
