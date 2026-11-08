@@ -12,8 +12,8 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 
 - **R1** — Se puede entrar con **email y contraseña** o con **Google**. El registro es libre desde el principio.
 - **R2** — Con email y contraseña, la cuenta no se puede usar hasta verificar el email con el enlace que se envía. Con Google, el email ya viene verificado.
-- **R3** — Si ya existe una cuenta con ese email y se entra con Google (con email verificado por Google), las dos formas de acceso se vinculan a la misma cuenta.
-- **R4** — Al registrarse hay que aceptar la política de privacidad y los términos. Se guarda la fecha y la versión aceptada ⚖️.
+- **R3** — Si ya existe una cuenta con ese email y se entra con Google (con email verificado por Google), las dos formas de acceso se vinculan a la misma cuenta, **solo si la cuenta existente ya tiene el email verificado**. Si no lo tiene, no se vincula y se pide confirmar antes el email: así nadie puede registrar el email de otra persona con su contraseña y quedarse dentro cuando la dueña entre con Google.
+- **R4** — Al registrarse hay que aceptar la política de privacidad y los términos. Se guarda la fecha y la versión aceptada ⚖️. Con Google, la cuenta solo se crea desde la pantalla de registro con los términos aceptados; si se entra con Google desde la pantalla de acceso sin tener cuenta, no se crea y se lleva al registro.
 - **R5** — Contraseña de al menos 12 caracteres, sin reglas de composición ni lista de contraseñas comunes (el mínimo de 12, el límite de intentos de R11 y el doble factor opcional bastan para el MVP). Se guarda solo su hash (algoritmo de Better Auth).
 - **R6** — Recuperación de contraseña con un enlace por email, de un solo uso y válido 1 hora. El mensaje es el mismo exista o no el email.
 - **R7** — Doble factor **opcional** con una app de autenticación (TOTP), con códigos de recuperación.
@@ -45,6 +45,8 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 | C4 | Intentos fallidos (R11) | Al sexto fallo en 15 minutos, bloqueo de 15 minutos |
 | C5 | Google, email nuevo (R1, R2) | Cuenta creada y verificada |
 | C6 | Google, email existente (R3) | Se vincula a la cuenta existente; mismos inmuebles |
+| C6b | Google, email existente sin verificar (R3) | No se vincula; se pide confirmar el email y la contraseña de la cuenta existente no da acceso a nada nuevo |
+| C5b | Google sin aceptar los términos (R4) | Desde la pantalla de acceso, sin cuenta: no se crea la cuenta |
 | C7 | Recuperación, email inexistente (R6) | Mismo mensaje que con un email existente |
 | C8 | Enlace de recuperación reutilizado (R6) | El segundo uso da error |
 | C9 | Recordar dispositivo (R8) | Sesión válida el día 30; el día 31 pide acceso |
