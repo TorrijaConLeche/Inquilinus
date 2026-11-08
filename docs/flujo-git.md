@@ -1,6 +1,6 @@
 # Flujo de trabajo con Git
 
-Estado: borrador
+Estado: aprobado
 
 Flujo sencillo basado en GitHub Flow: una rama principal siempre estable y una rama corta por cada cambio. No usamos Git Flow clásico (ramas `develop`, `release`, `hotfix`): con una sola persona desarrollando añade trabajo sin aportar nada.
 
@@ -25,7 +25,7 @@ Las ramas son cortas: una spec grande se implementa en varias ramas `feat/` pequ
 - **Código** (`feat/`, `fix/`, `chore/`): siempre con **pull request**. Requisitos para integrar:
   1. Los tests y la comprobación de tipos pasan en CI (GitHub Actions).
   2. La previsualización de Vercel de la PR funciona.
-  3. La usuaria aprueba la PR (ver P1).
+  3. Claude integra la PR cuando se cumplen 1 y 2, y avisa a la usuaria con un resumen del cambio. La usuaria puede pedir revisar una PR antes de integrarla.
 - Se integra con **squash merge**: cada PR queda como un único commit en `main`. La rama se borra después.
 - Si `main` avanza mientras una rama está abierta, la rama se actualiza con `rebase` sobre `main` antes de integrar.
 
@@ -53,7 +53,3 @@ Ejemplos: `feat(003): extraer periodo e importe con Bedrock` · `fix(001): desem
 
 - Nunca se suben claves ni `.env` al repositorio (ya lo impide `.gitignore`). Los secretos viven en Vercel y en GitHub Actions.
 - Si una clave se sube por error, se revoca inmediatamente; borrarla del historial no basta.
-
-## Preguntas abiertas
-
-- **P1** — PR de código: ¿las revisas y apruebas tú siempre, o Claude puede integrarlas cuando la CI esté en verde y avisarte?
