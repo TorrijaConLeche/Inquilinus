@@ -35,8 +35,8 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 
 Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app vacía con su estilo y un chequeo de salud que consulta la base de datos.
 
-- [ ] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO). Los dominios pasan a la tarea 2.0
-- [ ] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
+- [x] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO): se queda Inquilinus. Los dominios pasan a la tarea 2.0
+- [x] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
 - [x] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
 - [x] **1.5 · Claude** — Esqueleto de `apps/web` (Next.js, tokens Salvia, Figtree, modo oscuro, traducciones es/en) · `chore/web-esqueleto`

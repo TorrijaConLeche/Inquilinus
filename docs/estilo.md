@@ -4,7 +4,7 @@ Estado: aprobado
 
 ## Nombre
 
-**Inquilinus** (del latín, "inquilino"). Nombre alternativo anotado: **Rentarium** (ojo: se parece a Rentari.ai, software de gestión de alquileres con IA). Pendiente: comprobar marca en OEPM y EUIPO y registrar `inquilinus.es` y `inquilinus.com`.
+**Inquilinus** (del latín, "inquilino"). Marca comprobada en OEPM y EUIPO (tarea 1.1). Dominio: `inquilinus.es`; `inquilinus.com` está ocupado y la alternativa se decide en la tarea 2.0.
 
 ## Tono
 
