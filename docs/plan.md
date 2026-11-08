@@ -35,7 +35,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 
 Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app vacía con su estilo y un chequeo de salud que consulta la base de datos.
 
-- [ ] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO) y registrar `inquilinus.es` e `inquilinus.com`
+- [ ] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO). Los dominios pasan a la tarea 2.0
 - [ ] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
 - [x] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
@@ -49,6 +49,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 
 Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la previsualización.
 
+- [ ] **2.0 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa). Hace falta para los emails de la 2.1
 - [ ] **2.1 · Tú** — Verificar el dominio en Amazon SES (SPF, DKIM, DMARC) y pedir salir del modo de pruebas
 - [ ] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud
 - [ ] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
