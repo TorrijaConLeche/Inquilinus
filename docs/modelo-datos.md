@@ -19,8 +19,8 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **reparto** | factura, calculado_en, detalle | Foto fija del cálculo de la spec 001. `detalle`: tramos de días con los presentes, para la vista del inquilino (spec 004) |
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
 | **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, fecha_cobro, origen (`auto` \| `manual`), editado, desactualizado, quitado_en, pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes, incluidos los quitados, para que el proceso no los recree (spec 005) |
-| **suscripcion** | usuaria, plan (`gratis` \| `propietaria`), estado, stripe_cliente_id, stripe_suscripcion_id, periodo_fin, cancela_al_final | Solo cambia por webhooks de Stripe (spec 010) |
-| **evento_stripe** | id del evento, tipo, procesado_en | Para procesar cada webhook una sola vez |
+| **suscripcion** | usuaria, plan (`gratis` \| `propietaria`), periodicidad (`mensual` \| `anual`), estado, paddle_cliente_id, paddle_suscripcion_id, periodo_fin, cancela_al_final | Solo cambia por webhooks de Paddle (spec 010) |
+| **evento_pago** | id del evento, tipo, procesado_en | Para procesar cada webhook de Paddle una sola vez |
 | **uso_ia** | usuaria, mes, facturas_leidas | Contador mensual de facturas leídas por IA |
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
 | **documento** | inquilino, tipo (`contrato` \| `justificante_fianza`), fichero | Solo estos dos tipos; no se guardan DNI ni nóminas. Nunca pasa por la IA |
