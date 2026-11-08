@@ -13,8 +13,8 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **habitacion** | inmueble, nombre, precio_mensual, archivada | Un piso entero = una sola habitación. Se archiva, no se borra, si tiene historial |
 | **inquilino** | inmueble, nombre, apellidos, DNI, email, teléfono, notas | Pertenece al inmueble. Si se muda a otro inmueble de la misma propietaria, se cierran sus cuentas en el primero y se crea un inquilino nuevo en el segundo |
 | **ocupacion** | habitación, inquilino, entrada, salida (opcional) | Habitación e inquilino deben ser del mismo inmueble. Un inquilino puede tener varias si cambia de habitación. Se valida el solape (R8 de la spec 001) |
-| **suministro** | inmueble, tipo (`luz` \| `agua` \| `gas` \| `internet` \| `otro`), nombre, compañía, activo | De 0 a N por inmueble |
-| **factura** | suministro, fichero, compañía, periodo_inicio, periodo_fin, importe_total, consumo, unidad, estado, extraccion_ia | Estados: `extraida` → `confirmada` → `repartida`. `extraccion_ia` guarda lo que propuso la IA, para comparar con lo confirmado |
+| **tipo_gasto** | inmueble, nombre (texto libre: "Luz", "Agua", "Comunidad"…), activo | De 0 a N por inmueble; los define la usuaria |
+| **factura** | tipo_gasto, fichero (PDF), periodo_inicio, periodo_fin, importe_total, estado, propuesta_ia | Estados: `subida` → `propuesta` (o `error_extraccion`) → `confirmada` → `repartida`. `propuesta_ia` guarda lo que propuso la IA (spec 003) |
 | **reparto** | factura, calculado_en | Foto fija del cálculo de la spec 001 |
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
 | **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, origen (`auto` \| `manual`), pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes |
@@ -31,7 +31,7 @@ usuaria ── inmueble ─┬─ habitacion ── ocupacion ──┐
                      │     ├─ documento, fianza
                      │     ├─ cobro_alquiler
                      │     └─ enlace_inquilino
-                     └─ suministro ── factura ── reparto ── reparto_linea ── inquilino
+                     └─ tipo_gasto ── factura ── reparto ── reparto_linea ── inquilino
 ```
 
 ## Decisiones de diseño

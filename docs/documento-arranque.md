@@ -24,7 +24,7 @@ El núcleo es estándar en el mercado; el reparto inteligente de suministros es 
 
 - Varios inmuebles por usuaria, y varias habitaciones por inmueble, cada una con su precio.
 - Modalidad de alquiler por inmueble (entero o por habitaciones), elegida al crearlo.
-- Suministros configurables por inmueble: de cero a N, del tipo que se quiera. Sin suministros = incluidos en el alquiler.
+- Tipos de gasto configurables por inmueble (texto libre: luz, agua, comunidad…): de cero a N. Sin gastos = incluidos en el alquiler.
 - Ficha de cada inquilino (pertenece al inmueble); ocupaciones de habitación con fecha de entrada y de salida.
 - Documentos por inquilino y año: contratos firmados, DNI, nóminas.
 - Fianza por inquilino: importe, si se ha devuelto (y cuánto) y documento opcional.
@@ -33,9 +33,9 @@ El núcleo es estándar en el mercado; el reparto inteligente de suministros es 
 
 **Diferencial: reparto de suministros con IA**
 
-1. La usuaria sube la factura (luz, agua, gas, internet…) en foto o PDF.
-2. La IA extrae compañía, periodo, importe total y consumo.
-3. La usuaria revisa y confirma los datos extraídos.
+1. La usuaria sube la factura en PDF (un PDF por factura; fotos más adelante).
+2. La IA extrae el periodo y el importe total.
+3. La usuaria elige el tipo de gasto, revisa y confirma. Si ya hay una factura de ese tipo con el periodo solapado, la app avisa.
 4. La app prorratea por días según quién vivía allí durante ese periodo, incluidas entradas y salidas a mitad de factura.
 5. Se genera un desglose para cada inquilino.
 6. Se sigue quién ha pagado su parte y quién no.
