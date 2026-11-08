@@ -5,7 +5,7 @@ import {
   inmueblesTrasBajada,
   mesDeUsoIa,
   PRECIOS,
-  puedeCambiarInmuebleActivo,
+  puedeElegirInmuebleActivo,
   puedeLeerConIa,
 } from '../src/index.ts';
 
@@ -44,10 +44,10 @@ describe('Spec 010 · Planes', () => {
     expect(inmueblesTrasBajada(inmuebles, 'playa')).toEqual({ activo: 'playa', bloqueados: ['atico', 'centro'] });
   });
 
-  it('C13 · cambio del inmueble activo como máximo cada 30 días (R10c)', () => {
-    expect(puedeCambiarInmuebleActivo('2026-11-20', '2026-11-01')).toBe(false);
-    expect(puedeCambiarInmuebleActivo('2026-12-01', '2026-11-01')).toBe(true);
-    expect(puedeCambiarInmuebleActivo('2026-11-20', null)).toBe(true);
+  it('C13 · el inmueble activo se elige una sola vez (R10c)', () => {
+    expect(puedeElegirInmuebleActivo('starter', null)).toBe(true);
+    expect(puedeElegirInmuebleActivo('starter', '2026-11-01')).toBe(false);
+    expect(puedeElegirInmuebleActivo('advanced', null)).toBe(false);
   });
 
   it('C12 · desglose del IVA (R7)', () => {
