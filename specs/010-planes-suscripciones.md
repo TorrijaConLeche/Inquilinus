@@ -36,7 +36,7 @@ Dos planes: **Starter**, gratuito, para probar la app con un inmueble real, y **
 - **R9** — Si un pago falla, Paddle lo reintenta durante unos días y la app avisa a la usuaria. Mientras tanto el plan sigue activo. Si al final no se cobra, se aplica R8.
 - **R10** — Al pasar a Starter con más de un inmueble **no se borra nada**: la usuaria elige qué inmueble sigue activo y los demás quedan **bloqueados**. Hasta que elija, queda activo el más antiguo.
 - **R10b** — Un inmueble bloqueado aparece en la lista con un candado y la opción de pasar a Advanced, pero **no se puede entrar en él**: ni verlo, ni editarlo, ni marcar pagos. No se generan sus cobros. Sus datos se conservan intactos.
-- **R10c** — El inmueble activo se puede cambiar como máximo una vez cada 30 días, para que el límite de Starter no se sortee alternando inmuebles.
+- **R10c** — La elección del inmueble activo es **única**: una vez elegido, no se puede cambiar mientras la cuenta siga en Starter. Solo se puede cambiar volviendo a Advanced. Mientras la usuaria no haya elegido, el más antiguo queda activo de forma provisional y la elección sigue disponible. Si vuelve a Advanced y más adelante baja otra vez a Starter, vuelve a elegir.
 - **R10d** — Los enlaces de los inquilinos de un inmueble bloqueado siguen funcionando con lo que había y muestran el aviso **"Este inmueble no está actualizado"** (spec 004).
 - **R10e** — Los inmuebles bloqueados no cuentan en el panel principal; el panel muestra el aviso "N inmuebles bloqueados" con la opción de pasar a Advanced.
 - **R10f** — Aunque un inmueble esté bloqueado, la usuaria siempre puede **exportar todos sus datos** y borrar su cuenta (spec 008, R14), por sus derechos de acceso y portabilidad ⚖️.
@@ -67,7 +67,7 @@ Dos planes: **Starter**, gratuito, para probar la app con un inmueble real, y **
 | C10 | Bajada con 3 inmuebles (R10, R10b) | Elige uno activo; los otros dos bloqueados: no se puede entrar en ellos ni marcar pagos, y no generan cobros |
 | C11 | Impago final (R9) | Igual que C9 |
 | C12 | Desglose del IVA (R7) | Mensual: 4,99 € = 4,12 € + 0,87 € de IVA. Anual: 49,90 € = 41,24 € + 8,66 € de IVA |
-| C13 | Cambio del inmueble activo (R10c) | Cambiado el 2026-11-01: el 2026-11-20 no se puede volver a cambiar; el 2026-12-01 sí |
+| C13 | Elección única del inmueble activo (R10c) | Sin elegir: activo el más antiguo y se puede elegir. Tras elegir "playa": ya no se puede cambiar. Tras volver a Advanced y bajar de nuevo: se puede elegir otra vez |
 | C14 | Enlace de un inmueble bloqueado (R10d) | El inquilino ve lo que había y el aviso "Este inmueble no está actualizado" |
 | C15 | Panel con bloqueados (R10e) | Sus pendientes no cuentan; aparece "2 inmuebles bloqueados" |
 | C16 | Exportar con bloqueados (R10f) | La exportación incluye los datos de los inmuebles bloqueados |

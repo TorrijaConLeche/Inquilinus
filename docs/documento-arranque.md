@@ -120,7 +120,7 @@ Freemium con precio fijo por cuenta (spec 010):
 - **Starter** (gratis): 1 inmueble y 2 facturas leídas por IA al mes.
 - **Advanced:** 4,99 €/mes o 49,90 €/año con IVA incluido; hasta 10 inmuebles y sin límite práctico de IA.
 
-Si una usuaria de Advanced deja de pagar, pasa a Starter: no se borra nada, pero solo un inmueble sigue activo y el resto quedan bloqueados hasta que vuelva a pagar.
+Si una usuaria de Advanced deja de pagar, pasa a Starter: no se borra nada, pero solo un inmueble sigue activo (lo elige una sola vez y no puede cambiarlo) y el resto quedan bloqueados hasta que vuelva a pagar.
 
 Solo en España al principio. Cobro con **Paddle** como vendedor oficial: gestiona el IVA y factura a las clientas, así que no hace falta programa de facturación propio. Si la app crece mucho, se valorará Stripe. Margen aproximado: 3,39 € por suscripción mensual y 38 € por anual. Para cobrar hace falta darse de alta como autónoma o crear una sociedad (a confirmar con un gestor).
 
