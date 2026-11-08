@@ -36,7 +36,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app vacía con su estilo y un chequeo de salud que consulta la base de datos.
 
 - [x] **1.1 · Tú** — Comprobar la marca Inquilinus (OEPM, EUIPO): se queda Inquilinus. Los dominios pasan a la tarea 6.9
-- [x] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (con doble factor y alerta de gasto), con la guía de Claude
+- [x] **1.2 · Tú** — Crear las cuentas de Vercel, Neon (región Frankfurt) y AWS (región Estocolmo, con doble factor y alerta de gasto), con la guía de Claude
 - [x] **1.3 · Tú** — En GitHub: proteger `main`, activar el borrado automático de ramas y, si quieres, renombrar el repositorio
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
 - [x] **1.5 · Claude** — Esqueleto de `apps/web` (Next.js, tokens Salvia, Figtree, modo oscuro, traducciones es/en) · `chore/web-esqueleto`
@@ -49,8 +49,8 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 
 Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la previsualización.
 
-- [ ] **2.1 · Tú** — Verificar tu email en Amazon SES (modo de pruebas, sin dominio) para enviar los emails de la cuenta. Hasta tener dominio (6.9) pueden llegar a spam
-- [ ] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud, en modo de pruebas con tu cuenta como usuaria de prueba
+- [x] **2.1 · Tú** — Verificar tu email en Amazon SES (modo de pruebas, sin dominio) para enviar los emails de la cuenta. Hasta tener dominio (6.9) pueden llegar a spam
+- [x] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud, en modo de pruebas con tu cuenta como usuaria de prueba
 - [ ] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
 - [ ] **2.4 · Claude** — Inicio de sesión con Google y vinculación de cuentas · `feat/008-google`
 - [ ] **2.5 · Claude** — Límite de intentos, sesión de 30 días y doble factor · `feat/008-seguridad`
@@ -64,7 +64,7 @@ Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la p
 Depende de: fase 2. **Hecho cuando** tienes tus pisos reales dados de alta con sus inquilinos.
 
 - [ ] **3.0 · Tú + Claude** — Rama de Neon solo para las previsualizaciones de Vercel, para que las pruebas no toquen los datos reales
-- [ ] **3.1 · Tú** — Crear el bucket privado de S3 (Frankfurt) y sus credenciales, con la guía de Claude
+- [ ] **3.1 · Tú** — Pasar la cuenta de AWS al plan de pago (el gratuito limita regiones y caduca) y crear el bucket privado de S3 (Estocolmo) con permisos para el usuario `inquilinus-app`, con la guía de Claude
 - [ ] **3.2 · Claude** — API de inmuebles, habitaciones e historial de precios, con tests de aislamiento · `feat/007-api-inmuebles`
 - [ ] **3.3 · Claude** — API de inquilinos, ocupaciones y tipos de gasto · `feat/007-api-inquilinos`
 - [ ] **3.4 · Claude** — Asistente de alta del inmueble · `feat/007-asistente`

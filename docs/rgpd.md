@@ -32,7 +32,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 | --- | --- | --- | --- |
 | Vercel | Web y API | Funciones en Frankfurt | DPA |
 | Neon | Base de datos | Región UE | DPA |
-| AWS | Ficheros (S3), IA (Bedrock, perfil EU) y emails (SES, Frankfurt) | Regiones UE | DPA; Bedrock no entrena con los datos |
+| AWS | Ficheros (S3), IA (Bedrock, perfil EU) y emails (SES) | Estocolmo (`eu-north-1`); Bedrock con el perfil EU | DPA; Bedrock no entrena con los datos |
 | Paddle | Cobro de suscripciones como vendedor oficial (spec 010) | Reino Unido y otros | Trata los datos de pago como responsable propio; revisar sus condiciones ⚖️. La app no guarda datos de tarjeta |
 | Google | Inicio de sesión con Google (spec 008) | — | Elegido por la usuaria; solo email y perfil básico |
 

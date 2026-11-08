@@ -61,7 +61,10 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 
 ## Envío de emails
 
-Verificación y recuperación con **Amazon SES** en Frankfurt (misma cuenta y DPA de AWS). Requiere dominio propio con registros SPF, DKIM y DMARC y salir del modo de pruebas de SES.
+Verificación y recuperación con **Amazon SES** en Estocolmo (`eu-north-1`; misma cuenta y DPA de AWS).
+
+- **Hasta tener dominio (tarea 6.9 del plan):** SES en modo de pruebas, con el email de la propietaria verificado como remitente y como único destinatario. Basta para el uso propio; los emails pueden llegar a spam.
+- **Antes de abrir el registro a otras personas:** dominio propio con registros SPF, DKIM y DMARC y salida del modo de pruebas de SES. Sin esto, el registro solo funciona para direcciones verificadas en SES.
 
 ## Tareas
 
