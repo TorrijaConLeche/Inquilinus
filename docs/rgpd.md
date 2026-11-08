@@ -51,4 +51,5 @@ Los tres son proveedores estadounidenses con datos alojados en la UE; las garant
 | Cláusula informativa para los inquilinos (qué datos, para qué, cuánto tiempo, derechos) ⚖️ | Fase 2, antes de usarla con inquilinos reales |
 | Registro de actividades de tratamiento | Fase 2 (versión simple) |
 | Procedimiento de brechas de seguridad (notificar a la AEPD en 72 h si procede) | Fase 2 |
-| Política de privacidad, términos y DPA para otros propietarios ⚖️ | Fase 3 |
+| Política de privacidad y términos ⚖️ | Antes de difundir la app: el registro es libre desde el principio (spec 008) |
+| Contrato de encargo (DPA) para otros propietarios ⚖️ | Antes de que la use otra propietaria |

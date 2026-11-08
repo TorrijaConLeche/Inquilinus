@@ -134,7 +134,7 @@ Técnicamente es muy viable y barata; como negocio es moderada y depende de dest
 Primero una versión mínima para uso propio; solo cuando funcione en el día a día se enseña a otros propietarios.
 
 1. **Definir** ✅ — requisitos y alcance, modelo de datos, pantallas clave, stack. Cerrada el 5 de noviembre de 2026.
-2. **MVP para mí (web)** — inmuebles, habitaciones, inquilinos y ocupaciones, lectura de facturas, reparto por días, desglose y enlace del inquilino. *Paso siguiente cuando:* lleve unos meses de uso real.
+2. **MVP para mí (web)** — inmuebles, habitaciones, inquilinos y ocupaciones, lectura de facturas, reparto por días, desglose y enlace del inquilino. El registro de cuentas es libre desde el principio (email y contraseña o Google), así que los textos legales deben estar listos antes de difundir la app. *Paso siguiente cuando:* lleve unos meses de uso real.
 3. **Validar con otros** — propietarios cercanos, grupos de caseros, recoger molestias, medir uso real; parte legal del RGPD. *Paso siguiente cuando:* alguien pida usarla o pagarla.
 4. **Producto** — app móvil, resumen anual para la renta, recordatorios, suscripción. *Objetivo:* primeros clientes de pago.
 
