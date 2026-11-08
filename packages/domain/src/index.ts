@@ -40,3 +40,26 @@ export {
   type PendientesInquilino,
   type ResumenPanel,
 } from './pagos.ts';
+export {
+  validarDiaCobro,
+  normalizarAltaInmueble,
+  validarInquilino,
+  precioVigente,
+  mesesAfectadosPorCambioDePrecio,
+  accionAlEliminar,
+  nombreAnonimo,
+  confirmaBorradoInmueble,
+  type AltaInmueble,
+  type InmuebleNuevo,
+  type PrecioDesde,
+} from './gestion.ts';
+export {
+  cobrosQueFaltan,
+  cobrosAGenerarHoy,
+  inquilinosConCobroDesactualizado,
+  recalcularPideConfirmacion,
+  type CobroGenerado,
+  type EntradaCobros,
+} from './cobros.ts';
+/** Spec 001 R8 y spec 007 R7: valida las ocupaciones y devuelve sus tramos de presencia. */
+export { calcularTramos as validarOcupaciones, type Tramo } from './presencia.ts';
