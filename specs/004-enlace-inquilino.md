@@ -24,6 +24,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 - **R8** — Si la descarga está habilitada (R2b), el PDF de cada factura se podrá descargar con una URL firmada que caduca a los 5 minutos. Si no, no aparece el botón y la API responde 404.
 - **R9** — La vista solo muestra datos de esa estancia. Nunca muestra documentos, DNI ni datos de contacto, ni los suyos ni los de otros.
 - **R10** — Se muestran los cobros y repartos guardados (foto fija). Si la propietaria recalcula, la vista se actualiza.
+- **R11b** — Si el inmueble está bloqueado por el plan (spec 010, R10d), la vista sigue funcionando con lo que había y muestra el aviso "Este inmueble no está actualizado".
 - **R11** — Las páginas llevarán `noindex`, `Cache-Control: private, no-store` y `Referrer-Policy: no-referrer`.
 
 ## Casos de prueba

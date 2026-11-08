@@ -56,7 +56,7 @@ Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
 | C16 | Más de 20 PDF (R1) | Lote de 21 PDF | Se rechaza la subida antes de llamar a la IA |
 | C17 | Confirmar todas (R13) | Lote de 3; una sin importe | Se confirman 2; la tercera sigue por revisar |
 | C18 | Duplicado dentro del lote (R14) | La luz de octubre dos veces en el mismo lote | Aviso de solape entre ambas |
-| C19 | Límite de IA en un lote (R15) | Plan Gratis sin lecturas usadas; lote de 5 | Se leen con IA las 2 primeras; las otras 3 quedan para rellenar a mano |
+| C19 | Límite de IA en un lote (R15) | Plan Starter sin lecturas usadas; lote de 5 | Se leen con IA las 2 primeras; las otras 3 quedan para rellenar a mano |
 
 **Evaluación de la IA** (aparte de los tests): con 15-20 PDF reales de distintos tipos y compañías, la IA debe acertar periodo e importe en al menos el 90 % de los casos.
 

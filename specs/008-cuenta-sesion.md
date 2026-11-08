@@ -27,7 +27,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 **Seguridad y abuso**
 
 - **R11** — Tras 5 intentos fallidos en 15 minutos (por cuenta o por IP), se bloquean los intentos durante 15 minutos. El mensaje de error es genérico: "Email o contraseña incorrectos".
-- **R12** — Cada cuenta tiene un máximo de facturas leídas por IA al mes según su plan (spec 010): 2 en Gratis y 100 como uso razonable en Propietaria. Al alcanzarlo, se pueden seguir subiendo facturas y rellenarlas a mano.
+- **R12** — Cada cuenta tiene un máximo de facturas leídas por IA al mes según su plan (spec 010): 2 en Starter y 100 como uso razonable en Advanced. Al alcanzarlo, se pueden seguir subiendo facturas y rellenarlas a mano.
 
 **Datos de la cuenta (RGPD)**
 

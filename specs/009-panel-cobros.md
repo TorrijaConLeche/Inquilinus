@@ -13,7 +13,7 @@ Saber de un vistazo qué hay pendiente de cobro, en qué casa y de quién, y mar
 - **R1** — Arriba, un resumen con el **total pendiente de cobro** (alquiler y gastos de todos los inmuebles) y lo **cobrado este mes**.
 - **R2** — Debajo, los **pendientes agrupados por inmueble y por inquilino**: cada inquilino con sus conceptos pendientes ("Alquiler octubre 500 €", "Luz septiembre 30 €") y su total. Los inmuebles sin pendientes no aparecen en este bloque. No se muestra la ocupación. Los gastos de una liquidación aparecen como una sola línea desplegable (spec 011, R12).
 - **R3** — Los pendientes de meses anteriores al actual aparecen destacados y primero.
-- **R4** — Avisos, si los hay: facturas propuestas por la IA pendientes de revisar, cobros desactualizados y plazos de conservación vencidos (spec 007, R14).
+- **R4** — Avisos, si los hay: facturas propuestas por la IA pendientes de revisar, cobros desactualizados, plazos de conservación vencidos (spec 007, R14) e inmuebles bloqueados por el plan (spec 010, R10e). Los inmuebles bloqueados no cuentan en los totales.
 - **R5** — Una tarjeta por inmueble con su nombre y su pendiente. Al tocarla se abre el inmueble; al tocar un inquilino del bloque de pendientes se abre la pantalla de cobros de su inmueble.
 
 **Cobros del inmueble** (pantalla dentro de cada inmueble)

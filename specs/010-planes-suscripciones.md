@@ -4,11 +4,11 @@ Estado: aprobada · Paquetes: `packages/domain` (límites del plan), `apps/api` 
 
 ## Objetivo
 
-Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, **Propietaria**. El cobro lo hace **Paddle** como vendedor oficial (*merchant of record*): cobra, gestiona el IVA y emite las facturas a las clientas. Si la app crece mucho, se valorará pasar a Stripe.
+Dos planes: **Starter**, gratuito, para probar la app con un inmueble real, y **Advanced**, de pago. El cobro lo hace **Paddle** como vendedor oficial (*merchant of record*): cobra, gestiona el IVA y emite las facturas a las clientas. Si la app crece mucho, se valorará pasar a Stripe.
 
 ## Planes
 
-| | **Gratis** | **Propietaria** |
+| | **Starter** | **Advanced** |
 | --- | --- | --- |
 | Precio | 0 € | 4,99 €/mes o 49,90 €/año, IVA incluido |
 | Inmuebles activos | 1 | Hasta 10 |
@@ -19,7 +19,7 @@ Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, 
 
 **Límites**
 
-- **R1** — En Gratis no se puede crear un segundo inmueble, y en Propietaria no se puede crear el undécimo. La app explica el límite: en Gratis ofrece pasar a Propietaria; en Propietaria ofrece escribir a soporte.
+- **R1** — En Starter no se puede crear un segundo inmueble, y en Advanced no se puede crear el undécimo. La app explica el límite: en Starter ofrece pasar a Advanced; en Advanced ofrece escribir a soporte.
 - **R2** — Al agotar las facturas por IA del mes, la factura se sigue subiendo y se rellena a mano (spec 003, R8). Nunca se bloquea el uso de la app.
 - **R3** — El contador de facturas por IA se reinicia el día 1 de cada mes, en hora de Madrid.
 
@@ -32,10 +32,15 @@ Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, 
 
 **Cancelación, impago y bajada de plan**
 
-- **R8** — Al cancelar, el plan sigue activo hasta el final del periodo pagado (mes o año); después pasa a Gratis.
+- **R8** — Al cancelar, el plan sigue activo hasta el final del periodo pagado (mes o año); después pasa a Starter.
 - **R9** — Si un pago falla, Paddle lo reintenta durante unos días y la app avisa a la usuaria. Mientras tanto el plan sigue activo. Si al final no se cobra, se aplica R8.
-- **R10** — Al pasar a Gratis con más de un inmueble **no se borra nada**: la usuaria elige qué inmueble sigue activo y los demás quedan en **solo lectura** (se ven, los enlaces de los inquilinos siguen funcionando, pero no se generan cobros ni se suben facturas). Hasta que elija, queda activo el más antiguo.
-- **R11** — Al volver a Propietaria, todos los inmuebles vuelven a estar activos.
+- **R10** — Al pasar a Starter con más de un inmueble **no se borra nada**: la usuaria elige qué inmueble sigue activo y los demás quedan **bloqueados**. Hasta que elija, queda activo el más antiguo.
+- **R10b** — Un inmueble bloqueado aparece en la lista con un candado y la opción de pasar a Advanced, pero **no se puede entrar en él**: ni verlo, ni editarlo, ni marcar pagos. No se generan sus cobros. Sus datos se conservan intactos.
+- **R10c** — El inmueble activo se puede cambiar como máximo una vez cada 30 días, para que el límite de Starter no se sortee alternando inmuebles.
+- **R10d** — Los enlaces de los inquilinos de un inmueble bloqueado siguen funcionando con lo que había y muestran el aviso **"Este inmueble no está actualizado"** (spec 004).
+- **R10e** — Los inmuebles bloqueados no cuentan en el panel principal; el panel muestra el aviso "N inmuebles bloqueados" con la opción de pasar a Advanced.
+- **R10f** — Aunque un inmueble esté bloqueado, la usuaria siempre puede **exportar todos sus datos** y borrar su cuenta (spec 008, R14), por sus derechos de acceso y portabilidad ⚖️.
+- **R11** — Al volver a Advanced, todos los inmuebles se desbloquean.
 
 **Facturas**
 
@@ -50,18 +55,23 @@ Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, 
 
 | # | Caso | Resultado esperado |
 | --- | --- | --- |
-| C1 | Segundo inmueble en Gratis (R1) | No se crea; aparece la oferta de Propietaria |
-| C2 | Undécimo inmueble en Propietaria (R1) | No se crea; aparece la opción de escribir a soporte |
-| C3 | Tercera factura por IA en Gratis (R2) | No se llama a la IA; la factura se rellena a mano |
+| C1 | Segundo inmueble en Starter (R1) | No se crea; aparece la oferta de Advanced |
+| C2 | Undécimo inmueble en Advanced (R1) | No se crea; aparece la opción de escribir a soporte |
+| C3 | Tercera factura por IA en Starter (R2) | No se llama a la IA; la factura se rellena a mano |
 | C4 | Reinicio del contador (R3) | El 1 de diciembre a las 00:00 (Madrid) vuelve a haber 2 disponibles |
-| C5 | Suscripción mensual (R6) | Llega el webhook de suscripción activada: la cuenta pasa a Propietaria mensual |
+| C5 | Suscripción mensual (R6) | Llega el webhook de suscripción activada: la cuenta pasa a Advanced mensual |
 | C6 | Suscripción anual (R4, R8) | Con pago anual, el periodo termina un año después |
 | C7 | Webhook repetido (R6) | El mismo evento dos veces: un solo cambio |
 | C8 | Firma inválida (R6) | Respuesta 400 y ningún cambio |
-| C9 | Cancelación (R8) | Activa hasta el fin del periodo; al día siguiente, Gratis |
-| C10 | Bajada con 3 inmuebles (R10) | Elige uno activo; los otros dos en solo lectura, con sus enlaces funcionando y sin cobros automáticos |
+| C9 | Cancelación (R8) | Activa hasta el fin del periodo; al día siguiente, Starter |
+| C10 | Bajada con 3 inmuebles (R10, R10b) | Elige uno activo; los otros dos bloqueados: no se puede entrar en ellos ni marcar pagos, y no generan cobros |
 | C11 | Impago final (R9) | Igual que C9 |
 | C12 | Desglose del IVA (R7) | Mensual: 4,99 € = 4,12 € + 0,87 € de IVA. Anual: 49,90 € = 41,24 € + 8,66 € de IVA |
+| C13 | Cambio del inmueble activo (R10c) | Cambiado el 2026-11-01: el 2026-11-20 no se puede volver a cambiar; el 2026-12-01 sí |
+| C14 | Enlace de un inmueble bloqueado (R10d) | El inquilino ve lo que había y el aviso "Este inmueble no está actualizado" |
+| C15 | Panel con bloqueados (R10e) | Sus pendientes no cuentan; aparece "2 inmuebles bloqueados" |
+| C16 | Exportar con bloqueados (R10f) | La exportación incluye los datos de los inmuebles bloqueados |
+| C17 | Volver a Advanced (R11) | Los tres inmuebles se desbloquean |
 
 ## Fuera de alcance
 
@@ -75,5 +85,5 @@ Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, 
 - [x] Límites del plan en `packages/domain`
 - [ ] Contador mensual de facturas por IA
 - [ ] Checkout y portal de cliente de Paddle; webhooks con verificación de firma
-- [ ] Bajada de plan con elección de inmueble activo y modo solo lectura
-- [ ] Tests C1–C12
+- [ ] Bajada de plan con elección de inmueble activo y bloqueo
+- [ ] Tests C1–C17
