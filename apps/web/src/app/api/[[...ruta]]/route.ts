@@ -1,10 +1,8 @@
 // La API de apps/api, servida por la web en /api (un solo proyecto en Vercel).
-import { comprobadorBaseDatos, crearApp, crearBaseDatos } from "@inquilinus/api";
-
-const urlBaseDatos = process.env["DATABASE_URL"];
+import { crearApp, dependenciasDesdeEntorno } from "@inquilinus/api";
 
 const api = crearApp(
-  urlBaseDatos ? { comprobarBaseDatos: comprobadorBaseDatos(crearBaseDatos(urlBaseDatos)) } : {},
+  dependenciasDesdeEntorno(process.env, { rutaBase: "/api", urlPorDefecto: "http://localhost:3000" }),
   { rutaBase: "/api" },
 );
 

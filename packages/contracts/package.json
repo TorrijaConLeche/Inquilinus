@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./idiomas": "./src/idiomas.ts"
   },
   "scripts": {
     "openapi": "node scripts/generar-openapi.ts",

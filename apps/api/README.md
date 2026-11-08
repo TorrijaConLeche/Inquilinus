@@ -39,3 +39,12 @@ Los tests aplican las migraciones en PostgreSQL en memoria ([PGlite](https://pgl
 - Cada respuesta lleva la cabecera `x-id-peticion` para encontrar su línea en los logs. En Vercel coincide con su id de petición.
 
 Eventos: `peticion`, `error_no_controlado` y `base_datos_no_responde`. En la API, `dependencias.registro` permite capturarlo en los tests.
+
+## Cuentas (spec 008)
+
+[Better Auth](https://better-auth.com) en `<rutaBase>/auth/*` (en la web, `/api/auth/*`), configurado en `src/auth.ts`:
+
+- Tablas `usuario`, `sesion`, `metodo_acceso` y `verificacion`; los nombres de Better Auth se traducen a las columnas en español.
+- Email y contraseña con verificación obligatoria (R2), mínimo de 12 caracteres sin reglas (R5), recuperación con enlace de un solo uso válido 1 hora (R6) y aceptación de la versión vigente de los términos (R4, `VERSION_TERMINOS` en `@inquilinus/contracts`).
+- Emails por Amazon SES (`src/correo/`) en el idioma del usuario. Si SES falla, el registro sigue y solo el tipo de error va al log.
+- `src/configuracion.ts` monta todo desde las variables de entorno (`.env.example`). Sin alguna de ellas, la API funciona pero sin cuentas.

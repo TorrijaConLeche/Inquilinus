@@ -58,15 +58,78 @@ export const plan = pgEnum("plan", ["starter", "advanced"]);
 export const periodicidad = pgEnum("periodicidad", ["mensual", "anual"]);
 export const tipoDocumento = pgEnum("tipo_documento", ["contrato", "justificante_fianza"]);
 
-// Usuario y ficheros -------------------------------------------------------
+// Usuario, acceso y ficheros -----------------------------------------------
+// `usuario`, `sesion`, `metodo_acceso` y `verificacion` las usa Better Auth
+// (spec 008); los nombres de sus campos se traducen en `src/auth.ts`.
 
-/** Las columnas de sesión y verificación las añade Better Auth (fase 2). */
+/** Solo email, nombre y método de acceso (spec 008, R15). */
 export const usuario = pgTable("usuario", {
   id: id(),
   email: text().notNull().unique(),
-  nombre: text().notNull(),
+  /** Opcional (R15): vacío si no se ha indicado. */
+  nombre: text().notNull().default(""),
+  emailVerificado: boolean().notNull().default(false),
+  /** Better Auth lo exige en su esquema; nunca se rellena (R15). */
+  imagen: text(),
+  /** Versión de la política de privacidad y los términos aceptada (R4). */
+  terminosVersion: text(),
+  terminosAceptadosEn: momento(),
   ...marcas,
 });
+
+/** Sesión abierta; la cookie solo lleva su token (R9). */
+export const sesion = pgTable(
+  "sesion",
+  {
+    id: id(),
+    usuarioId: uuid()
+      .notNull()
+      .references(() => usuario.id, { onDelete: "cascade" }),
+    token: text().notNull().unique(),
+    expiraEn: momento().notNull(),
+    /** Para la seguridad de la cuenta (ver sesiones abiertas); nunca va a los logs. */
+    ip: text(),
+    agenteUsuario: text(),
+    ...marcas,
+  },
+  (t) => [index().on(t.usuarioId)],
+);
+
+/** Forma de entrar: `credential` (email y contraseña) o `google`. */
+export const metodoAcceso = pgTable(
+  "metodo_acceso",
+  {
+    id: id(),
+    usuarioId: uuid()
+      .notNull()
+      .references(() => usuario.id, { onDelete: "cascade" }),
+    proveedor: text().notNull(),
+    idEnProveedor: text().notNull(),
+    /** Solo el hash (R5). */
+    contrasenaHash: text(),
+    tokenAcceso: text(),
+    tokenRefresco: text(),
+    tokenId: text(),
+    tokenAccesoExpiraEn: momento(),
+    tokenRefrescoExpiraEn: momento(),
+    alcance: text(),
+    ...marcas,
+  },
+  (t) => [index().on(t.usuarioId)],
+);
+
+/** Tokens de verificación de email y de recuperación de contraseña. */
+export const verificacion = pgTable(
+  "verificacion",
+  {
+    id: id(),
+    identificador: text().notNull(),
+    valor: text().notNull(),
+    expiraEn: momento().notNull(),
+    ...marcas,
+  },
+  (t) => [index().on(t.identificador)],
+);
 
 export const fichero = pgTable("fichero", {
   id: id(),

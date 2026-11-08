@@ -51,7 +51,7 @@ Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la p
 
 - [x] **2.1 · Tú** — Verificar tu email en Amazon SES (modo de pruebas, sin dominio) para enviar los emails de la cuenta. Hasta tener dominio (6.9) pueden llegar a spam
 - [x] **2.2 · Tú** — Crear las credenciales de inicio de sesión con Google en Google Cloud, en modo de pruebas con tu cuenta como usuaria de prueba
-- [ ] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
+- [x] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
 - [ ] **2.4 · Claude** — Inicio de sesión con Google y vinculación de cuentas · `feat/008-google`
 - [ ] **2.5 · Claude** — Límite de intentos, sesión de 30 días y doble factor · `feat/008-seguridad`
 - [ ] **2.6 · Claude** — Pantallas de registro, acceso, recuperación y ajustes de cuenta · `feat/008-pantallas`
