@@ -26,6 +26,18 @@ export function desdeDia(dia: number): Fecha {
   return new Date(dia * MS_POR_DIA).toISOString().slice(0, 10);
 }
 
+const FORMATO_MADRID = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Madrid',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/** Día natural en hora de Madrid de un instante (procesos diarios y contadores mensuales). */
+export function fechaEnMadrid(instante: Date | string): Fecha {
+  return FORMATO_MADRID.format(typeof instante === 'string' ? new Date(instante) : instante);
+}
+
 /** Mes (`YYYY-MM`) al que pertenece una fecha. */
 export function mesDe(fecha: Fecha): Mes {
   aDia(fecha);
