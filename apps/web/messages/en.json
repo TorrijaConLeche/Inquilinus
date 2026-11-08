@@ -3,9 +3,156 @@
     "titulo": "Inquilinus",
     "descripcion": "Manage your rentals and split utility bills among your tenants."
   },
+  "Comun": {
+    "marca": "Inquilinus"
+  },
   "Inicio": {
     "titulo": "Inquilinus",
     "lema": "Your rentals in order, with bills split clearly.",
-    "estado": "Under construction"
+    "entrar": "Sign in",
+    "crearCuenta": "Create account",
+    "irPanel": "Go to my dashboard"
+  },
+  "Registro": {
+    "titulo": "Create your account",
+    "subtitulo": "Start managing your rentals in a minute.",
+    "email": "Email",
+    "contrasena": "Password",
+    "contrasenaAyuda": "At least {minimo} characters. A sentence you'll remember works great.",
+    "nombre": "Name",
+    "opcional": "optional",
+    "aceptoTerminos": "I have read and accept the <privacidad>privacy policy</privacidad> and the <terminos>terms of use</terminos>.",
+    "crear": "Create account",
+    "creando": "Creating account…",
+    "o": "or",
+    "googleAcepta": "To continue with Google, first accept the privacy policy and the terms.",
+    "yaTienes": "Already have an account?",
+    "entrar": "Sign in",
+    "revisaEmail": "We've sent an email to {email}. Click the link to confirm your account and get started.",
+    "revisaSpam": "If you don't see it in a few minutes, check your spam folder.",
+    "irAcceso": "Go to sign in"
+  },
+  "Acceso": {
+    "titulo": "Sign in to your account",
+    "subtitulo": "Welcome back.",
+    "email": "Email",
+    "contrasena": "Password",
+    "recordar": "Remember this device for 30 days",
+    "olvidada": "Forgot your password?",
+    "entrar": "Sign in",
+    "entrando": "Signing in…",
+    "o": "or",
+    "google": "Continue with Google",
+    "sinCuenta": "Don't have an account?",
+    "crearCuenta": "Create account",
+    "codigoAyuda": "Enter the 6-digit code from your authenticator app.",
+    "codigoRecuperacionAyuda": "Enter one of your recovery codes. Each one works only once.",
+    "codigo": "Code",
+    "codigoRecuperacion": "Recovery code",
+    "verificar": "Verify",
+    "usarApp": "Use the authenticator app",
+    "usarRecuperacion": "I don't have the app: use a recovery code",
+    "reenviarVerificacion": "Resend the email",
+    "verificacionReenviada": "We've sent another confirmation email to {email}.",
+    "irRegistro": "Go to sign up",
+    "contrasenaCambiada": "Password changed. Sign in with the new one."
+  },
+  "Recuperar": {
+    "titulo": "Recover your password",
+    "subtitulo": "We'll send you a link to choose a new one.",
+    "email": "Email",
+    "enviar": "Send link",
+    "enviado": "If there is an account for {email}, we've sent you a link to change your password.",
+    "caduca": "The link works once and expires in 1 hour. If you don't see it, check spam.",
+    "volver": "Back to sign in"
+  },
+  "Restablecer": {
+    "titulo": "Choose a new password",
+    "nueva": "New password",
+    "ayuda": "At least {minimo} characters. Saving it will sign you out on all your devices.",
+    "guardar": "Save password",
+    "pedirOtro": "Request a new link"
+  },
+  "Errores": {
+    "credenciales": "Incorrect email or password.",
+    "emailSinVerificar": "You haven't confirmed your email yet. Check your inbox.",
+    "demasiadosIntentos": "Too many attempts. Wait 15 minutes and try again.",
+    "contrasenaCorta": "The password is too short.",
+    "contrasenaLarga": "The password is too long.",
+    "contrasenaIncorrecta": "The password is not correct.",
+    "terminos": "There's no account for that Google account. To create one, sign up accepting the privacy policy and the terms.",
+    "enlaceNoValido": "This link no longer works: it has been used or has expired.",
+    "codigoIncorrecto": "The code is not correct.",
+    "sesionCaducada": "Too much time has passed. Sign in again with your email and password.",
+    "cuentaNoVinculada": "There's already an unconfirmed account with that email. Confirm it from the email we sent you and sign in with Google again.",
+    "generico": "Something went wrong. Please try again in a moment."
+  },
+  "Privado": {
+    "marca": "Inquilinus",
+    "navegacion": "Main navigation",
+    "panel": "Dashboard",
+    "ajustes": "Settings",
+    "salir": "Sign out"
+  },
+  "Panel": {
+    "titulo": "Dashboard",
+    "saludo": "Hello",
+    "saludoNombre": "Hello, {nombre}",
+    "proximamente": "Here you'll see your properties, payments and bills. We're getting it ready.",
+    "cuenta": "You're signed in as {email}."
+  },
+  "Ajustes": {
+    "titulo": "Settings",
+    "cuenta": "Your account",
+    "idioma": "Language",
+    "idiomas": {
+      "es": "Español",
+      "en": "English"
+    },
+    "tema": "Appearance",
+    "temas": {
+      "sistema": "Same as device",
+      "claro": "Light",
+      "oscuro": "Dark"
+    },
+    "dobleFactor": {
+      "titulo": "Two-step verification",
+      "activo": "On",
+      "explicacion": "Besides your password, we'll ask for a code from an authenticator app (Google Authenticator, Microsoft Authenticator…) when you sign in.",
+      "explicacionActivo": "When you sign in with your password we also ask for the code from your authenticator app.",
+      "soloGoogle": "You sign in with Google: two-step verification is handled by your Google account.",
+      "activar": "Turn on",
+      "desactivar": "Turn off",
+      "pedirContrasena": "For your security, confirm your password.",
+      "contrasena": "Password",
+      "cancelar": "Cancel",
+      "continuar": "Continue",
+      "escanear": "Scan this code with your authenticator app and enter the 6-digit code it shows.",
+      "qrAlt": "QR code to add Inquilinus to your authenticator app",
+      "sinCamara": "Can't scan it? Enter this key in the app:",
+      "codigo": "Code from the app",
+      "confirmar": "Confirm",
+      "activado": "Two-step verification is on.",
+      "guardaCodigos": "Keep these recovery codes somewhere safe. If you lose your phone, each one lets you sign in once. We won't show them again.",
+      "descargar": "Download codes",
+      "hecho": "I've saved them",
+      "archivoCodigos": "Inquilinus recovery codes. Each one works only once."
+    },
+    "sesiones": {
+      "titulo": "Sessions",
+      "explicacion": "If you've signed in on a device you no longer use or that isn't yours, sign out everywhere. You'll need to sign in here again too.",
+      "cerrarTodas": "Sign out on all devices",
+      "confirmar": "Yes, sign out everywhere",
+      "cancelar": "Cancel"
+    }
+  },
+  "Legal": {
+    "borrador": "Text in preparation (version {version}). It will be available before the app opens to more people.",
+    "privacidad": {
+      "titulo": "Privacy policy"
+    },
+    "terminos": {
+      "titulo": "Terms of use"
+    }
   }
 }

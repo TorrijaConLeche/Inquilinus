@@ -22,6 +22,10 @@ Amable, serio y moderno. La app habla claro y sin tecnicismos, transmite calma c
 | `superficie` | `#FFFFFF` | `#1C2421` | Tarjetas y ventanas |
 | `texto` | `#1F2A27` | `#EEF3F1` | Texto principal |
 | `texto-suave` | `#5E6B67` | `#9DAEA8` | Texto secundario |
+| `borde-fuerte` | `texto` al 28 % | `texto` al 28 % | Bordes de campos y botones secundarios |
+| `sobre-primario` | = `superficie` | = `superficie` | Texto sobre `primario` |
+| `error` | `#B3403A` | `#F2A49C` | Textos y bordes de error |
+| `error-suave` | `#FBECEB` | `#3A2422` | Fondo de los avisos de error |
 
 - El texto sobre `primario` es `superficie` (blanco en claro). El contraste cumple WCAG AA.
 - Los colores de los tipos de gasto del timeline (spec 006) son una paleta aparte, distinta de `primario` y del color reservado al alquiler. Se define al implementar la spec 006, con versión clara y oscura.

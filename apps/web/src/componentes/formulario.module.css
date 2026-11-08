@@ -1,0 +1,241 @@
+/* Piezas de formulario. Solo tokens de globals.css (docs/estilo.md). */
+
+.pagina {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-ventana);
+}
+
+.marca {
+  margin: 0 0 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primario);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.titulo {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.subtitulo {
+  margin: 0 0 24px;
+  color: var(--texto-suave);
+}
+
+.formulario {
+  display: grid;
+  gap: 16px;
+}
+
+.campo {
+  display: grid;
+  gap: 6px;
+}
+
+.etiqueta {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.opcional {
+  font-weight: 400;
+  color: var(--texto-suave);
+}
+
+.entrada {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--texto);
+  background: var(--fondo);
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+}
+
+.entrada:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 1px;
+  border-color: var(--primario);
+}
+
+.entrada[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.ayuda {
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+}
+
+.textoError {
+  font-size: 0.875rem;
+  color: var(--error);
+}
+
+.casilla {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.9375rem;
+}
+
+.casilla input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--primario);
+  flex-shrink: 0;
+}
+
+.boton {
+  min-height: 44px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--sobre-primario);
+  background: var(--primario);
+  border: 1px solid var(--primario);
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.boton:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.boton:focus-visible,
+.enlace:focus-visible,
+.botonEnlace:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.botonSecundario {
+  composes: boton;
+  color: var(--texto);
+  background: var(--superficie);
+  border-color: var(--borde-fuerte);
+}
+
+.botonPeligro {
+  composes: boton;
+  color: var(--error);
+  background: var(--superficie);
+  border-color: var(--error);
+}
+
+/* composes no se encadena: se nombran las dos clases. */
+.botonGoogle {
+  composes: boton botonSecundario;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Botón con aspecto de enlace (acciones secundarias dentro de un texto). */
+.botonEnlace {
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primario);
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.botonEnlace:hover {
+  text-decoration: underline;
+}
+
+.separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+}
+
+.separador::before,
+.separador::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--borde);
+}
+
+.enlace {
+  color: var(--primario);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.enlace:hover {
+  text-decoration: underline;
+}
+
+.pie {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--texto-suave);
+}
+
+.aviso {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radio-control);
+  font-size: 0.9375rem;
+  border: 1px solid transparent;
+}
+
+.avisoError {
+  composes: aviso;
+  color: var(--error);
+  background: var(--error-suave);
+  border-color: var(--error);
+}
+
+.avisoExito {
+  composes: aviso;
+  color: var(--primario-texto);
+  background: var(--primario-suave);
+}
+
+.avisoInfo {
+  composes: aviso;
+  color: var(--texto);
+  background: var(--fondo);
+  border-color: var(--borde);
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}

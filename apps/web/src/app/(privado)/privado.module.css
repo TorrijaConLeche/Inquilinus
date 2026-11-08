@@ -1,0 +1,138 @@
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+}
+
+.marca {
+  font-weight: 600;
+  color: var(--primario);
+  text-decoration: none;
+}
+
+.navegacion {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.navegacion a {
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.navegacion a:hover {
+  color: var(--primario);
+}
+
+.contenido {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+  display: grid;
+  gap: 24px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.seccion {
+  padding: 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  display: grid;
+  gap: 16px;
+}
+
+.seccion h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.seccion p {
+  margin: 0;
+}
+
+.suave {
+  color: var(--texto-suave);
+}
+
+.opciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.opcion:has(input:checked) {
+  border-color: var(--primario);
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  font-weight: 600;
+}
+
+.opcion:has(input:focus-visible) {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.opcion input {
+  accent-color: var(--primario);
+}
+
+.etiquetaEstado {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radio-control);
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.qr {
+  width: 200px;
+  height: 200px;
+  padding: 8px;
+  background: #ffffff; /* El QR necesita fondo blanco para leerse también en modo oscuro. */
+  border-radius: var(--radio-control);
+}
+
+.secreto,
+.codigos {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+
+.codigos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+  background: var(--fondo);
+  border-radius: var(--radio-control);
+}

@@ -54,7 +54,7 @@ Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la p
 - [x] **2.3 · Claude** — Better Auth con email y contraseña y verificación por email · `feat/008-email`
 - [x] **2.4 · Claude** — Inicio de sesión con Google y vinculación de cuentas · `feat/008-google`
 - [x] **2.5 · Claude** — Límite de intentos, sesión de 30 días y doble factor · `feat/008-seguridad`
-- [ ] **2.6 · Claude** — Pantallas de registro, acceso, recuperación y ajustes de cuenta · `feat/008-pantallas`
+- [x] **2.6 · Claude** — Pantallas de registro, acceso, recuperación y ajustes de cuenta · `feat/008-pantallas`
 - [ ] **2.7 · Claude** — Exportar y borrar la cuenta · `feat/008-exportar-borrar`
 - [ ] **2.8 · Claude** — Borrador de política de privacidad y términos · `docs/textos-legales`
 - [ ] **2.9 · Tú** — Revisar los textos legales con un asesor (antes de difundir la app)

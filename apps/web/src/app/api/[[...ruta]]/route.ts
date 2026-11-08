@@ -1,10 +1,5 @@
 // La API de apps/api, servida por la web en /api (un solo proyecto en Vercel).
-import { crearApp, dependenciasDesdeEntorno } from "@inquilinus/api";
-
-const api = crearApp(
-  dependenciasDesdeEntorno(process.env, { rutaBase: "/api", urlPorDefecto: "http://localhost:3000" }),
-  { rutaBase: "/api" },
-);
+import { api } from "../../../servidor/api";
 
 const atender = (peticion: Request) => api.fetch(peticion);
 

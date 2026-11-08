@@ -11,6 +11,12 @@
   --texto: #1f2a27;
   --texto-suave: #5e6b67;
   --borde: color-mix(in srgb, var(--texto) 12%, transparent);
+  /* Bordes de campos y botones secundarios: más visibles que --borde. */
+  --borde-fuerte: color-mix(in srgb, var(--texto) 28%, transparent);
+  /* Texto sobre --primario (docs/estilo.md: es --superficie). */
+  --sobre-primario: var(--superficie);
+  --error: #b3403a;
+  --error-suave: #fbeceb;
 
   --radio-control: 8px;
   --radio-tarjeta: 12px;
@@ -29,6 +35,8 @@
     --superficie: #1c2421;
     --texto: #eef3f1;
     --texto-suave: #9daea8;
+    --error: #f2a49c;
+    --error-suave: #3a2422;
   }
 }
 
@@ -41,6 +49,8 @@
   --superficie: #1c2421;
   --texto: #eef3f1;
   --texto-suave: #9daea8;
+  --error: #f2a49c;
+  --error-suave: #3a2422;
 }
 
 *,
@@ -78,4 +88,17 @@ a {
 /* Importes y tablas: cifras del mismo ancho para que las columnas se alineen. */
 .cifras {
   font-variant-numeric: tabular-nums;
+}
+
+/* Texto solo para lectores de pantalla. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

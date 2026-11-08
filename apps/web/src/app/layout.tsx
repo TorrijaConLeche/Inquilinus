@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
+import { COOKIE_TEMA, esTema } from "../lib/preferencias";
 import "./globals.css";
 
 // next/font descarga la fuente al compilar y la sirve desde la propia app.
@@ -20,8 +22,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const idioma = await getLocale();
+  // Tema fijado en los ajustes; "sistema" (o nada) sigue al dispositivo.
+  const tema = (await cookies()).get(COOKIE_TEMA)?.value;
+  const dataTema = esTema(tema) && tema !== "sistema" ? tema : undefined;
   return (
-    <html lang={idioma} className={figtree.variable}>
+    <html lang={idioma} className={figtree.variable} data-tema={dataTema}>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
