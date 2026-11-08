@@ -32,4 +32,4 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [005 · Generación de cobros de alquiler](005-generacion-cobros.md) | aprobada |
 | [006 · Timeline del inmueble](006-timeline.md) | aprobada |
 | [007 · Gestión de inmuebles, habitaciones, inquilinos y ocupaciones](007-gestion-inmuebles.md) | aprobada |
-| [008 · Cuenta e inicio de sesión](008-cuenta-sesion.md) | borrador |
+| [008 · Cuenta e inicio de sesión](008-cuenta-sesion.md) | aprobada |

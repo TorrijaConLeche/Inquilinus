@@ -1,6 +1,6 @@
 # 008 · Cuenta e inicio de sesión
 
-Estado: borrador · Paquetes: `apps/api` (Better Auth), `apps/web`
+Estado: aprobada · Paquetes: `apps/api` (Better Auth), `apps/web`
 
 ## Objetivo
 
