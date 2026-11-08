@@ -12,6 +12,7 @@ import { crearApp } from "../src/app.ts";
 import { crearAuth } from "../src/auth.ts";
 import * as t from "../src/bd/esquema.ts";
 import type { Correo } from "../src/correo/enviador.ts";
+import { metodoDobleFactor } from "../src/cuenta.ts";
 import { crearRegistro } from "../src/registro.ts";
 
 const URL_BASE = "http://localhost:3000";
@@ -297,5 +298,89 @@ describe("doble factor (R7)", () => {
     const conBueno = await pedir("/two-factor/verify-totp", { code: codigoTotp(secreto) }, { cookie: paso1 });
     expect(conBueno.status).not.toBe(200);
     expect(await sesionDe(cookiesDe(conBueno))).toBeNull();
+  });
+});
+
+describe("doble factor por email (R7)", () => {
+  /** Activa el código por email (no hace falta confirmar: llega al email ya verificado). */
+  async function activarPorEmail(email: string) {
+    const cookie = cookiesDe(await entrar(email));
+    const activar = await pedir("/two-factor/enable", { password: CONTRASENA, method: "otp" }, { cookie });
+    expect(activar.status).toBe(200);
+    expect(await activar.json()).toMatchObject({ method: "otp" });
+  }
+
+  /** El código de 6 cifras del último email enviado a esa dirección. */
+  const codigoDelEmail = (email: string) =>
+    [...enviados].reverse().find((c) => c.para === email)!.texto.match(/\b\d{6}\b/)![0];
+
+  it("C10b — Doble factor por email (R7): tras la contraseña llega un código al email y con él se entra", async () => {
+    const email = await cuentaVerificada();
+    await activarPorEmail(email);
+
+    const paso1 = await entrar(email);
+    expect(await paso1.json()).toMatchObject({ twoFactorRedirect: true, twoFactorMethods: ["otp"] });
+    expect(await sesionDe(cookiesDe(paso1))).toBeNull();
+
+    const antes = enviados.length;
+    expect((await pedir("/two-factor/send-otp", {}, { cookie: cookiesDe(paso1) })).status).toBe(200);
+    expect(enviados.length).toBe(antes + 1);
+    expect(enviados.at(-1)!.asunto).toMatch(/código|code/i);
+
+    const paso2 = await pedir("/two-factor/verify-otp", { code: codigoDelEmail(email) }, { cookie: cookiesDe(paso1) });
+    expect(paso2.status).toBe(200);
+    expect((await sesionDe(cookiesDe(paso2)))?.user.email).toBe(email);
+  });
+
+  it("C10c — App activa, código por email (R7): da error y no se envía nada", async () => {
+    const email = await cuentaVerificada();
+    await activarDobleFactor(email);
+    const paso1 = await entrar(email);
+
+    const antes = enviados.length;
+    const pedirCodigo = await pedir("/two-factor/send-otp", {}, { cookie: cookiesDe(paso1) });
+    expect(pedirCodigo.status).toBe(403);
+    expect(await pedirCodigo.json()).toMatchObject({ code: "METODO_NO_PERMITIDO" });
+    expect(enviados.length).toBe(antes);
+
+    const conCodigoInventado = await pedir("/two-factor/verify-otp", { code: "123456" }, { cookie: cookiesDe(paso1) });
+    expect(conCodigoInventado.status).not.toBe(200);
+  });
+
+  it("un código por email sirve una sola vez y caduca a los 5 minutos", async () => {
+    const email = await cuentaVerificada();
+    await activarPorEmail(email);
+
+    const primero = cookiesDe(await entrar(email));
+    await pedir("/two-factor/send-otp", {}, { cookie: primero });
+    const codigo = codigoDelEmail(email);
+    expect((await pedir("/two-factor/verify-otp", { code: codigo }, { cookie: primero })).status).toBe(200);
+
+    const segundo = cookiesDe(await entrar(email));
+    expect((await pedir("/two-factor/verify-otp", { code: codigo }, { cookie: segundo })).status).not.toBe(200);
+
+    const inicio = Date.now();
+    viajarA(inicio);
+    const tercero = cookiesDe(await entrar(email));
+    await pedir("/two-factor/send-otp", {}, { cookie: tercero });
+    const caducado = codigoDelEmail(email);
+    viajarA(inicio + 6 * MINUTO);
+    expect((await pedir("/two-factor/verify-otp", { code: caducado }, { cookie: tercero })).status).not.toBe(200);
+  });
+
+  it("indica el método activo de cada usuario", async () => {
+    const conApp = await cuentaVerificada();
+    await activarDobleFactor(conApp);
+    const conEmail = await cuentaVerificada();
+    await activarPorEmail(conEmail);
+    const sin = await cuentaVerificada();
+
+    const metodo = async (email: string) => {
+      const [u] = await bd.select().from(t.usuario).where(eq(t.usuario.email, email));
+      return metodoDobleFactor(bd, { id: u!.id, dobleFactorActivo: u!.dobleFactorActivo });
+    };
+    expect(await metodo(conApp)).toBe("app");
+    expect(await metodo(conEmail)).toBe("email");
+    expect(await metodo(sin)).toBeNull();
   });
 });

@@ -48,7 +48,7 @@ export function dependenciasDesdeEntorno(
   if (!url) return { registro };
 
   const bd = crearBaseDatos(url);
-  const dependencias: Dependencias = { registro, comprobarBaseDatos: comprobadorBaseDatos(bd) };
+  const dependencias: Dependencias = { registro, bd, comprobarBaseDatos: comprobadorBaseDatos(bd) };
 
   // Sin todas las variables, la API funciona pero sin cuentas (solo el nombre de lo que falta va al log).
   const faltan = VARIABLES_AUTH.filter((clave) => !entorno[clave]);

@@ -4,7 +4,9 @@
     "descripcion": "Manage your rentals and split utility bills among your tenants."
   },
   "Comun": {
-    "marca": "Inquilinus"
+    "marca": "Inquilinus",
+    "mostrarContrasena": "Show password",
+    "ocultarContrasena": "Hide password"
   },
   "Inicio": {
     "titulo": "Inquilinus",
@@ -55,7 +57,11 @@
     "reenviarVerificacion": "Resend the email",
     "verificacionReenviada": "We've sent another confirmation email to {email}.",
     "irRegistro": "Go to sign up",
-    "contrasenaCambiada": "Password changed. Sign in with the new one."
+    "contrasenaCambiada": "Password changed. Sign in with the new one.",
+    "codigoEmail": "Code from the email",
+    "codigoEmailAyuda": "Enter the 6-digit code we've emailed you. It expires in 5 minutes; if you don't see it, check spam.",
+    "codigoEmailEnviado": "We've sent a code to your email.",
+    "reenviarCodigo": "Send me another code"
   },
   "Recuperar": {
     "titulo": "Recover your password",
@@ -85,7 +91,8 @@
     "codigoIncorrecto": "The code is not correct.",
     "sesionCaducada": "Too much time has passed. Sign in again with your email and password.",
     "cuentaNoVinculada": "There's already an unconfirmed account with that email. Confirm it from the email we sent you and sign in with Google again.",
-    "generico": "Something went wrong. Please try again in a moment."
+    "generico": "Something went wrong. Please try again in a moment.",
+    "codigoCaducado": "The code has expired. Ask for another one."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -117,11 +124,9 @@
     },
     "dobleFactor": {
       "titulo": "Two-step verification",
-      "activo": "On",
       "explicacion": "Besides your password, we'll ask for a code from an authenticator app (Google Authenticator, Microsoft Authenticator…) when you sign in.",
       "explicacionActivo": "When you sign in with your password we also ask for the code from your authenticator app.",
       "soloGoogle": "You sign in with Google: two-step verification is handled by your Google account.",
-      "activar": "Turn on",
       "desactivar": "Turn off",
       "pedirContrasena": "For your security, confirm your password.",
       "contrasena": "Password",
@@ -136,7 +141,17 @@
       "guardaCodigos": "Keep these recovery codes somewhere safe. If you lose your phone, each one lets you sign in once. We won't show them again.",
       "descargar": "Download codes",
       "hecho": "I've saved them",
-      "archivoCodigos": "Inquilinus recovery codes. Each one works only once."
+      "archivoCodigos": "Inquilinus recovery codes. Each one works only once.",
+      "activoApp": "On · app",
+      "activoEmail": "On · email",
+      "explicacionActivoEmail": "When you sign in with your password we also email you a 6-digit code.",
+      "cambiarMetodo": "To change the method, turn it off and turn it on again with the other one.",
+      "activarApp": "With an app",
+      "activarEmail": "With an email code",
+      "diferencia": "The app is safer and works offline. The email code is simpler but protects less: if someone gets into your email, they could also get in here.",
+      "activadoEmail": "Two-step verification is on. Every time you sign in with your password we'll email you a code.",
+      "avisoSpam": "Until the app has its own domain, the code may land in your spam folder. Mark it as \"Not spam\" the first time.",
+      "entendido": "Got it"
     },
     "sesiones": {
       "titulo": "Sessions",

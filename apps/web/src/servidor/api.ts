@@ -1,6 +1,6 @@
 // Una sola instancia de la API para la ruta /api y para las páginas del servidor.
 import "server-only";
-import { crearApp, dependenciasDesdeEntorno } from "@inquilinus/api";
+import { crearApp, dependenciasDesdeEntorno, metodoDobleFactor, type MetodoDobleFactor } from "@inquilinus/api";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -38,4 +38,10 @@ export async function tieneContrasena(): Promise<boolean> {
   if (!auth) return false;
   const metodos = await auth.api.listUserAccounts({ headers: await headers() });
   return metodos.some((m) => m.providerId === "credential");
+}
+
+/** Método de doble factor activo del usuario: app, email o ninguno (spec 008, R7). */
+export async function metodoDobleFactorDe(usuario: UsuarioSesion): Promise<MetodoDobleFactor | null> {
+  if (!dependencias.bd) return null;
+  return metodoDobleFactor(dependencias.bd, usuario);
 }

@@ -77,6 +77,41 @@
   border-color: var(--error);
 }
 
+/* Campo de contraseña con el botón del ojo dentro, a la derecha. */
+.conBoton {
+  position: relative;
+}
+
+.conBoton .entrada {
+  padding-right: 48px;
+}
+
+.botonOjo {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  color: var(--texto-suave);
+  background: none;
+  border: 0;
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.botonOjo:hover {
+  color: var(--texto);
+}
+
+.botonOjo:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 1px;
+}
+
 .ayuda {
   font-size: 0.875rem;
   color: var(--texto-suave);

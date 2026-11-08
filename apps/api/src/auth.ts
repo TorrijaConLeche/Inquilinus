@@ -10,12 +10,20 @@ import {
 } from "@inquilinus/contracts";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError, createAuthMiddleware, getIP, getOAuthState, isAPIError } from "better-auth/api";
+import {
+  APIError,
+  createAuthMiddleware,
+  getIP,
+  getOAuthState,
+  getSessionFromCtx,
+  isAPIError,
+} from "better-auth/api";
 import { twoFactor } from "better-auth/plugins";
+import { and, eq } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import * as esquema from "./bd/esquema.ts";
 import type { EnviadorCorreo } from "./correo/enviador.ts";
-import { componerCorreo } from "./correo/plantillas.ts";
+import { componerCodigo, componerCorreo } from "./correo/plantillas.ts";
 import { BLOQUEO_MS, crearLimitador, MAXIMO_FALLOS } from "./limitador.ts";
 import { describirError, type Registro } from "./registro.ts";
 
@@ -67,12 +75,37 @@ export function crearAuth(config: ConfigAuth) {
   const limitador = crearLimitador(config.bd, config.secreto);
 
   /** Un fallo de SES no debe romper el registro ni filtrar datos al log. */
-  const enviar = async (...args: Parameters<typeof componerCorreo>) => {
+  const enviarSeguro = async (mensaje: Parameters<EnviadorCorreo["enviar"]>[0]) => {
     try {
-      await correo.enviar(componerCorreo(...args));
+      await correo.enviar(mensaje);
     } catch (error) {
       registro.aviso("correo_no_enviado", describirError(error));
     }
+  };
+  const enviar = (...args: Parameters<typeof componerCorreo>) => enviarSeguro(componerCorreo(...args));
+
+  /** ¿Tiene el doble factor con app ya confirmado? Entonces no hay código por email (R7). */
+  const usaApp = async (usuarioId: string) => {
+    const [fila] = await config.bd
+      .select({ id: esquema.dobleFactor.id })
+      .from(esquema.dobleFactor)
+      .where(and(eq(esquema.dobleFactor.usuarioId, usuarioId), eq(esquema.dobleFactor.verificado, true)))
+      .limit(1);
+    return Boolean(fila);
+  };
+
+  /**
+   * Usuario que está en el segundo paso del acceso: el de la sesión si ya la
+   * hay, o el de la cookie firmada que Better Auth deja tras la contraseña.
+   */
+  const usuarioDelSegundoPaso = async (ctx: Parameters<Parameters<typeof createAuthMiddleware>[0]>[0]) => {
+    const sesion = await getSessionFromCtx(ctx).catch(() => null);
+    if (sesion) return sesion.user.id;
+    const cookie = ctx.context.createAuthCookie("two_factor");
+    const firmada = await ctx.getSignedCookie(cookie.name, ctx.context.secret);
+    if (!firmada) return null;
+    const verificacion = await ctx.context.internalAdapter.findVerificationValue(firmada);
+    return verificacion?.value ?? null;
   };
 
   /** Claves del limitador para un intento de acceso con email (cuenta e IP). */
@@ -110,9 +143,22 @@ export function crearAuth(config: ConfigAuth) {
       cookiePrefix: "inquilinus",
     },
 
-    // R11: límite de intentos con email y contraseña, por cuenta y por IP.
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
+        // R7: con la app activa no se puede pedir ni usar un código por email.
+        // Se corta aquí porque Better Auth guarda el código antes de enviarlo.
+        if (ctx.path === "/two-factor/send-otp" || ctx.path === "/two-factor/verify-otp") {
+          const usuarioId = await usuarioDelSegundoPaso(ctx);
+          if (usuarioId && (await usaApp(usuarioId))) {
+            throw new APIError("FORBIDDEN", {
+              code: "METODO_NO_PERMITIDO",
+              message: "Esta cuenta usa una app de autenticación.",
+            });
+          }
+          return;
+        }
+
+        // R11: límite de intentos con email y contraseña, por cuenta y por IP.
         if (ctx.path !== "/sign-in/email") return;
         const claves = clavesDeIntento(ctx);
         if (!claves) return;
@@ -145,6 +191,20 @@ export function crearAuth(config: ConfigAuth) {
         issuer: "Inquilinus",
         accountLockout: { enabled: true, maxFailedAttempts: MAXIMO_FALLOS, durationSeconds: BLOQUEO_MS / 1000 },
         backupCodeOptions: { amount: 10 },
+        // R7: código de 6 cifras por email, válido 5 minutos, guardado como hash.
+        // Better Auth lo ofrece a cualquiera con doble factor; aquí se niega a
+        // quien tiene la app, para no rebajar su protección a la del correo.
+        otpOptions: {
+          period: 5,
+          digits: 6,
+          allowedAttempts: MAXIMO_FALLOS,
+          storeOTP: "hashed",
+          sendOTP: async ({ user, otp }, ctx) => {
+            // Segunda barrera: aunque el hook lo corta antes, nunca se envía a quien usa la app.
+            if (await usaApp(user.id)) return;
+            await enviarSeguro(componerCodigo(idiomaDe(ctx?.request), user.email, otp));
+          },
+        },
         schema: {
           user: { fields: { twoFactorEnabled: "dobleFactorActivo" } },
           twoFactor: {

@@ -10,14 +10,18 @@ import { clienteAuth } from "../../../lib/cliente-auth";
 import { claveDeError, type ClaveError } from "../../../lib/errores";
 import estilos from "../privado.module.css";
 
+type Metodo = "app" | "email";
+
 type Estado =
   | { paso: "inicio" }
-  | { paso: "contrasena"; accion: "activar" | "desactivar" }
+  | { paso: "contrasena"; accion: "desactivar" | { activar: Metodo } }
   | { paso: "escanear"; qr: string; secreto: string; codigos: string[] }
-  | { paso: "codigos"; codigos: string[] };
+  | { paso: "codigos"; codigos: string[] }
+  | { paso: "emailActivado" };
 
-/** Doble factor opcional con app de autenticación (spec 008, R7). */
-export function DobleFactor({ activo, conContrasena }: { activo: boolean; conContrasena: boolean }) {
+/** Doble factor opcional, con app de autenticación o con código por email (spec 008, R7). */
+export function DobleFactor({ metodo, conContrasena }: { metodo: Metodo | null; conContrasena: boolean }) {
+  const activo = metodo !== null;
   const t = useTranslations("Ajustes.dobleFactor");
   const te = useTranslations("Errores");
   const router = useRouter();
@@ -39,10 +43,16 @@ export function DobleFactor({ activo, conContrasena }: { activo: boolean; conCon
     if (estado.paso !== "contrasena") return;
     setEnviando(true);
     setError(null);
-    if (estado.accion === "activar") {
-      const { data, error } = await clienteAuth.twoFactor.enable({ password: contrasena });
+    if (estado.accion !== "desactivar" && estado.accion.activar === "email") {
+      // Código por email: se activa al momento; el email ya está verificado.
+      const { error } = await clienteAuth.twoFactor.enable({ password: contrasena, method: "otp" });
       setEnviando(false);
-      // Solo usamos la app de autenticación (TOTP), no códigos por email.
+      if (error) return setError(claveDeError(error.code));
+      setContrasena("");
+      setEstado({ paso: "emailActivado" });
+    } else if (estado.accion !== "desactivar") {
+      const { data, error } = await clienteAuth.twoFactor.enable({ password: contrasena, method: "totp" });
+      setEnviando(false);
       if (error || !data || data.method !== "totp") return setError(claveDeError(error?.code));
       const secreto = new URL(data.totpURI).searchParams.get("secret") ?? "";
       const qr = await QRCode.toDataURL(data.totpURI, { margin: 1, width: 200 });
@@ -80,21 +90,66 @@ export function DobleFactor({ activo, conContrasena }: { activo: boolean; conCon
     <section className={estilos.seccion} aria-labelledby="titulo-2fa">
       <div className={formulario.fila}>
         <h2 id="titulo-2fa">{t("titulo")}</h2>
-        {activo && estado.paso === "inicio" && <span className={estilos.etiquetaEstado}>{t("activo")}</span>}
+        {metodo && estado.paso === "inicio" && (
+          <span className={estilos.etiquetaEstado}>{metodo === "app" ? t("activoApp") : t("activoEmail")}</span>
+        )}
       </div>
 
       {!conContrasena && <p className={estilos.suave}>{t("soloGoogle")}</p>}
 
-      {conContrasena && estado.paso === "inicio" && (
+      {conContrasena && estado.paso === "inicio" && activo && (
         <>
-          <p className={estilos.suave}>{activo ? t("explicacionActivo") : t("explicacion")}</p>
+          <p className={estilos.suave}>{metodo === "app" ? t("explicacionActivo") : t("explicacionActivoEmail")}</p>
+          <p className={estilos.suave}>{t("cambiarMetodo")}</p>
           <div>
             <button
               type="button"
-              className={activo ? formulario.botonPeligro : formulario.boton}
-              onClick={() => setEstado({ paso: "contrasena", accion: activo ? "desactivar" : "activar" })}
+              className={formulario.botonPeligro}
+              onClick={() => setEstado({ paso: "contrasena", accion: "desactivar" })}
             >
-              {activo ? t("desactivar") : t("activar")}
+              {t("desactivar")}
+            </button>
+          </div>
+        </>
+      )}
+
+      {conContrasena && estado.paso === "inicio" && !activo && (
+        <>
+          <p className={estilos.suave}>{t("explicacion")}</p>
+          <div className={formulario.fila}>
+            <button
+              type="button"
+              className={formulario.boton}
+              onClick={() => setEstado({ paso: "contrasena", accion: { activar: "app" } })}
+            >
+              {t("activarApp")}
+            </button>
+            <button
+              type="button"
+              className={formulario.botonSecundario}
+              onClick={() => setEstado({ paso: "contrasena", accion: { activar: "email" } })}
+            >
+              {t("activarEmail")}
+            </button>
+          </div>
+          <p className={estilos.suave}>{t("diferencia")}</p>
+        </>
+      )}
+
+      {estado.paso === "emailActivado" && (
+        <>
+          <Aviso tipo="exito">{t("activadoEmail")}</Aviso>
+          <p className={estilos.suave}>{t("avisoSpam")}</p>
+          <div>
+            <button
+              type="button"
+              className={formulario.boton}
+              onClick={() => {
+                reiniciar();
+                router.refresh();
+              }}
+            >
+              {t("entendido")}
             </button>
           </div>
         </>

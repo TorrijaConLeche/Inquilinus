@@ -16,6 +16,7 @@ const POR_CODIGO: Record<string, ClaveError> = {
   TOKEN_EXPIRED: "enlaceNoValido",
   INVALID_CODE: "codigoIncorrecto",
   INVALID_BACKUP_CODE: "codigoIncorrecto",
+  OTP_HAS_EXPIRED: "codigoCaducado",
   INVALID_TWO_FACTOR_COOKIE: "sesionCaducada",
   ACCOUNT_NOT_LINKED: "cuentaNoVinculada",
 };
@@ -30,6 +31,7 @@ export type ClaveError =
   | "terminos"
   | "enlaceNoValido"
   | "codigoIncorrecto"
+  | "codigoCaducado"
   | "sesionCaducada"
   | "cuentaNoVinculada"
   | "generico";
