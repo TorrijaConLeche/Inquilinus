@@ -51,7 +51,7 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 
 ## Tareas
 
-- [ ] Función de dominio: qué cobros faltan para un inmueble, una fecha y su día de cobro
+- [x] Función de dominio: qué cobros faltan para un inmueble, una fecha y su día de cobro
 - [ ] Día de cobro en las opciones del inmueble
 - [ ] Proceso diario (cron de Vercel) y generación manual
 - [ ] Marcado de desactualizados al cambiar ocupaciones o precios

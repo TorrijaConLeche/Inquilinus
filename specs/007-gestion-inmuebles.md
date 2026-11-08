@@ -60,7 +60,7 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 
 ## Tareas
 
-- [ ] Validaciones y precio vigente por mes en `packages/domain`
+- [x] Validaciones y precio vigente por mes en `packages/domain`
 - [ ] Historial de precios por habitación
 - [ ] Asistente de alta del inmueble
 - [ ] Formularios de habitaciones, tipos de gasto, inquilinos y ocupaciones
