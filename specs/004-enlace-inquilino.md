@@ -14,7 +14,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 - **R3** — El enlace funciona durante la estancia y hasta 3 meses después de la fecha de salida (inclusive). Si cambia la fecha de salida, la caducidad se recalcula.
 - **R4** — Con un token revocado, caducado o inexistente, la página mostrará el mismo mensaje ("Este enlace ya no está disponible"), sin revelar cuál es el motivo ni ningún dato.
 - **R5** — Arriba se mostrará el **total pendiente**: suma de cobros de alquiler y partes de gastos sin pagar.
-- **R6** — Debajo, un timeline (lo más reciente primero) con:
+- **R6** — Debajo, el timeline del inmueble con su fila resaltada (spec 006) y una lista (lo más reciente primero) con:
   - cobros de alquiler: mes, renta, recargo por vacíos, importe y pagado (con fecha) o pendiente;
   - gastos repartidos: tipo, periodo, total de la factura, su parte, días y pagado (con fecha) o pendiente;
   - fianza: importe, fecha de recepción y, si procede, fecha e importe devuelto.

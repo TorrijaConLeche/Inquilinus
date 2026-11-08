@@ -141,7 +141,7 @@ Primero una versión mínima para uso propio; solo cuando funcione en el día a 
 ## Pantallas del MVP
 
 1. Lista de inmuebles: ocupación, cobros pendientes, facturas sin repartir.
-2. Detalle del inmueble: habitaciones, inquilinos y ocupaciones en una línea de tiempo.
+2. Detalle del inmueble: timeline horizontal con alquiler, gastos e inquilinos, ventanas de detalle al pulsar y lista de movimientos (spec 006).
 3. Ficha del inquilino: datos, documentos, fianza, cobros y enlace.
 4. Subir factura → revisar lo leído por la IA → ver el reparto y confirmar.
 5. Cobros del mes: quién ha pagado alquiler y suministros.
