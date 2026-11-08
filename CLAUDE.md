@@ -2,7 +2,7 @@
 
 Plataforma web (y más adelante móvil) para que propietarias gestionen sus alquileres. El diferencial: leer facturas de suministros con IA y repartirlas por días entre los inquilinos, con un desglose transparente.
 
-Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/modelo-datos.md`. RGPD en `docs/rgpd.md`. Flujo de Git en `docs/flujo-git.md`.
+Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/modelo-datos.md`. RGPD en `docs/rgpd.md`. Flujo de Git en `docs/flujo-git.md`. Estilo visual e idiomas en `docs/estilo.md`.
 
 ## Cómo trabajamos: spec-driven development
 
@@ -30,7 +30,8 @@ La app móvil (Expo) está fuera del MVP; todo lo reutilizable va en `packages/`
 
 ## Convenciones
 
-- Código, nombres de dominio y textos de la app en **español**.
+- Código y nombres de dominio en **español**. La interfaz está en **español e inglés** desde el MVP: ningún texto va escrito en los componentes, todo sale de las traducciones (`es`, `en`). Ver `docs/estilo.md`.
+- Estilo: paleta Salvia, tipografía Figtree, modo oscuro desde el inicio. Colores siempre por tokens (`docs/estilo.md`).
 - Importes siempre en **céntimos enteros**; nunca `number` con decimales para dinero.
 - Fechas de negocio como día natural `YYYY-MM-DD`, sin hora ni zona horaria.
 - `packages/domain` es TypeScript puro: sin I/O, sin base de datos, sin dependencias. Errores de entrada con `ErrorValidacion`.

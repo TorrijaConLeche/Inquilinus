@@ -159,7 +159,8 @@ Ninguna por ahora.
 
 Este documento es la base del proyecto en Claude y, más adelante, del repositorio en Claude Code.
 
-- **Mercado:** España. Idioma de la app: español.
+- **Mercado:** España. Idiomas de la app: español (por defecto) e inglés, desde el MVP.
+- **Estilo:** tono amable, serio y moderno; paleta Salvia, tipografía Figtree y modo oscuro (`docs/estilo.md`).
 - **Prioridad:** el reparto de suministros con IA es el diferencial; el resto debe ser simple.
 - **Enfoque:** primero uso propio, después validación con otros propietarios. Evitar funcionalidades que no resuelvan un problema real observado.
 - **Restricciones:** RGPD por diseño (datos en la UE); la IA propone y la usuaria revisa antes de que se genere ningún desglose.
