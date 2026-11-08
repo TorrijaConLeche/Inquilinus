@@ -16,3 +16,6 @@ export function comprobadorBaseDatos(bd: { execute: (consulta: ReturnType<typeof
     await bd.execute(sql`select 1`);
   };
 }
+
+/** Cualquier conexión de Drizzle a PostgreSQL con nuestro esquema: Neon en producción, PGlite en los tests. */
+export type ConexionBd = import("drizzle-orm/pg-core").PgDatabase<import("drizzle-orm/pg-core").PgQueryResultHKT, typeof esquema>;

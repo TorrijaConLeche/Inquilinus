@@ -1,17 +1,25 @@
 import {
   generarOpenApi,
+  PeticionBorrarCuenta,
   type RespuestaError,
   type RespuestaSalud,
 } from "@inquilinus/contracts";
 import { Hono, type Context } from "hono";
+import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
 import type { Auth } from "./auth.ts";
-import type { BaseDatos } from "./bd/cliente.ts";
+import type { ConexionBd } from "./bd/cliente.ts";
+import { borrarCuenta, exportarDatos } from "./cuenta.ts";
+import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
 
 export interface Dependencias {
-  /** Conexión a la base de datos, para las consultas que hace la web en el servidor. */
-  bd?: BaseDatos;
+  /** Conexión a la base de datos (Neon en producción, PGlite en los tests). */
+  bd?: ConexionBd;
+  /** Limitador de intentos, para olvidar el contador de una cuenta al borrarla. */
+  limitador?: Limitador;
+  /** Borra ficheros del bucket privado (fase 3). Sin él, una cuenta con ficheros no se borra. */
+  borrarFicheros?: (claves: string[]) => Promise<void>;
   /**
    * Lanza si la base de datos no responde. Sin ella (por ejemplo, sin
    * DATABASE_URL), el chequeo de salud no consulta la base.
@@ -81,10 +89,64 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
 
   app.get("/openapi.json", (c) => c.json(openapi));
 
-  const { auth } = dependencias;
+  const { auth, bd } = dependencias;
   if (auth) {
     // En el log queda el patrón `/auth/*`, nunca la URL con tokens.
     app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
+  }
+
+  // Exportar y borrar la cuenta (spec 008, R14). Solo con sesión y, para
+  // cambiar datos, solo desde la propia app (cabecera Origin igual a la de la API).
+  if (auth && bd) {
+    const sesionDe = (c: Context) => auth.api.getSession({ headers: c.req.raw.headers });
+
+    // Contra peticiones desde otras webs (CSRF): todo lo que no sea leer exige
+    // la cabecera Origin del mismo dominio. El middleware csrf de Hono no sirve
+    // aquí: solo mira formularios, y un atacante podría mandar el JSON como texto.
+    app.use("/cuenta/*", async (c, next) => {
+      if (c.req.method !== "GET" && c.req.method !== "HEAD") {
+        const host = c.req.header("host") ?? new URL(c.req.url).host;
+        let hostOrigen: string | null = null;
+        try {
+          hostOrigen = new URL(c.req.header("origin") ?? "").host;
+        } catch {
+          hostOrigen = null;
+        }
+        if (hostOrigen !== host) return c.json<RespuestaError>({ error: "origen-no-permitido" }, 403);
+      }
+      await next();
+    });
+
+    app.get("/cuenta/exportacion", async (c) => {
+      const sesion = await sesionDe(c);
+      if (!sesion) return c.json<RespuestaError>({ error: "sin-sesion" }, 401);
+      const datos = await exportarDatos(bd, sesion.user.id);
+      const fecha = datos.exportadoEn.slice(0, 10);
+      c.header("content-disposition", `attachment; filename="inquilinus-datos-${fecha}.json"`);
+      c.header("cache-control", "no-store");
+      return c.json(datos);
+    });
+
+    app.post("/cuenta/borrar", async (c) => {
+      const sesion = await sesionDe(c);
+      if (!sesion) return c.json<RespuestaError>({ error: "sin-sesion" }, 401);
+      const peticion = PeticionBorrarCuenta.safeParse(await c.req.json().catch(() => null));
+      const email = sesion.user.email.trim().toLowerCase();
+      if (!peticion.success || peticion.data.email.toLowerCase() !== email) {
+        return c.json<RespuestaError>({ error: "email-no-coincide" }, 400);
+      }
+      await borrarCuenta(bd, sesion.user.id, {
+        ...(dependencias.borrarFicheros && { borrarFicheros: dependencias.borrarFicheros }),
+        ...(dependencias.limitador && { claveIntentos: dependencias.limitador.claves(email, null).cuenta }),
+      });
+      registro.info("cuenta_borrada", { idPeticion: c.get("idPeticion") });
+      // Las sesiones ya no existen; se borra también la cookie del navegador.
+      for (const nombre of ["inquilinus.session_token", "inquilinus.session_data", "inquilinus.dont_remember"]) {
+        deleteCookie(c, nombre, { path: "/" });
+        deleteCookie(c, `__Secure-${nombre}`, { path: "/", secure: true });
+      }
+      return c.body(null, 204);
+    });
   }
 
   app.notFound((c) => c.json<RespuestaError>({ error: "no-encontrado" }, 404));

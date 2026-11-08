@@ -24,7 +24,7 @@ import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import * as esquema from "./bd/esquema.ts";
 import type { EnviadorCorreo } from "./correo/enviador.ts";
 import { componerCodigo, componerCorreo } from "./correo/plantillas.ts";
-import { BLOQUEO_MS, crearLimitador, MAXIMO_FALLOS } from "./limitador.ts";
+import { BLOQUEO_MS, crearLimitador, MAXIMO_FALLOS, type Limitador } from "./limitador.ts";
 import { describirError, type Registro } from "./registro.ts";
 
 export interface ConfigAuth {
@@ -40,6 +40,8 @@ export interface ConfigAuth {
   rutaBase: string;
   /** Otros orígenes desde los que se aceptan peticiones (previsualizaciones de Vercel). */
   origenesConfiables?: string[];
+  /** Limitador de intentos compartido con el borrado de cuentas. Si no se pasa, se crea uno. */
+  limitador?: Limitador;
   /** Cliente OAuth de Google (tarea 2.2). Sin él, solo email y contraseña. */
   google?: { idCliente: string; secreto: string };
 }
@@ -72,7 +74,7 @@ export const DURACION_SESION_S = 30 * 24 * 60 * 60;
 
 export function crearAuth(config: ConfigAuth) {
   const { correo, registro } = config;
-  const limitador = crearLimitador(config.bd, config.secreto);
+  const limitador = config.limitador ?? crearLimitador(config.bd, config.secreto);
 
   /** Un fallo de SES no debe romper el registro ni filtrar datos al log. */
   const enviarSeguro = async (mensaje: Parameters<EnviadorCorreo["enviar"]>[0]) => {
