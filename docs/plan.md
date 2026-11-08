@@ -43,7 +43,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 - [x] **1.6 · Claude** — `packages/contracts` con Zod y generación de OpenAPI · `chore/contracts`
 - [x] **1.7 · Claude** — Esquema de base de datos con Drizzle según `docs/modelo-datos.md` y primera migración · `feat/bd-esquema`
 - [x] **1.8 · Claude + Tú** — Proyecto en Vercel conectado a GitHub, funciones en Frankfurt, variables de entorno y previsualizaciones por PR · `chore/vercel`
-- [ ] **1.9 · Claude** — Registro de errores sin datos personales (RGPD) · `chore/logs`
+- [x] **1.9 · Claude** — Registro de errores sin datos personales (RGPD) · `chore/logs`
 
 ## Fase 2 · Cuenta e inicio de sesión (spec 008)
 

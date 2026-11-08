@@ -3,7 +3,9 @@ import {
   type RespuestaError,
   type RespuestaSalud,
 } from "@inquilinus/contracts";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
+import { matchedRoutes } from "hono/route";
+import { crearRegistro, describirError, type Registro } from "./registro.ts";
 
 export interface Dependencias {
   /**
@@ -11,6 +13,8 @@ export interface Dependencias {
    * DATABASE_URL), el chequeo de salud no consulta la base.
    */
   comprobarBaseDatos?: () => Promise<void>;
+  /** Por defecto, JSON por consola (los logs de Vercel). */
+  registro?: Registro;
 }
 
 export interface Opciones {
@@ -18,9 +22,38 @@ export interface Opciones {
   rutaBase?: string;
 }
 
+/** Cabecera con el identificador de la petición, para cruzarla con los logs. */
+export const CABECERA_ID_PETICION = "x-id-peticion";
+
+type Entorno = { Variables: { idPeticion: string } };
+
+/** El patrón de la ruta (`/inmuebles/:id`), nunca la URL real. */
+function patronRuta(c: Context): string {
+  const rutas = matchedRoutes(c).filter((r) => r.method !== "ALL");
+  return rutas.at(-1)?.path ?? "sin_ruta";
+}
+
 export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {}) {
-  const app = opciones.rutaBase ? new Hono().basePath(opciones.rutaBase) : new Hono();
+  const registro = dependencias.registro ?? crearRegistro();
+  const base = new Hono<Entorno>();
+  const app = opciones.rutaBase ? base.basePath(opciones.rutaBase) : base;
   const openapi = generarOpenApi();
+
+  app.use(async (c, next) => {
+    const inicio = performance.now();
+    // En Vercel, el id de la petición de la plataforma; en local, uno nuevo.
+    const idPeticion = c.req.header("x-vercel-id") ?? crypto.randomUUID();
+    c.set("idPeticion", idPeticion);
+    await next();
+    c.header(CABECERA_ID_PETICION, idPeticion);
+    registro.info("peticion", {
+      idPeticion,
+      metodo: c.req.method,
+      ruta: patronRuta(c),
+      estado: c.res.status,
+      duracionMs: Math.round(performance.now() - inicio),
+    });
+  });
 
   app.get("/salud", async (c) => {
     const { comprobarBaseDatos } = dependencias;
@@ -30,8 +63,12 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     try {
       await comprobarBaseDatos();
       return c.json<RespuestaSalud>({ estado: "ok", baseDatos: "ok" });
-    } catch {
-      // Sin detalle del error: puede incluir datos de conexión.
+    } catch (error) {
+      // En la respuesta, nada; en el registro, solo el tipo y el código.
+      registro.aviso("base_datos_no_responde", {
+        idPeticion: c.get("idPeticion"),
+        ...describirError(error),
+      });
       return c.json<RespuestaSalud>({ estado: "error", baseDatos: "error" }, 503);
     }
   });
@@ -41,9 +78,12 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
   app.notFound((c) => c.json<RespuestaError>({ error: "no-encontrado" }, 404));
 
   app.onError((error, c) => {
-    // Solo el tipo de error, nunca el mensaje (RGPD). El registro completo
-    // llega con la tarea 1.9.
-    console.error(`Error no controlado: ${error.name}`);
+    registro.error("error_no_controlado", {
+      idPeticion: c.get("idPeticion"),
+      metodo: c.req.method,
+      ruta: patronRuta(c),
+      ...describirError(error),
+    });
     return c.json<RespuestaError>({ error: "interno" }, 500);
   });
 
