@@ -33,3 +33,4 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [006 · Timeline del inmueble](006-timeline.md) | aprobada |
 | [007 · Gestión de inmuebles, habitaciones, inquilinos y ocupaciones](007-gestion-inmuebles.md) | aprobada |
 | [008 · Cuenta e inicio de sesión](008-cuenta-sesion.md) | aprobada |
+| [009 · Panel principal y cobros del inmueble](009-panel-cobros.md) | aprobada |
