@@ -17,7 +17,7 @@
   --radio-ventana: 16px;
 }
 
-/* Modo oscuro: sigue al dispositivo salvo que la usuaria fije el claro
+/* Modo oscuro: sigue al dispositivo salvo que el usuario fije el claro
    (data-tema="claro"), o se fuerza con data-tema="oscuro". */
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema="claro"]) {

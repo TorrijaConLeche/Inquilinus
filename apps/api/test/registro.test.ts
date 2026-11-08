@@ -113,7 +113,7 @@ describe("registro en la API", () => {
     const app = crearApp({
       registro,
       comprobarBaseDatos: async () => {
-        throw Object.assign(new Error("postgres://usuaria:secreto@host/bd"), { code: "28P01" });
+        throw Object.assign(new Error("postgres://usuario:secreto@host/bd"), { code: "28P01" });
       },
     });
 

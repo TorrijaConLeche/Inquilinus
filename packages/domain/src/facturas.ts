@@ -51,7 +51,7 @@ export function importeDesdeTexto(texto: string): number | null {
   return Number.isSafeInteger(centimos) ? centimos : null;
 }
 
-/** Lo que propone la IA o rellena la usuaria antes de confirmar. Cualquier campo puede faltar. */
+/** Lo que propone la IA o rellena el usuario antes de confirmar. Cualquier campo puede faltar. */
 export interface BorradorFactura {
   tipoGastoId?: string | null;
   inicio?: Fecha | null;
@@ -91,7 +91,7 @@ export interface FacturaExistente {
 
 /**
  * Spec 003, R6: facturas del mismo tipo de gasto cuyo periodo comparte al menos un día con el de la nueva.
- * Devuelve sus ids; la usuaria decide si continúa.
+ * Devuelve sus ids; el usuario decide si continúa.
  */
 export function facturasSolapadas(
   nueva: { tipoGastoId: string; inicio: Fecha; fin: Fecha },

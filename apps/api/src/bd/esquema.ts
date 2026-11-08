@@ -3,7 +3,7 @@
 // - Importes: céntimos enteros (`integer`).
 // - Fechas de negocio: `date` como texto `YYYY-MM-DD`. Meses: texto `YYYY-MM`.
 // - Momentos (cuándo pasó algo): `timestamptz`.
-// - Todo cuelga de una usuaria a través del inmueble; al borrar la usuaria o el
+// - Todo cuelga de un usuario a través del inmueble; al borrar el usuario o el
 //   inmueble se borra en cascada lo que cuelga de él. Las demás referencias no
 //   borran en cascada.
 import { sql, type SQL } from "drizzle-orm";
@@ -58,10 +58,10 @@ export const plan = pgEnum("plan", ["starter", "advanced"]);
 export const periodicidad = pgEnum("periodicidad", ["mensual", "anual"]);
 export const tipoDocumento = pgEnum("tipo_documento", ["contrato", "justificante_fianza"]);
 
-// Usuaria y ficheros -------------------------------------------------------
+// Usuario y ficheros -------------------------------------------------------
 
 /** Las columnas de sesión y verificación las añade Better Auth (fase 2). */
-export const usuaria = pgTable("usuaria", {
+export const usuario = pgTable("usuario", {
   id: id(),
   email: text().notNull().unique(),
   nombre: text().notNull(),
@@ -70,9 +70,9 @@ export const usuaria = pgTable("usuaria", {
 
 export const fichero = pgTable("fichero", {
   id: id(),
-  usuariaId: uuid()
+  usuarioId: uuid()
     .notNull()
-    .references(() => usuaria.id, { onDelete: "cascade" }),
+    .references(() => usuario.id, { onDelete: "cascade" }),
   claveS3: text().notNull().unique(),
   nombreOriginal: text().notNull(),
   mime: text().notNull(),
@@ -87,9 +87,9 @@ export const inmueble = pgTable(
   "inmueble",
   {
     id: id(),
-    usuariaId: uuid()
+    usuarioId: uuid()
       .notNull()
-      .references(() => usuaria.id, { onDelete: "cascade" }),
+      .references(() => usuario.id, { onDelete: "cascade" }),
     nombre: text().notNull(),
     direccion: text(),
     modalidad: modalidad().notNull(),
@@ -101,7 +101,7 @@ export const inmueble = pgTable(
     ...marcas,
   },
   (t) => [
-    index().on(t.usuariaId),
+    index().on(t.usuarioId),
     check("inmueble_dia_cobro", sql`${t.diaCobro} between 1 and 28`),
   ],
 );
@@ -394,10 +394,10 @@ export const actividad = pgTable(
 /** Solo cambia por webhooks de Paddle (spec 010). */
 export const suscripcion = pgTable("suscripcion", {
   id: id(),
-  usuariaId: uuid()
+  usuarioId: uuid()
     .notNull()
     .unique()
-    .references(() => usuaria.id, { onDelete: "cascade" }),
+    .references(() => usuario.id, { onDelete: "cascade" }),
   plan: plan().notNull(),
   periodicidad: periodicidad().notNull(),
   /** Estado tal como lo envía Paddle. */
@@ -424,12 +424,12 @@ export const usoIa = pgTable(
   "uso_ia",
   {
     id: id(),
-    usuariaId: uuid()
+    usuarioId: uuid()
       .notNull()
-      .references(() => usuaria.id, { onDelete: "cascade" }),
+      .references(() => usuario.id, { onDelete: "cascade" }),
     mes: mes().notNull(),
     facturasLeidas: integer().notNull().default(0),
     ...marcas,
   },
-  (t) => [unique().on(t.usuariaId, t.mes), check("uso_ia_mes", formatoMes(t.mes))],
+  (t) => [unique().on(t.usuarioId, t.mes), check("uso_ia_mes", formatoMes(t.mes))],
 );

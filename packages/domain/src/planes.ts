@@ -33,7 +33,7 @@ export function mesDeUsoIa(instante: Date | string): Mes {
 
 /**
  * Spec 010, R10 y R10b: al pasar a Starter, qué inmueble sigue activo y cuáles quedan bloqueados.
- * Si la usuaria no ha elegido, sigue activo el más antiguo.
+ * Si el usuario no ha elegido, sigue activo el más antiguo.
  */
 export function inmueblesTrasBajada(
   inmuebles: readonly { id: string; creadoEn: string }[],

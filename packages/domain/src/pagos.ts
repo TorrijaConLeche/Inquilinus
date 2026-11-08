@@ -11,7 +11,7 @@ export interface Concepto {
   /** Céntimos. */
   importe: number;
   pagadoEn?: Fecha | null;
-  /** Cobro quitado por la propietaria (spec 005, R11): no se ve ni cuenta. */
+  /** Cobro quitado por el propietario (spec 005, R11): no se ve ni cuenta. */
   quitado?: boolean;
 }
 
