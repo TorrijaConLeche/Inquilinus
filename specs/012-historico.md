@@ -36,9 +36,9 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 
 **Inquilinos y RGPD**
 
-- **R10** — En su enlace (spec 004), el inquilino ve **su** histórico de dinero: cobros, gastos, liquidaciones, pagos y fianza que le afectan, con filtros por tipo de gasto y fechas. No ve las actividades de los demás ni los cambios internos (ediciones, enlaces, opciones del inmueble).
-- **R11** — El histórico no guarda más datos personales que el nombre del inquilino. Si se borra un inquilino, en su histórico aparece como "Inquilino N" (spec 007, R12).
-- **R12** — Un inmueble bloqueado por el plan (spec 010, R10b) tampoco permite ver su histórico, pero se incluye en la exportación de datos de la cuenta (spec 010, R10f).
+- **R9** — En su enlace (spec 004), el inquilino ve **su** histórico de dinero: cobros, gastos, liquidaciones, pagos y fianza que le afectan, con filtros por tipo de gasto y fechas. No ve las actividades de los demás ni los cambios internos (ediciones, enlaces, opciones del inmueble).
+- **R10** — El histórico no guarda más datos personales que el nombre del inquilino. Si se borra un inquilino, en su histórico aparece como "Inquilino N" (spec 007, R12).
+- **R11** — Un inmueble bloqueado por el plan (spec 010, R10b) tampoco permite ver su histórico, pero se incluye en la exportación de datos de la cuenta (spec 010, R10f).
 
 ## Casos de prueba
 
@@ -52,8 +52,8 @@ Piso Centro con Alex y Jorge. En octubre: cobros de alquiler de los dos; luz de 
 | C4 | Filtros combinados y resumen (R6, R7) | Alex + "Luz": pagado 20 €, pendiente 0 € |
 | C5 | Cambio de importe (R4) | "Renta de octubre de Jorge: 400 € → 380 €" |
 | C6 | Solo lectura (R3) | No hay forma de editar ni borrar una actividad |
-| C8 | Vista del inquilino (R10) | Jorge ve sus cobros, su parte de la luz y sus pagos; no ve los de Alex ni la edición interna |
-| C9 | Inquilino borrado (R11) | Sus actividades aparecen como "Inquilino 1" con los mismos importes |
+| C8 | Vista del inquilino (R9) | Jorge ve sus cobros, su parte de la luz y sus pagos; no ve los de Alex ni la edición interna |
+| C9 | Inquilino borrado (R10) | Sus actividades aparecen como "Inquilino 1" con los mismos importes |
 
 ## Fuera de alcance
 
