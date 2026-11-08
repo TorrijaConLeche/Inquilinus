@@ -28,3 +28,14 @@ PostgreSQL en Neon (Frankfurt) con [Drizzle](https://orm.drizzle.team). Esquema 
 3. `pnpm --filter @inquilinus/api bd:migrar` la aplica en la base de datos del `.env`.
 
 Los tests aplican las migraciones en PostgreSQL en memoria ([PGlite](https://pglite.dev)), sin conexión a Neon. Con `DATABASE_URL`, el chequeo de salud consulta la base de datos.
+
+## Registro (logs)
+
+`src/registro.ts` escribe una línea JSON por evento en la consola (en producción, los logs de Vercel). Nunca lleva datos personales (`docs/rgpd.md`):
+
+- Solo admite una lista cerrada de campos: id de petición, método, patrón de ruta, estado, duración y, en los errores, tipo, código y pila. Cualquier otro campo se descarta.
+- Las rutas se registran por su patrón (`/inmuebles/:id`), nunca la URL real, que puede llevar el token del enlace del inquilino o parámetros de búsqueda.
+- De los errores nunca se guarda el mensaje. Solo el tipo, el código de dominio (`FECHA_INVALIDA`) o de PostgreSQL (`28P01`) y las líneas `at …` de la pila.
+- Cada respuesta lleva la cabecera `x-id-peticion` para encontrar su línea en los logs. En Vercel coincide con su id de petición.
+
+Eventos: `peticion`, `error_no_controlado` y `base_datos_no_responde`. En la API, `dependencias.registro` permite capturarlo en los tests.
