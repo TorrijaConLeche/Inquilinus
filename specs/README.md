@@ -28,3 +28,4 @@ Solo se implementa una spec `aprobada`. Si al implementar cambia una regla, se a
 | [001 · Reparto de suministros](001-reparto-suministros.md) | implementada |
 | [002 · Cálculo del alquiler mensual](002-calculo-alquiler.md) | implementada |
 | [003 · Lectura de facturas con IA](003-lectura-facturas.md) | aprobada |
+| [004 · Enlace y vista del inquilino](004-enlace-inquilino.md) | borrador |

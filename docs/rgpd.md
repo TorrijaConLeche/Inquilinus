@@ -20,7 +20,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 - **Ficheros privados:** bucket sin acceso público; descarga solo con URL firmada de pocos minutos, generada tras comprobar permisos.
 - **Aislamiento:** cada consulta se filtra por la usuaria propietaria del inmueble; tests que lo verifiquen.
 - **Minimización en la IA:** solo se envía la imagen de la factura. DNI, nóminas y contratos nunca pasan por la IA. Bedrock no usa los datos para entrenar.
-- **Enlace del inquilino:** token aleatorio largo, guardado como hash; revocable; caduca automáticamente al cerrar la estancia (con un margen configurable); páginas con `noindex`; solo muestra datos de ese inquilino (el resto aparecen como "otro inquilino").
+- **Enlace del inquilino:** token aleatorio largo, guardado como hash; revocable; caduca 3 meses después de la salida; páginas con `noindex` y sin caché; solo muestra datos de esa estancia, nunca documentos ni datos de contacto (spec 004).
 - **Logs sin datos personales:** ni DNI, ni nombres, ni contenido de facturas en los logs ni en los errores enviados a monitorización.
 - **Acceso:** autenticación con Better Auth; doble factor disponible; secretos fuera del código.
 - **Derechos del inquilino:** exportar sus datos (acceso y portabilidad) y borrarlos o anonimizarlos (ver modelo de datos).

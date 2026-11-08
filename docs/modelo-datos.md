@@ -15,13 +15,13 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **ocupacion** | habitación, inquilino, entrada, salida (opcional) | Habitación e inquilino deben ser del mismo inmueble. Un inquilino puede tener varias si cambia de habitación. Se valida el solape (R8 de la spec 001) |
 | **tipo_gasto** | inmueble, nombre (texto libre: "Luz", "Agua", "Comunidad"…), activo | De 0 a N por inmueble; los define la usuaria |
 | **factura** | tipo_gasto, fichero (PDF), periodo_inicio, periodo_fin, importe_total, estado, propuesta_ia | Estados: `subida` → `propuesta` (o `error_extraccion`) → `confirmada` → `repartida`. `propuesta_ia` guarda lo que propuso la IA (spec 003) |
-| **reparto** | factura, calculado_en | Foto fija del cálculo de la spec 001 |
+| **reparto** | factura, calculado_en, detalle | Foto fija del cálculo de la spec 001. `detalle`: tramos de días con los presentes, para la vista del inquilino (spec 004) |
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
 | **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, origen (`auto` \| `manual`), pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes |
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
 | **documento** | inquilino, tipo (`contrato` \| `dni` \| `nomina` \| `otro`), año, fichero, notas | Nunca pasa por la IA |
 | **fichero** | usuaria, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |
-| **enlace_inquilino** | inquilino, token_hash, permite_descarga, caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
+| **enlace_inquilino** | inquilino, token_hash, caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
 
 ## Relaciones
 
