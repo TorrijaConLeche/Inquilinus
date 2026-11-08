@@ -13,7 +13,8 @@
     "lema": "Your rentals in order, with bills split clearly.",
     "entrar": "Sign in",
     "crearCuenta": "Create account",
-    "irPanel": "Go to my dashboard"
+    "irPanel": "Go to my dashboard",
+    "cuentaBorrada": "Your account and all its data have been deleted. Thank you for using Inquilinus."
   },
   "Registro": {
     "titulo": "Create your account",
@@ -92,7 +93,8 @@
     "sesionCaducada": "Too much time has passed. Sign in again with your email and password.",
     "cuentaNoVinculada": "There's already an unconfirmed account with that email. Confirm it from the email we sent you and sign in with Google again.",
     "generico": "Something went wrong. Please try again in a moment.",
-    "codigoCaducado": "The code has expired. Ask for another one."
+    "codigoCaducado": "The code has expired. Ask for another one.",
+    "emailNoCoincide": "The email doesn't match your account's."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -158,6 +160,18 @@
       "explicacion": "If you've signed in on a device you no longer use or that isn't yours, sign out everywhere. You'll need to sign in here again too.",
       "cerrarTodas": "Sign out on all devices",
       "confirmar": "Yes, sign out everywhere",
+      "cancelar": "Cancel"
+    },
+    "datos": {
+      "titulo": "Your data",
+      "explicacionExportar": "Download a copy of all your account data as a JSON file. It doesn't include passwords or security keys.",
+      "descargar": "Download my data",
+      "explicacionBorrar": "Deleting your account permanently removes your properties, tenants, payments, bills and documents, and signs you out on all your devices.",
+      "borrar": "Delete my account",
+      "aviso": "This can't be undone. If you want to keep anything, download your data first.",
+      "confirmarEmail": "To confirm, type your email ({email})",
+      "confirmar": "Delete my account forever",
+      "borrando": "Deleting…",
       "cancelar": "Cancel"
     }
   },

@@ -136,3 +136,10 @@
   background: var(--fondo);
   border-radius: var(--radio-control);
 }
+
+.separador {
+  width: 100%;
+  margin: 8px 0;
+  border: 0;
+  border-top: 1px solid var(--borde);
+}

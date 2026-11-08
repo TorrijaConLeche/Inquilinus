@@ -4,6 +4,7 @@ import type { Dependencias } from "./app.ts";
 import { crearAuth } from "./auth.ts";
 import { comprobadorBaseDatos, crearBaseDatos } from "./bd/cliente.ts";
 import { crearEnviadorSes } from "./correo/enviador.ts";
+import { crearLimitador } from "./limitador.ts";
 import { crearRegistro, type Registro } from "./registro.ts";
 
 type Entorno = Record<string, string | undefined>;
@@ -57,7 +58,11 @@ export function dependenciasDesdeEntorno(
     return dependencias;
   }
 
+  // Un solo limitador: lo usan el acceso (R11) y el borrado de la cuenta (R14).
+  const limitador = crearLimitador(bd, entorno["BETTER_AUTH_SECRET"]!);
+  dependencias.limitador = limitador;
   dependencias.auth = crearAuth({
+    limitador,
     bd,
     registro,
     secreto: entorno["BETTER_AUTH_SECRET"]!,

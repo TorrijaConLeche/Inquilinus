@@ -25,6 +25,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 - **Logs sin datos personales:** ni DNI, ni nombres, ni contenido de facturas en los logs ni en los errores enviados a monitorización. Lo garantiza el registro de la API (`apps/api/src/registro.ts`): lista cerrada de campos, rutas por su patrón y errores sin su mensaje.
 - **Acceso:** autenticación con Better Auth; doble factor disponible; secretos fuera del código.
 - **Derechos del inquilino:** exportar sus datos (acceso y portabilidad) y borrarlos o anonimizarlos (ver modelo de datos).
+- **Derechos de la propietaria:** desde Ajustes descarga todos sus datos en JSON (acceso y portabilidad, sin secretos) y borra su cuenta con todo lo suyo (supresión), escribiendo su email para confirmar (spec 008, R14).
 
 ## Subencargados
 

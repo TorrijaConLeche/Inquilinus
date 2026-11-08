@@ -16,6 +16,8 @@ pnpm --filter @inquilinus/api test
 | --- | --- |
 | `GET /salud` | `200 { estado: "ok" }`. Si hay base de datos configurada, la consulta y devuelve `503` sin detalles si falla. |
 | `GET /openapi.json` | Documento OpenAPI generado desde `@inquilinus/contracts`. |
+| `GET /cuenta/exportacion` | Con sesión: todos los datos de la cuenta en JSON, sin secretos (spec 008, R14). |
+| `POST /cuenta/borrar` | Con sesión, `{ email }` y cabecera `Origin` de la propia app: borra la cuenta y todo lo suyo, primero los ficheros (R14, C12). |
 
 Los errores nunca devuelven ni registran el mensaje original (RGPD).
 

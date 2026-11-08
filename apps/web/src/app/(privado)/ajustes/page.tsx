@@ -7,6 +7,7 @@ import estilos from "../privado.module.css";
 import { DobleFactor } from "./DobleFactor";
 import { Preferencias } from "./Preferencias";
 import { Sesiones } from "./Sesiones";
+import { TusDatos } from "./TusDatos";
 
 export async function generateMetadata() {
   const t = await getTranslations("Ajustes");
@@ -35,6 +36,7 @@ export default async function Ajustes() {
       <Preferencias idioma={esIdioma(locale) ? locale : IDIOMA_POR_DEFECTO} tema={esTema(tema) ? tema : "sistema"} />
       <DobleFactor metodo={usuario ? await metodoDobleFactorDe(usuario) : null} conContrasena={conContrasena} />
       <Sesiones />
+      {usuario && <TusDatos email={usuario.email} />}
     </>
   );
 }

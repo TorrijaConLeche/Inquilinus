@@ -13,7 +13,8 @@
     "lema": "Tus alquileres en orden, con las facturas repartidas de forma clara.",
     "entrar": "Entrar",
     "crearCuenta": "Crear cuenta",
-    "irPanel": "Ir a mi panel"
+    "irPanel": "Ir a mi panel",
+    "cuentaBorrada": "Tu cuenta y todos sus datos se han borrado. Gracias por haber usado Inquilinus."
   },
   "Registro": {
     "titulo": "Crea tu cuenta",
@@ -92,7 +93,8 @@
     "sesionCaducada": "Ha pasado demasiado tiempo. Vuelve a entrar con tu email y contraseña.",
     "cuentaNoVinculada": "Ya hay una cuenta con ese email sin confirmar. Confírmala desde el email que te enviamos y vuelve a entrar con Google.",
     "generico": "Algo ha fallado. Vuelve a intentarlo en un momento.",
-    "codigoCaducado": "El código ha caducado. Pide otro."
+    "codigoCaducado": "El código ha caducado. Pide otro.",
+    "emailNoCoincide": "El email no coincide con el de tu cuenta."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -158,6 +160,18 @@
       "explicacion": "Si has entrado en un dispositivo que ya no usas o que no es tuyo, cierra la sesión en todos. Tendrás que volver a entrar aquí también.",
       "cerrarTodas": "Cerrar sesión en todos los dispositivos",
       "confirmar": "Sí, cerrar todas",
+      "cancelar": "Cancelar"
+    },
+    "datos": {
+      "titulo": "Tus datos",
+      "explicacionExportar": "Descarga una copia de todos los datos de tu cuenta en un fichero JSON. No incluye contraseñas ni claves de seguridad.",
+      "descargar": "Descargar mis datos",
+      "explicacionBorrar": "Borrar tu cuenta elimina para siempre tus inmuebles, inquilinos, cobros, facturas y documentos, y cierra la sesión en todos tus dispositivos.",
+      "borrar": "Borrar mi cuenta",
+      "aviso": "Esto no se puede deshacer. Si quieres conservar algo, descarga antes tus datos.",
+      "confirmarEmail": "Para confirmar, escribe tu email ({email})",
+      "confirmar": "Borrar mi cuenta para siempre",
+      "borrando": "Borrando…",
       "cancelar": "Cancelar"
     }
   },
