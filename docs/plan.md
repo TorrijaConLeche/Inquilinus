@@ -98,7 +98,8 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 
 - [ ] **6.1 · Claude** — Paleta de colores de los tipos de gasto y selector de color · `feat/006-colores`
 - [ ] **6.2 · Claude** — Componente de timeline con zoom · `feat/006-timeline`
-- [ ] **6.3 · Claude** — Ventanas de detalle del alquiler y de la factura, y lista de movimientos · `feat/006-detalles`
+- [ ] **6.3 · Claude** — Ventanas de detalle del alquiler y de la factura · `feat/006-detalles`
+- [ ] **6.4b · Claude** — Histórico del inmueble con filtros, resumen y exportación (spec 012). El registro de actividad se añade desde la fase 3 en cada acción · `feat/012-historico`
 - [ ] **6.4 · Claude** — Enlaces: generar, revocar, regenerar, WhatsApp y permiso de descarga · `feat/004-enlaces`
 - [ ] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
 - [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
