@@ -67,6 +67,7 @@ describe("migraciones", () => {
       [
         "actividad",
         "cobro_alquiler",
+        "doble_factor",
         "documento",
         "enlace_inquilino",
         "evento_pago",
@@ -75,6 +76,7 @@ describe("migraciones", () => {
         "fichero",
         "habitacion",
         "inmueble",
+        "intento_acceso",
         "inquilino",
         "liquidacion",
         "metodo_acceso",

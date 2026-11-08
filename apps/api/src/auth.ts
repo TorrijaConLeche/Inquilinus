@@ -8,13 +8,15 @@ import {
   LONGITUD_MINIMA_CONTRASENA,
   VERSION_TERMINOS,
 } from "@inquilinus/contracts";
-import { betterAuth } from "better-auth";
+import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError, getOAuthState } from "better-auth/api";
+import { APIError, createAuthMiddleware, getIP, getOAuthState, isAPIError } from "better-auth/api";
+import { twoFactor } from "better-auth/plugins";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import * as esquema from "./bd/esquema.ts";
 import type { EnviadorCorreo } from "./correo/enviador.ts";
 import { componerCorreo } from "./correo/plantillas.ts";
+import { BLOQUEO_MS, crearLimitador, MAXIMO_FALLOS } from "./limitador.ts";
 import { describirError, type Registro } from "./registro.ts";
 
 export interface ConfigAuth {
@@ -57,8 +59,12 @@ function idiomaDe(peticion?: Request) {
   return elegirIdioma({ cookie, acceptLanguage: peticion?.headers.get("accept-language") });
 }
 
+/** R8: con "recordar este dispositivo", la sesión dura 30 días y no se alarga. */
+export const DURACION_SESION_S = 30 * 24 * 60 * 60;
+
 export function crearAuth(config: ConfigAuth) {
   const { correo, registro } = config;
+  const limitador = crearLimitador(config.bd, config.secreto);
 
   /** Un fallo de SES no debe romper el registro ni filtrar datos al log. */
   const enviar = async (...args: Parameters<typeof componerCorreo>) => {
@@ -67,6 +73,20 @@ export function crearAuth(config: ConfigAuth) {
     } catch (error) {
       registro.aviso("correo_no_enviado", describirError(error));
     }
+  };
+
+  /** Claves del limitador para un intento de acceso con email (cuenta e IP). */
+  const clavesDeIntento = (ctx: {
+    body?: unknown;
+    request?: Request | undefined;
+    headers?: Headers | undefined;
+    context: { options: BetterAuthOptions };
+  }) => {
+    const email = (ctx.body as { email?: unknown } | undefined)?.email;
+    if (typeof email !== "string") return null;
+    const origen = ctx.request ?? ctx.headers;
+    const ip = origen ? getIP(origen, ctx.context.options) : null;
+    return limitador.claves(email, ip);
   };
 
   return betterAuth({
@@ -81,6 +101,7 @@ export function crearAuth(config: ConfigAuth) {
         sesion: esquema.sesion,
         metodoAcceso: esquema.metodoAcceso,
         verificacion: esquema.verificacion,
+        dobleFactor: esquema.dobleFactor,
       },
     }),
     advanced: {
@@ -88,6 +109,58 @@ export function crearAuth(config: ConfigAuth) {
       // Cookie de sesión HttpOnly, SameSite=Lax y Secure en https (R9).
       cookiePrefix: "inquilinus",
     },
+
+    // R11: límite de intentos con email y contraseña, por cuenta y por IP.
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/sign-in/email") return;
+        const claves = clavesDeIntento(ctx);
+        if (!claves) return;
+        if (await limitador.estaBloqueado(Object.values(claves), new Date())) {
+          throw new APIError("TOO_MANY_REQUESTS", {
+            code: "DEMASIADOS_INTENTOS",
+            message: "Demasiados intentos. Prueba de nuevo en 15 minutos.",
+          });
+        }
+      }),
+      after: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/sign-in/email") return;
+        const claves = clavesDeIntento(ctx);
+        if (!claves) return;
+        const resultado = ctx.context.returned;
+        if (isAPIError(resultado)) {
+          if (resultado.body?.code === "INVALID_EMAIL_OR_PASSWORD") {
+            await limitador.registrarFallo(Object.values(claves), new Date());
+          }
+        } else {
+          await limitador.olvidar(claves.cuenta);
+        }
+      }),
+    },
+
+    plugins: [
+      // R7: doble factor opcional con app de autenticación y códigos de
+      // recuperación. Tras 5 códigos fallidos seguidos, 15 minutos de bloqueo (R11).
+      twoFactor({
+        issuer: "Inquilinus",
+        accountLockout: { enabled: true, maxFailedAttempts: MAXIMO_FALLOS, durationSeconds: BLOQUEO_MS / 1000 },
+        backupCodeOptions: { amount: 10 },
+        schema: {
+          user: { fields: { twoFactorEnabled: "dobleFactorActivo" } },
+          twoFactor: {
+            modelName: "dobleFactor",
+            fields: {
+              secret: "secreto",
+              backupCodes: "codigosRecuperacion",
+              userId: "usuarioId",
+              verified: "verificado",
+              failedVerificationCount: "fallosSeguidos",
+              lockedUntil: "bloqueadoHasta",
+            },
+          },
+        },
+      }),
+    ],
 
     // Nombres de Better Auth → columnas en español.
     user: {
@@ -105,6 +178,10 @@ export function crearAuth(config: ConfigAuth) {
       },
     },
     session: {
+      // R8: 30 días exactos desde el acceso, sin renovar al usarla. Sin
+      // "recordar" (rememberMe: false), la cookie es de sesión del navegador.
+      expiresIn: DURACION_SESION_S,
+      disableSessionRefresh: true,
       modelName: "sesion",
       fields: {
         userId: "usuarioId",
