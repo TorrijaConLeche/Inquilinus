@@ -41,7 +41,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 - [x] **1.4 · Claude** — Esqueleto de `apps/api` (Hono, chequeo de salud, tests) · `chore/api-esqueleto`
 - [x] **1.5 · Claude** — Esqueleto de `apps/web` (Next.js, tokens Salvia, Figtree, modo oscuro, traducciones es/en) · `chore/web-esqueleto`
 - [x] **1.6 · Claude** — `packages/contracts` con Zod y generación de OpenAPI · `chore/contracts`
-- [ ] **1.7 · Claude** — Esquema de base de datos con Drizzle según `docs/modelo-datos.md` y primera migración · `feat/bd-esquema`
+- [x] **1.7 · Claude** — Esquema de base de datos con Drizzle según `docs/modelo-datos.md` y primera migración · `feat/bd-esquema`
 - [ ] **1.8 · Claude + Tú** — Proyecto en Vercel conectado a GitHub, funciones en Frankfurt, variables de entorno y previsualizaciones por PR · `chore/vercel`
 - [ ] **1.9 · Claude** — Registro de errores sin datos personales (RGPD) · `chore/logs`
 
