@@ -72,6 +72,8 @@ export {
   puedeLeerConIa,
   mesDeUsoIa,
   inmueblesTrasBajada,
+  DIAS_ENTRE_CAMBIOS_DE_ACTIVO,
+  puedeCambiarInmuebleActivo,
   desgloseIva,
   type Plan,
   type Periodicidad,
