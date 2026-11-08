@@ -56,8 +56,8 @@ Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
 
 ## Tareas
 
-- [ ] Validación de fichero (R1) y de confirmación (R9) en `packages/domain`
-- [ ] Detección de solapes de periodo (R6) en `packages/domain`
+- [x] Validación de fichero (R1) y de confirmación (R9) en `packages/domain`
+- [x] Detección de solapes de periodo (R6) en `packages/domain`
 - [ ] Interfaz `InvoiceExtractor` y su implementación con Bedrock (prompt y salida estructurada)
 - [ ] Endpoints de subida, propuesta y confirmación en `apps/api`
 - [ ] Tests C1–C11

@@ -26,6 +26,32 @@ export function desdeDia(dia: number): Fecha {
   return new Date(dia * MS_POR_DIA).toISOString().slice(0, 10);
 }
 
+/** Mes (`YYYY-MM`) al que pertenece una fecha. */
+export function mesDe(fecha: Fecha): Mes {
+  aDia(fecha);
+  return fecha.slice(0, 7);
+}
+
+/** Día del mes (1-31) de una fecha. */
+export function diaDelMes(fecha: Fecha): number {
+  aDia(fecha);
+  return Number(fecha.slice(8, 10));
+}
+
+/** Fecha de un día concreto de un mes. Si el mes no tiene ese día, el último del mes. */
+export function fechaEnMes(mes: Mes, dia: number): Fecha {
+  const { inicio, dias } = rangoDelMes(mes);
+  return desdeDia(inicio + Math.min(dia, dias) - 1);
+}
+
+/** Suma meses a una fecha. Si el día no existe en el mes de destino, se usa el último día. */
+export function sumarMeses(fecha: Fecha, meses: number): Fecha {
+  aDia(fecha);
+  const total = Number(fecha.slice(0, 4)) * 12 + Number(fecha.slice(5, 7)) - 1 + meses;
+  const mes = `${String(Math.floor(total / 12)).padStart(4, '0')}-${String((total % 12) + 1).padStart(2, '0')}`;
+  return fechaEnMes(mes, diaDelMes(fecha));
+}
+
 /** Primer y último día del mes (ambos inclusive) y número de días. */
 export function rangoDelMes(mes: Mes): { inicio: number; fin: number; dias: number } {
   const m = RE_MES.exec(mes);

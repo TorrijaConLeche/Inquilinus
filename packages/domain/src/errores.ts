@@ -5,7 +5,13 @@ export type CodigoError =
   | 'IMPORTE_INVALIDO'
   | 'OCUPACION_INVALIDA'
   | 'SOLAPE_OCUPACIONES'
-  | 'HABITACION_DESCONOCIDA';
+  | 'HABITACION_DESCONOCIDA'
+  | 'FICHERO_INVALIDO'
+  | 'CAMPO_OBLIGATORIO'
+  | 'NOMBRE_OBLIGATORIO'
+  | 'SIN_HABITACIONES'
+  | 'SIN_PRECIO'
+  | 'DIA_COBRO_INVALIDO';
 
 /** Error de datos de entrada. Los cálculos nunca devuelven un resultado parcial. */
 export class ErrorValidacion extends Error {

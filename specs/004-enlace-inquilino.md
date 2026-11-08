@@ -49,7 +49,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 
 ## Tareas
 
-- [ ] Caducidad (R3), total pendiente (R5) y tramos del detalle (R7) en `packages/domain`
+- [x] Caducidad (R3), total pendiente (R5) y tramos del detalle (R7) en `packages/domain`
 - [ ] Guardar el detalle por tramos junto al reparto (foto fija)
 - [ ] Generar, revocar y regenerar enlaces en `apps/api`
 - [ ] Vista pública en `apps/web`
