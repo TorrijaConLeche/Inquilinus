@@ -15,6 +15,13 @@
       "when": 1794161701981,
       "tag": "0001_acceso",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794163408180,
+      "tag": "0002_seguridad",
+      "breakpoints": true
     }
   ]
 }

@@ -74,6 +74,39 @@ export const usuario = pgTable("usuario", {
   /** Versión de la política de privacidad y los términos aceptada (R4). */
   terminosVersion: text(),
   terminosAceptadosEn: momento(),
+  /** Doble factor activo (R7). */
+  dobleFactorActivo: boolean().notNull().default(false),
+  ...marcas,
+});
+
+/** Doble factor con app de autenticación (R7). Better Auth cifra el secreto y los códigos. */
+export const dobleFactor = pgTable(
+  "doble_factor",
+  {
+    id: id(),
+    usuarioId: uuid()
+      .notNull()
+      .references(() => usuario.id, { onDelete: "cascade" }),
+    secreto: text().notNull(),
+    codigosRecuperacion: text().notNull(),
+    verificado: boolean().notNull().default(true),
+    /** Bloqueo tras códigos fallidos seguidos (R11). */
+    fallosSeguidos: integer().notNull().default(0),
+    bloqueadoHasta: momento(),
+    ...marcas,
+  },
+  (t) => [index().on(t.usuarioId), index().on(t.secreto)],
+);
+
+/**
+ * Intentos fallidos de acceso por cuenta y por IP (R11). La clave es una
+ * huella HMAC del email o de la IP: nunca se guardan en claro.
+ */
+export const intentoAcceso = pgTable("intento_acceso", {
+  clave: text().primaryKey(),
+  fallos: integer().notNull().default(0),
+  primerFalloEn: momento().notNull(),
+  bloqueadoHasta: momento(),
   ...marcas,
 });
 
