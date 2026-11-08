@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "dev": "node --env-file-if-exists=.env --watch src/servidor.ts",
     "start": "node --env-file-if-exists=.env src/servidor.ts",

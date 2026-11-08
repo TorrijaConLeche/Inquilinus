@@ -60,3 +60,12 @@ describe("OpenAPI", () => {
     expect(await respuesta.json()).toEqual(JSON.parse(JSON.stringify(generarOpenApi())));
   });
 });
+
+describe("ruta base", () => {
+  it("sirve todas las rutas bajo el prefijo indicado", async () => {
+    const app = crearApp({}, { rutaBase: "/api" });
+    expect((await app.request("/api/salud")).status).toBe(200);
+    expect((await app.request("/api/openapi.json")).status).toBe(200);
+    expect((await app.request("/salud")).status).toBe(404);
+  });
+});

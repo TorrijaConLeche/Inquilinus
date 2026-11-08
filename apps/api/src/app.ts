@@ -7,14 +7,19 @@ import { Hono } from "hono";
 
 export interface Dependencias {
   /**
-   * Lanza si la base de datos no responde. Opcional hasta que exista el
-   * esquema (tarea 1.7); sin ella, el chequeo de salud no consulta la base.
+   * Lanza si la base de datos no responde. Sin ella (por ejemplo, sin
+   * DATABASE_URL), el chequeo de salud no consulta la base.
    */
   comprobarBaseDatos?: () => Promise<void>;
 }
 
-export function crearApp(dependencias: Dependencias = {}) {
-  const app = new Hono();
+export interface Opciones {
+  /** Prefijo de todas las rutas. En la web, la API vive en `/api`. */
+  rutaBase?: string;
+}
+
+export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {}) {
+  const app = opciones.rutaBase ? new Hono().basePath(opciones.rutaBase) : new Hono();
   const openapi = generarOpenApi();
 
   app.get("/salud", async (c) => {
