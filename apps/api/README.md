@@ -15,5 +15,6 @@ pnpm --filter @inquilinus/api test
 | Ruta | Qué hace |
 | --- | --- |
 | `GET /salud` | `200 { estado: "ok" }`. Si hay base de datos configurada, la consulta y devuelve `503` sin detalles si falla. |
+| `GET /openapi.json` | Documento OpenAPI generado desde `@inquilinus/contracts`. |
 
 Los errores nunca devuelven ni registran el mensaje original (RGPD).

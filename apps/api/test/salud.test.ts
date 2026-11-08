@@ -1,18 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
+import { generarOpenApi, RespuestaError, RespuestaSalud } from "@inquilinus/contracts";
 import { crearApp } from "../src/app.ts";
 
 describe("chequeo de salud", () => {
   it("responde ok sin base de datos configurada", async () => {
     const respuesta = await crearApp().request("/salud");
     expect(respuesta.status).toBe(200);
-    expect(await respuesta.json()).toEqual({ estado: "ok" });
+    expect(RespuestaSalud.parse(await respuesta.json())).toEqual({ estado: "ok" });
   });
 
   it("responde ok cuando la base de datos contesta", async () => {
     const app = crearApp({ comprobarBaseDatos: async () => {} });
     const respuesta = await app.request("/salud");
     expect(respuesta.status).toBe(200);
-    expect(await respuesta.json()).toEqual({ estado: "ok", baseDatos: "ok" });
+    expect(RespuestaSalud.parse(await respuesta.json())).toEqual({ estado: "ok", baseDatos: "ok" });
   });
 
   it("responde 503 sin detalles cuando la base de datos falla", async () => {
@@ -24,7 +25,7 @@ describe("chequeo de salud", () => {
     const respuesta = await app.request("/salud");
     expect(respuesta.status).toBe(503);
     const cuerpo = await respuesta.text();
-    expect(JSON.parse(cuerpo)).toEqual({ estado: "error", baseDatos: "error" });
+    expect(RespuestaSalud.parse(JSON.parse(cuerpo))).toEqual({ estado: "error", baseDatos: "error" });
     expect(cuerpo).not.toContain("secreto");
   });
 });
@@ -33,7 +34,7 @@ describe("errores", () => {
   it("devuelve 404 en JSON para rutas desconocidas", async () => {
     const respuesta = await crearApp().request("/no-existe");
     expect(respuesta.status).toBe(404);
-    expect(await respuesta.json()).toEqual({ error: "no-encontrado" });
+    expect(RespuestaError.parse(await respuesta.json())).toEqual({ error: "no-encontrado" });
   });
 
   it("devuelve 500 genérico sin el mensaje del error ni en la respuesta ni en el log", async () => {
@@ -45,9 +46,17 @@ describe("errores", () => {
     const respuesta = await app.request("/explota");
     expect(respuesta.status).toBe(500);
     const cuerpo = await respuesta.text();
-    expect(JSON.parse(cuerpo)).toEqual({ error: "interno" });
+    expect(RespuestaError.parse(JSON.parse(cuerpo))).toEqual({ error: "interno" });
     expect(cuerpo).not.toContain("12345678Z");
     expect(log.mock.calls.flat().join(" ")).not.toContain("12345678Z");
     log.mockRestore();
+  });
+});
+
+describe("OpenAPI", () => {
+  it("sirve el documento generado desde los contratos", async () => {
+    const respuesta = await crearApp().request("/openapi.json");
+    expect(respuesta.status).toBe(200);
+    expect(await respuesta.json()).toEqual(JSON.parse(JSON.stringify(generarOpenApi())));
   });
 });

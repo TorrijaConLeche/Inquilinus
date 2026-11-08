@@ -1,3 +1,8 @@
+import {
+  generarOpenApi,
+  type RespuestaError,
+  type RespuestaSalud,
+} from "@inquilinus/contracts";
 import { Hono } from "hono";
 
 export interface Dependencias {
@@ -10,28 +15,31 @@ export interface Dependencias {
 
 export function crearApp(dependencias: Dependencias = {}) {
   const app = new Hono();
+  const openapi = generarOpenApi();
 
   app.get("/salud", async (c) => {
     const { comprobarBaseDatos } = dependencias;
     if (!comprobarBaseDatos) {
-      return c.json({ estado: "ok" });
+      return c.json<RespuestaSalud>({ estado: "ok" });
     }
     try {
       await comprobarBaseDatos();
-      return c.json({ estado: "ok", baseDatos: "ok" });
+      return c.json<RespuestaSalud>({ estado: "ok", baseDatos: "ok" });
     } catch {
       // Sin detalle del error: puede incluir datos de conexión.
-      return c.json({ estado: "error", baseDatos: "error" }, 503);
+      return c.json<RespuestaSalud>({ estado: "error", baseDatos: "error" }, 503);
     }
   });
 
-  app.notFound((c) => c.json({ error: "no-encontrado" }, 404));
+  app.get("/openapi.json", (c) => c.json(openapi));
+
+  app.notFound((c) => c.json<RespuestaError>({ error: "no-encontrado" }, 404));
 
   app.onError((error, c) => {
     // Solo el tipo de error, nunca el mensaje (RGPD). El registro completo
     // llega con la tarea 1.9.
     console.error(`Error no controlado: ${error.name}`);
-    return c.json({ error: "interno" }, 500);
+    return c.json<RespuestaError>({ error: "interno" }, 500);
   });
 
   return app;
