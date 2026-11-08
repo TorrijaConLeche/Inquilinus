@@ -33,7 +33,7 @@ pnpm --filter @inquilinus/web test
 | `/acceso` | Email y contraseña, «recordar este dispositivo», paso del doble factor (app o código de recuperación), reenviar la verificación y Google |
 | `/recuperar`, `/restablecer` | Enlace por email y contraseña nueva |
 | `/panel` | Provisional hasta la fase 4 |
-| `/ajustes` | Idioma, apariencia (claro, oscuro, como el dispositivo), doble factor con QR y códigos, cerrar sesión en todos los dispositivos |
+| `/ajustes` | Idioma, apariencia (claro, oscuro, como el dispositivo), doble factor con app (QR y códigos de recuperación) o con código por email, cerrar sesión en todos los dispositivos |
 | `/privacidad`, `/terminos` | Provisionales hasta la tarea 2.8 |
 
 - `src/servidor/api.ts`: la instancia de la API compartida por `/api` y las páginas (sesión del usuario en el servidor).
@@ -41,3 +41,4 @@ pnpm --filter @inquilinus/web test
 - `(privado)/layout.tsx` exige sesión; sin ella, a `/acceso`.
 - Idioma y apariencia se guardan en las cookies técnicas `idioma` y `tema`.
 - El botón de Google no aparece en las previsualizaciones de Vercel.
+- Todos los campos de contraseña (`Campo` con `type="password"`) llevan un botón para mostrarla u ocultarla.

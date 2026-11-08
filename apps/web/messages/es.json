@@ -4,7 +4,9 @@
     "descripcion": "Gestiona tus alquileres y reparte las facturas de suministros entre tus inquilinos."
   },
   "Comun": {
-    "marca": "Inquilinus"
+    "marca": "Inquilinus",
+    "mostrarContrasena": "Mostrar contraseña",
+    "ocultarContrasena": "Ocultar contraseña"
   },
   "Inicio": {
     "titulo": "Inquilinus",
@@ -55,7 +57,11 @@
     "reenviarVerificacion": "Reenviar el email",
     "verificacionReenviada": "Te hemos enviado otro email de confirmación a {email}.",
     "irRegistro": "Ir al registro",
-    "contrasenaCambiada": "Contraseña cambiada. Entra con la nueva."
+    "contrasenaCambiada": "Contraseña cambiada. Entra con la nueva.",
+    "codigoEmail": "Código del email",
+    "codigoEmailAyuda": "Escribe el código de 6 cifras que te hemos enviado por email. Caduca en 5 minutos; si no lo ves, mira en spam.",
+    "codigoEmailEnviado": "Te hemos enviado un código a tu email.",
+    "reenviarCodigo": "Enviarme otro código"
   },
   "Recuperar": {
     "titulo": "Recupera tu contraseña",
@@ -85,7 +91,8 @@
     "codigoIncorrecto": "El código no es correcto.",
     "sesionCaducada": "Ha pasado demasiado tiempo. Vuelve a entrar con tu email y contraseña.",
     "cuentaNoVinculada": "Ya hay una cuenta con ese email sin confirmar. Confírmala desde el email que te enviamos y vuelve a entrar con Google.",
-    "generico": "Algo ha fallado. Vuelve a intentarlo en un momento."
+    "generico": "Algo ha fallado. Vuelve a intentarlo en un momento.",
+    "codigoCaducado": "El código ha caducado. Pide otro."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -117,11 +124,9 @@
     },
     "dobleFactor": {
       "titulo": "Verificación en dos pasos",
-      "activo": "Activa",
       "explicacion": "Además de la contraseña, al entrar te pediremos un código de una app de autenticación (Google Authenticator, Microsoft Authenticator…).",
       "explicacionActivo": "Al entrar con tu contraseña te pedimos también el código de tu app de autenticación.",
       "soloGoogle": "Entras con Google: la verificación en dos pasos la gestiona tu cuenta de Google.",
-      "activar": "Activar",
       "desactivar": "Desactivar",
       "pedirContrasena": "Por seguridad, confirma tu contraseña.",
       "contrasena": "Contraseña",
@@ -136,7 +141,17 @@
       "guardaCodigos": "Guarda estos códigos de recuperación en un lugar seguro. Si pierdes el móvil, cada uno te deja entrar una vez. No los volveremos a mostrar.",
       "descargar": "Descargar códigos",
       "hecho": "Ya los he guardado",
-      "archivoCodigos": "Códigos de recuperación de Inquilinus. Cada uno sirve una sola vez."
+      "archivoCodigos": "Códigos de recuperación de Inquilinus. Cada uno sirve una sola vez.",
+      "activoApp": "Activa · app",
+      "activoEmail": "Activa · email",
+      "explicacionActivoEmail": "Al entrar con tu contraseña te enviamos también un código de 6 cifras por email.",
+      "cambiarMetodo": "Para cambiar de método, desactívala y vuelve a activarla con el otro.",
+      "activarApp": "Con una app",
+      "activarEmail": "Con un código por email",
+      "diferencia": "La app es más segura y funciona sin conexión. El código por email es más sencillo, pero protege menos: si alguien entra en tu correo, también podría entrar aquí.",
+      "activadoEmail": "Verificación en dos pasos activada. Cada vez que entres con tu contraseña te enviaremos un código por email.",
+      "avisoSpam": "Mientras la app no tenga dominio propio, el código puede llegar a la carpeta de spam. Márcalo como «No es spam» la primera vez.",
+      "entendido": "Entendido"
     },
     "sesiones": {
       "titulo": "Sesiones",

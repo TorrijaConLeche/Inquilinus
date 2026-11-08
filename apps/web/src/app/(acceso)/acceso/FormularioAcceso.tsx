@@ -30,6 +30,9 @@ export function FormularioAcceso({
   const [recordar, setRecordar] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [conRecuperacion, setConRecuperacion] = useState(false);
+  /** Segundo factor de esta cuenta: app (con códigos de recuperación) o código por email. */
+  const [porEmail, setPorEmail] = useState(false);
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<ClaveError | null>(errorInicial);
   const [reenviado, setReenviado] = useState(false);
@@ -37,6 +40,14 @@ export function FormularioAcceso({
   const alPanel = () => {
     router.replace("/panel");
     router.refresh();
+  };
+
+  const enviarCodigo = async () => {
+    setError(null);
+    setCodigoEnviado(false);
+    const { error } = await clienteAuth.twoFactor.sendOtp();
+    if (error) return setError(claveDeError(error.code));
+    setCodigoEnviado(true);
   };
 
   const entrar = async (e: FormEvent) => {
@@ -54,7 +65,14 @@ export function FormularioAcceso({
     if (error) return setError(claveDeError(error.code));
     if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) {
       setContrasena("");
-      return setPaso("codigo");
+      setPaso("codigo");
+      // Sin app configurada, el segundo factor es el código por email: se envía ya.
+      const metodos = (data as { twoFactorMethods?: string[] }).twoFactorMethods ?? [];
+      if (!metodos.includes("totp")) {
+        setPorEmail(true);
+        await enviarCodigo();
+      }
+      return;
     }
     alPanel();
   };
@@ -64,9 +82,12 @@ export function FormularioAcceso({
     setEnviando(true);
     setError(null);
     const limpio = codigo.trim();
-    const { error } = conRecuperacion
-      ? await clienteAuth.twoFactor.verifyBackupCode({ code: limpio })
-      : await clienteAuth.twoFactor.verifyTotp({ code: limpio.replace(/\s/g, "") });
+    const sinEspacios = limpio.replace(/\s/g, "");
+    const { error } = porEmail
+      ? await clienteAuth.twoFactor.verifyOtp({ code: sinEspacios })
+      : conRecuperacion
+        ? await clienteAuth.twoFactor.verifyBackupCode({ code: limpio })
+        : await clienteAuth.twoFactor.verifyTotp({ code: sinEspacios });
     setEnviando(false);
     if (error) return setError(claveDeError(error.code));
     alPanel();
@@ -77,6 +98,31 @@ export function FormularioAcceso({
     setError(null);
     setReenviado(true);
   };
+
+  if (paso === "codigo" && porEmail) {
+    return (
+      <form className={estilos.formulario} onSubmit={verificar} noValidate>
+        {codigoEnviado && <Aviso tipo="exito">{t("codigoEmailEnviado")}</Aviso>}
+        <p className={estilos.ayuda}>{t("codigoEmailAyuda")}</p>
+        {error && <Aviso tipo="error">{te(error)}</Aviso>}
+        <Campo
+          etiqueta={t("codigoEmail")}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          autoFocus
+          required
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+        />
+        <button type="submit" className={estilos.boton} disabled={!codigo.trim() || enviando}>
+          {t("verificar")}
+        </button>
+        <button type="button" className={estilos.botonEnlace} onClick={enviarCodigo}>
+          {t("reenviarCodigo")}
+        </button>
+      </form>
+    );
+  }
 
   if (paso === "codigo") {
     return (

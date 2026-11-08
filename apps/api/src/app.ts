@@ -6,9 +6,12 @@ import {
 import { Hono, type Context } from "hono";
 import { matchedRoutes } from "hono/route";
 import type { Auth } from "./auth.ts";
+import type { BaseDatos } from "./bd/cliente.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
 
 export interface Dependencias {
+  /** Conexión a la base de datos, para las consultas que hace la web en el servidor. */
+  bd?: BaseDatos;
   /**
    * Lanza si la base de datos no responde. Sin ella (por ejemplo, sin
    * DATABASE_URL), el chequeo de salud no consulta la base.

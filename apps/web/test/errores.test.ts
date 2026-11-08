@@ -31,6 +31,7 @@ describe("claveDeError", () => {
       "TERMINOS_NO_ACEPTADOS",
       "INVALID_TOKEN",
       "INVALID_CODE",
+      "OTP_HAS_EXPIRED",
       "INVALID_TWO_FACTOR_COOKIE",
       "ACCOUNT_NOT_LINKED",
       "OTRO",

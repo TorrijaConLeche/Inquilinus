@@ -2,7 +2,7 @@ import { esIdioma, IDIOMA_POR_DEFECTO } from "@inquilinus/contracts/idiomas";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { COOKIE_TEMA, esTema } from "../../../lib/preferencias";
-import { tieneContrasena, usuarioActual } from "../../../servidor/api";
+import { metodoDobleFactorDe, tieneContrasena, usuarioActual } from "../../../servidor/api";
 import estilos from "../privado.module.css";
 import { DobleFactor } from "./DobleFactor";
 import { Preferencias } from "./Preferencias";
@@ -33,7 +33,7 @@ export default async function Ajustes() {
       </section>
 
       <Preferencias idioma={esIdioma(locale) ? locale : IDIOMA_POR_DEFECTO} tema={esTema(tema) ? tema : "sistema"} />
-      <DobleFactor activo={usuario?.dobleFactorActivo ?? false} conContrasena={conContrasena} />
+      <DobleFactor metodo={usuario ? await metodoDobleFactorDe(usuario) : null} conContrasena={conContrasena} />
       <Sesiones />
     </>
   );

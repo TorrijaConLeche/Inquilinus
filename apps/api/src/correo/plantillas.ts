@@ -52,3 +52,34 @@ export function componerCorreo(plantilla: Plantilla, idioma: Idioma, para: strin
 </body></html>`,
   };
 }
+
+const TEXTOS_CODIGO: Record<Idioma, { asunto: string; intro: string; caduca: string; pie: string }> = {
+  es: {
+    asunto: "Tu código para entrar en Inquilinus",
+    intro: "Escribe este código para terminar de entrar en tu cuenta:",
+    caduca: "Caduca en 5 minutos.",
+    pie: "Si no estás intentando entrar, alguien conoce tu contraseña: cámbiala desde Ajustes.",
+  },
+  en: {
+    asunto: "Your code to sign in to Inquilinus",
+    intro: "Enter this code to finish signing in to your account:",
+    caduca: "It expires in 5 minutes.",
+    pie: "If you aren't trying to sign in, someone knows your password: change it in Settings.",
+  },
+};
+
+/** Código del doble factor por email (spec 008, R7). */
+export function componerCodigo(idioma: Idioma, para: string, codigo: string) {
+  const t = TEXTOS_CODIGO[idioma];
+  return {
+    para,
+    asunto: t.asunto,
+    texto: `${t.intro}\n\n${codigo}\n\n${t.caduca}\n\n${t.pie}\n`,
+    html: `<!doctype html><html lang="${idioma}"><body style="font-family:system-ui,sans-serif;color:#1f2a27;line-height:1.5">
+<p>${escaparHtml(t.intro)}</p>
+<p style="font-size:28px;font-weight:600;letter-spacing:6px;font-variant-numeric:tabular-nums">${escaparHtml(codigo)}</p>
+<p>${escaparHtml(t.caduca)}</p>
+<p style="color:#5e6b67;font-size:14px">${escaparHtml(t.pie)}</p>
+</body></html>`,
+  };
+}
