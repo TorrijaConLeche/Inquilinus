@@ -8,7 +8,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 
 | Fase | Resultado | Estado |
 | --- | --- | --- |
-| 0 · Definición y dominio | Specs 001-010, documentación y lógica de negocio probada | ✅ Hecha |
+| 0 · Definición y dominio | Specs 001-011, documentación y lógica de negocio probada | ✅ Hecha |
 | 1 · Infraestructura | La app desplegada en Vercel, conectada a la base de datos | ⏳ Siguiente |
 | 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | Pendiente |
 | 3 · Inmuebles e inquilinos | Tus pisos dados de alta | Pendiente |
@@ -27,7 +27,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 
 ## Fase 0 · Definición y dominio ✅
 
-- [x] Specs 001-010 aprobadas; modelo de datos, RGPD, estilo, flujo de Git
+- [x] Specs 001-011 aprobadas; modelo de datos, RGPD, estilo, flujo de Git
 - [x] Monorepo y CI (GitHub Actions)
 - [x] Lógica de dominio de las specs 001-005, 007, 009 y 010 con sus tests
 
@@ -89,7 +89,8 @@ Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se rep
 - [ ] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`InvoiceExtractor`) que propone periodo, importe y tipo de gasto · `feat/003-extractor`
 - [ ] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [ ] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
-- [ ] **5.5 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos · `test/003-evaluacion`
+- [ ] **5.5 · Claude** — Liquidaciones: dominio, API, propuesta al confirmar un lote y vista agrupada en el panel y en los cobros del inmueble (spec 011) · `feat/011-liquidaciones`
+- [ ] **5.6 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos · `test/003-evaluacion`
 
 ## Fase 6 · Timeline y enlace del inquilino (specs 006 y 004) → `v0.1.0`
 
@@ -99,7 +100,7 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [ ] **6.2 · Claude** — Componente de timeline con zoom · `feat/006-timeline`
 - [ ] **6.3 · Claude** — Ventanas de detalle del alquiler y de la factura, y lista de movimientos · `feat/006-detalles`
 - [ ] **6.4 · Claude** — Enlaces: generar, revocar, regenerar, WhatsApp y permiso de descarga · `feat/004-enlaces`
-- [ ] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma · `feat/004-vista-publica`
+- [ ] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
 - [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
 - [ ] **6.7 · Tú** — Revisar la cláusula informativa y entregarla a tus inquilinos
 - [ ] **6.8 · Claude** — Etiqueta `v0.1.0`

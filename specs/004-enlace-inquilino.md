@@ -17,6 +17,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 - **R6** — Debajo, el timeline del inmueble con su fila resaltada (spec 006) y una lista (lo más reciente primero) con:
   - cobros de alquiler: mes, renta, recargo por vacíos, importe y pagado (con fecha) o pendiente;
   - gastos repartidos: tipo, periodo, total de la factura, su parte, días y pagado (con fecha) o pendiente;
+  - liquidaciones: nombre, su total, estado y desglose por factura (spec 011, R15);
   - fianza: importe, fecha de recepción y, si procede, fecha e importe devuelto.
 - **R7** — Cada gasto mostrará el detalle del cálculo por tramos de días, con el nombre de pila de los presentes. Por ejemplo: "Del 1 al 20: tú y Alex → 30,00 €. Del 21 al 30: tú, Alex y Jorge → 10,00 €".
 - **R7b** — El inquilino nunca verá lo que han pagado o deben los demás; solo el estado de sus propios pagos.

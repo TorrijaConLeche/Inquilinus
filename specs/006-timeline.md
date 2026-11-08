@@ -38,7 +38,7 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 - **R12** — Al pulsar una **factura** se abre una ventana con: tipo, periodo, importe total, detalle del cálculo por tramos (spec 004, R7) y reparto por inquilino.
   - Propietaria: cada inquilino con su parte y pagado (con fecha) o pendiente; botón para descargar el PDF siempre.
   - Inquilino: su parte y su estado; botón para descargar el PDF solo si la descarga está habilitada (spec 004, R2b).
-- **R13** — Debajo del timeline, una lista con los mismos movimientos (lo más reciente primero). Al pulsar un elemento se abre la misma ventana.
+- **R13** — Debajo del timeline, una lista con los mismos movimientos (lo más reciente primero), incluidas las liquidaciones (spec 011, R14). Al pulsar un elemento se abre su ventana de detalle.
 
 ## Casos de prueba
 
