@@ -3,9 +3,156 @@
     "titulo": "Inquilinus",
     "descripcion": "Gestiona tus alquileres y reparte las facturas de suministros entre tus inquilinos."
   },
+  "Comun": {
+    "marca": "Inquilinus"
+  },
   "Inicio": {
     "titulo": "Inquilinus",
     "lema": "Tus alquileres en orden, con las facturas repartidas de forma clara.",
-    "estado": "En construcción"
+    "entrar": "Entrar",
+    "crearCuenta": "Crear cuenta",
+    "irPanel": "Ir a mi panel"
+  },
+  "Registro": {
+    "titulo": "Crea tu cuenta",
+    "subtitulo": "Empieza a gestionar tus alquileres en un minuto.",
+    "email": "Email",
+    "contrasena": "Contraseña",
+    "contrasenaAyuda": "Al menos {minimo} caracteres. Una frase que recuerdes funciona muy bien.",
+    "nombre": "Nombre",
+    "opcional": "opcional",
+    "aceptoTerminos": "He leído y acepto la <privacidad>política de privacidad</privacidad> y los <terminos>términos de uso</terminos>.",
+    "crear": "Crear cuenta",
+    "creando": "Creando cuenta…",
+    "o": "o",
+    "googleAcepta": "Para continuar con Google, acepta primero la política de privacidad y los términos.",
+    "yaTienes": "¿Ya tienes cuenta?",
+    "entrar": "Entrar",
+    "revisaEmail": "Te hemos enviado un email a {email}. Pulsa el enlace para confirmar tu cuenta y empezar.",
+    "revisaSpam": "Si no lo ves en unos minutos, mira en la carpeta de spam.",
+    "irAcceso": "Ir a la pantalla de acceso"
+  },
+  "Acceso": {
+    "titulo": "Entra en tu cuenta",
+    "subtitulo": "Hola de nuevo.",
+    "email": "Email",
+    "contrasena": "Contraseña",
+    "recordar": "Recordar este dispositivo 30 días",
+    "olvidada": "¿Has olvidado la contraseña?",
+    "entrar": "Entrar",
+    "entrando": "Entrando…",
+    "o": "o",
+    "google": "Continuar con Google",
+    "sinCuenta": "¿No tienes cuenta?",
+    "crearCuenta": "Crear cuenta",
+    "codigoAyuda": "Escribe el código de 6 cifras de tu app de autenticación.",
+    "codigoRecuperacionAyuda": "Escribe uno de tus códigos de recuperación. Cada uno sirve una sola vez.",
+    "codigo": "Código",
+    "codigoRecuperacion": "Código de recuperación",
+    "verificar": "Verificar",
+    "usarApp": "Usar la app de autenticación",
+    "usarRecuperacion": "No tengo la app: usar un código de recuperación",
+    "reenviarVerificacion": "Reenviar el email",
+    "verificacionReenviada": "Te hemos enviado otro email de confirmación a {email}.",
+    "irRegistro": "Ir al registro",
+    "contrasenaCambiada": "Contraseña cambiada. Entra con la nueva."
+  },
+  "Recuperar": {
+    "titulo": "Recupera tu contraseña",
+    "subtitulo": "Te enviaremos un enlace para elegir una nueva.",
+    "email": "Email",
+    "enviar": "Enviar enlace",
+    "enviado": "Si hay una cuenta con {email}, te hemos enviado un enlace para cambiar la contraseña.",
+    "caduca": "El enlace sirve una sola vez y caduca en 1 hora. Si no lo ves, mira en spam.",
+    "volver": "Volver a la pantalla de acceso"
+  },
+  "Restablecer": {
+    "titulo": "Elige una contraseña nueva",
+    "nueva": "Contraseña nueva",
+    "ayuda": "Al menos {minimo} caracteres. Al guardarla se cerrará la sesión en todos tus dispositivos.",
+    "guardar": "Guardar contraseña",
+    "pedirOtro": "Pedir un enlace nuevo"
+  },
+  "Errores": {
+    "credenciales": "Email o contraseña incorrectos.",
+    "emailSinVerificar": "Todavía no has confirmado tu email. Revisa tu bandeja de entrada.",
+    "demasiadosIntentos": "Demasiados intentos. Espera 15 minutos y vuelve a probar.",
+    "contrasenaCorta": "La contraseña es demasiado corta.",
+    "contrasenaLarga": "La contraseña es demasiado larga.",
+    "contrasenaIncorrecta": "La contraseña no es correcta.",
+    "terminos": "No hay ninguna cuenta con ese Google. Para crearla, regístrate aceptando la política de privacidad y los términos.",
+    "enlaceNoValido": "Este enlace ya no sirve: se ha usado o ha caducado.",
+    "codigoIncorrecto": "El código no es correcto.",
+    "sesionCaducada": "Ha pasado demasiado tiempo. Vuelve a entrar con tu email y contraseña.",
+    "cuentaNoVinculada": "Ya hay una cuenta con ese email sin confirmar. Confírmala desde el email que te enviamos y vuelve a entrar con Google.",
+    "generico": "Algo ha fallado. Vuelve a intentarlo en un momento."
+  },
+  "Privado": {
+    "marca": "Inquilinus",
+    "navegacion": "Navegación principal",
+    "panel": "Panel",
+    "ajustes": "Ajustes",
+    "salir": "Cerrar sesión"
+  },
+  "Panel": {
+    "titulo": "Panel",
+    "saludo": "Hola",
+    "saludoNombre": "Hola, {nombre}",
+    "proximamente": "Aquí verás tus inmuebles, cobros y facturas. Estamos preparándolo.",
+    "cuenta": "Has entrado como {email}."
+  },
+  "Ajustes": {
+    "titulo": "Ajustes",
+    "cuenta": "Tu cuenta",
+    "idioma": "Idioma",
+    "idiomas": {
+      "es": "Español",
+      "en": "English"
+    },
+    "tema": "Apariencia",
+    "temas": {
+      "sistema": "Como el dispositivo",
+      "claro": "Claro",
+      "oscuro": "Oscuro"
+    },
+    "dobleFactor": {
+      "titulo": "Verificación en dos pasos",
+      "activo": "Activa",
+      "explicacion": "Además de la contraseña, al entrar te pediremos un código de una app de autenticación (Google Authenticator, Microsoft Authenticator…).",
+      "explicacionActivo": "Al entrar con tu contraseña te pedimos también el código de tu app de autenticación.",
+      "soloGoogle": "Entras con Google: la verificación en dos pasos la gestiona tu cuenta de Google.",
+      "activar": "Activar",
+      "desactivar": "Desactivar",
+      "pedirContrasena": "Por seguridad, confirma tu contraseña.",
+      "contrasena": "Contraseña",
+      "cancelar": "Cancelar",
+      "continuar": "Continuar",
+      "escanear": "Escanea este código con tu app de autenticación y escribe el código de 6 cifras que te muestre.",
+      "qrAlt": "Código QR para añadir Inquilinus a tu app de autenticación",
+      "sinCamara": "¿No puedes escanearlo? Escribe esta clave en la app:",
+      "codigo": "Código de la app",
+      "confirmar": "Confirmar",
+      "activado": "Verificación en dos pasos activada.",
+      "guardaCodigos": "Guarda estos códigos de recuperación en un lugar seguro. Si pierdes el móvil, cada uno te deja entrar una vez. No los volveremos a mostrar.",
+      "descargar": "Descargar códigos",
+      "hecho": "Ya los he guardado",
+      "archivoCodigos": "Códigos de recuperación de Inquilinus. Cada uno sirve una sola vez."
+    },
+    "sesiones": {
+      "titulo": "Sesiones",
+      "explicacion": "Si has entrado en un dispositivo que ya no usas o que no es tuyo, cierra la sesión en todos. Tendrás que volver a entrar aquí también.",
+      "cerrarTodas": "Cerrar sesión en todos los dispositivos",
+      "confirmar": "Sí, cerrar todas",
+      "cancelar": "Cancelar"
+    }
+  },
+  "Legal": {
+    "borrador": "Texto en preparación (versión {version}). Estará disponible antes de abrir la app a más personas.",
+    "privacidad": {
+      "titulo": "Política de privacidad"
+    },
+    "terminos": {
+      "titulo": "Términos de uso"
+    }
   }
 }

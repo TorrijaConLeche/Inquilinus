@@ -1,0 +1,44 @@
+import { describe, expect, it } from "vitest";
+import en from "../messages/en.json";
+import es from "../messages/es.json";
+import { claveDeError } from "../src/lib/errores";
+
+describe("claveDeError", () => {
+  it("traduce los códigos de la API a textos propios", () => {
+    expect(claveDeError("INVALID_EMAIL_OR_PASSWORD")).toBe("credenciales");
+    expect(claveDeError("DEMASIADOS_INTENTOS")).toBe("demasiadosIntentos");
+    expect(claveDeError("TERMINOS_NO_ACEPTADOS")).toBe("terminos");
+  });
+
+  it("acepta los códigos en minúsculas que llegan en la URL tras Google", () => {
+    expect(claveDeError("account_not_linked")).toBe("cuentaNoVinculada");
+  });
+
+  it("cualquier otro código o ninguno da el mensaje genérico", () => {
+    expect(claveDeError("ALGO_RARO")).toBe("generico");
+    expect(claveDeError(undefined)).toBe("generico");
+    expect(claveDeError("")).toBe("generico");
+  });
+
+  it("todas las claves posibles tienen texto en es y en", () => {
+    const codigos = [
+      "INVALID_EMAIL_OR_PASSWORD",
+      "EMAIL_NOT_VERIFIED",
+      "DEMASIADOS_INTENTOS",
+      "PASSWORD_TOO_SHORT",
+      "PASSWORD_TOO_LONG",
+      "INVALID_PASSWORD",
+      "TERMINOS_NO_ACEPTADOS",
+      "INVALID_TOKEN",
+      "INVALID_CODE",
+      "INVALID_TWO_FACTOR_COOKIE",
+      "ACCOUNT_NOT_LINKED",
+      "OTRO",
+    ];
+    for (const codigo of codigos) {
+      const clave = claveDeError(codigo);
+      expect(es.Errores[clave]).toBeTruthy();
+      expect(en.Errores[clave]).toBeTruthy();
+    }
+  });
+});

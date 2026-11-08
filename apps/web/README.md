@@ -24,3 +24,20 @@ pnpm --filter @inquilinus/web test
 - La web sirve la API de `apps/api` en `/api` (`src/app/api/[[...ruta]]/route.ts`): un solo proyecto en Vercel, un solo dominio y sin CORS. `apps/api` sigue siendo independiente y se puede desplegar aparte más adelante.
 - Vercel: proyecto con *Root Directory* `apps/web`, funciones en Frankfurt (`vercel.json`, `fra1`) y la variable `DATABASE_URL` (Neon con pooler) en Production y Preview.
 - Vercel se salta los despliegues de los commits que no tocan `apps/web` ni los paquetes de los que depende (por ejemplo, cambios solo en `docs/` o `specs/`).
+
+## Pantallas de la cuenta (spec 008)
+
+| Ruta | Qué hay |
+| --- | --- |
+| `/registro` | Email, contraseña (12+), nombre opcional, aceptación de términos y Google (solo con los términos aceptados) |
+| `/acceso` | Email y contraseña, «recordar este dispositivo», paso del doble factor (app o código de recuperación), reenviar la verificación y Google |
+| `/recuperar`, `/restablecer` | Enlace por email y contraseña nueva |
+| `/panel` | Provisional hasta la fase 4 |
+| `/ajustes` | Idioma, apariencia (claro, oscuro, como el dispositivo), doble factor con QR y códigos, cerrar sesión en todos los dispositivos |
+| `/privacidad`, `/terminos` | Provisionales hasta la tarea 2.8 |
+
+- `src/servidor/api.ts`: la instancia de la API compartida por `/api` y las páginas (sesión del usuario en el servidor).
+- `src/lib/cliente-auth.ts`: cliente de Better Auth en el navegador. `src/lib/errores.ts` traduce los códigos de error de la API a textos propios.
+- `(privado)/layout.tsx` exige sesión; sin ella, a `/acceso`.
+- Idioma y apariencia se guardan en las cookies técnicas `idioma` y `tema`.
+- El botón de Google no aparece en las previsualizaciones de Vercel.

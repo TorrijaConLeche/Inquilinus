@@ -25,12 +25,14 @@
   color: var(--texto-suave);
 }
 
-.estado {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: var(--radio-control);
-  background: var(--primario-suave);
-  color: var(--primario-texto);
-  font-size: 0.875rem;
-  font-weight: 600;
+.acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.acciones a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
