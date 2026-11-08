@@ -44,7 +44,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 ## Fuera de alcance
 
 - Que el inquilino marque pagos o suba justificantes.
-- Ver sus documentos (contrato, DNI, nóminas).
+- Ver sus documentos (contrato, justificante de la fianza).
 - Notificaciones o avisos de nuevos cargos.
 
 ## Tareas

@@ -10,7 +10,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 | --- | --- | --- |
 | Nombre del inquilino (único dato de su ficha) | Gestionar el contrato | Ejecución del contrato |
 | Fechas de estancia, cobros, repartos | Calcular y cobrar alquiler y suministros | Ejecución del contrato |
-| Nóminas, contratos firmados | Solvencia y prueba del contrato | Ejecución del contrato / interés legítimo |
+| Contrato firmado y justificante de la fianza | Prueba del contrato y de la fianza | Ejecución del contrato |
 | Facturas de suministros | Repartir el gasto | Ejecución del contrato |
 
 ## Medidas técnicas (v1)
@@ -19,9 +19,9 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 - **Cifrado:** TLS en todas las conexiones; cifrado en reposo en base de datos, copias y ficheros.
 - **Ficheros privados:** bucket sin acceso público; descarga solo con URL firmada de pocos minutos, generada tras comprobar permisos.
 - **Aislamiento:** cada consulta se filtra por la usuaria propietaria del inmueble; tests que lo verifiquen.
-- **Minimización en la IA:** solo se envía la imagen de la factura. DNI, nóminas y contratos nunca pasan por la IA. Bedrock no usa los datos para entrenar.
+- **Minimización en la IA:** solo se envía la imagen de la factura. Los contratos y justificantes nunca pasan por la IA. Bedrock no usa los datos para entrenar.
 - **Enlace del inquilino:** token aleatorio largo, guardado como hash; revocable; caduca 3 meses después de la salida; páginas con `noindex` y sin caché; solo muestra datos de esa estancia; de los demás, solo el nombre de pila en el detalle del cálculo, nunca lo que pagan o deben, ni documentos ni datos de contacto (spec 004).
-- **Minimización en la ficha:** del inquilino solo se guarda el nombre; ni DNI, ni email, ni teléfono (spec 007).
+- **Minimización en la ficha:** del inquilino solo se guarda el nombre; ni DNI, ni email, ni teléfono (spec 007). Como documentos, solo el contrato y el justificante de la fianza; no se guardan DNI ni nóminas.
 - **Logs sin datos personales:** ni DNI, ni nombres, ni contenido de facturas en los logs ni en los errores enviados a monitorización.
 - **Acceso:** autenticación con Better Auth; doble factor disponible; secretos fuera del código.
 - **Derechos del inquilino:** exportar sus datos (acceso y portabilidad) y borrarlos o anonimizarlos (ver modelo de datos).
@@ -39,7 +39,7 @@ Los tres son proveedores estadounidenses con datos alojados en la UE; las garant
 ## Conservación ⚖️
 
 - Durante la estancia: todo.
-- Al terminar: DNI y nóminas se borran tras un plazo corto configurable (propuesta: al devolver la fianza).
+- Al terminar: el justificante de la fianza se conserva hasta su devolución y el plazo legal posterior ⚖️.
 - Contratos, cobros, repartos y facturas: se conservan mientras haya obligaciones legales o fiscales; plazo exacto a validar. Después, borrado o anonimización.
 - La app avisa a la propietaria cuando un dato alcanza su plazo.
 

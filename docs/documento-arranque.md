@@ -26,7 +26,7 @@ El núcleo es estándar en el mercado; el reparto inteligente de suministros es 
 - Modalidad de alquiler por inmueble (entero o por habitaciones), elegida al crearlo.
 - Tipos de gasto configurables por inmueble (texto libre: luz, agua, comunidad…): de cero a N. Sin gastos = incluidos en el alquiler.
 - Ficha de cada inquilino (pertenece al inmueble); ocupaciones de habitación con fecha de entrada y de salida.
-- Documentos por inquilino y año: contratos firmados, DNI, nóminas.
+- Documentos por inquilino: solo el contrato firmado y el justificante de la fianza. No se guardan DNI ni nóminas.
 - Fianza por inquilino: importe, si se ha devuelto (y cuánto) y documento opcional.
 - Cobros de alquiler generados automáticamente cada mes (o a mano), con estado pagado o pendiente.
 - Seguimiento de qué inquilinos han pagado su parte de cada factura y cuándo, y un timeline por inmueble.
@@ -91,7 +91,7 @@ Web primero, API-first, con el dominio en un paquete compartido para que la app 
 
 **Proveedores:** no hace falta que sean europeos; se exige que los datos estén en la UE y que cada proveedor tenga contrato de encargo (DPA). Criterio: calidad, coste y sencillez. Coste estimado en la fase 2: prácticamente 0 €/mes más céntimos de IA y almacenamiento. Postgres, S3 y Next.js son estándar, así que cambiar de proveedor no requiere tocar el código.
 
-**RGPD desde el inicio:** medidas técnicas y organizativas en `docs/rgpd.md`. Datos en la UE, ficheros privados y cifrados, mínimo acceso, plazos de conservación y borrado de datos de inquilinos; los documentos de inquilinos (DNI, nóminas) nunca pasan por la IA. La cláusula informativa para inquilinos y el registro de actividades van en la fase 2; la documentación para otros propietarios, en la fase 3. Todo lo legal se valida con un asesor.
+**RGPD desde el inicio:** medidas técnicas y organizativas en `docs/rgpd.md`. Datos en la UE, ficheros privados y cifrados, mínimo acceso, plazos de conservación y borrado de datos de inquilinos; del inquilino solo se guarda el nombre y, como documentos, el contrato y el justificante de la fianza, que nunca pasan por la IA. La cláusula informativa para inquilinos y el registro de actividades van en la fase 2; la documentación para otros propietarios, en la fase 3. Todo lo legal se valida con un asesor.
 
 ## Competencia y posicionamiento
 
@@ -126,7 +126,7 @@ Técnicamente es muy viable y barata; como negocio es moderada y depende de dest
 **Riesgos principales:**
 
 - Diferenciarse frente a herramientas gratuitas o ya establecidas.
-- Protección de datos: se manejan documentos personales de inquilinos (DNI, nóminas).
+- Protección de datos: se manejan contratos de inquilinos, que contienen datos personales. Se minimiza todo lo demás (no se guardan DNI ni nóminas).
 - Errores de lectura de la IA: la usuaria revisa siempre antes de generar el desglose.
 
 ## Estrategia y fases

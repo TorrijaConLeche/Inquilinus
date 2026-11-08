@@ -21,7 +21,7 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 
 **Inquilinos y estancias**
 
-- **R6** — De un inquilino solo se guarda su **nombre**, obligatorio. No se guardan DNI, email, teléfono ni notas.
+- **R6** — De un inquilino solo se guarda su **nombre**, obligatorio. No se guardan DNI, email, teléfono ni notas. Como documentos solo se pueden subir, opcionalmente, el contrato firmado y el justificante de la fianza (en PDF).
 - **R7** — Una ocupación tiene habitación, fecha de entrada (obligatoria) y fecha de salida (opcional). No puede solaparse con otra de la misma habitación (spec 001, R8).
 - **R8** — Cambiar de habitación es cerrar la ocupación actual y abrir otra nueva para el mismo inquilino.
 - **R9** — Cuando un inquilino se va, se le pone fecha de salida. Su enlace caduca 3 meses después (spec 004).

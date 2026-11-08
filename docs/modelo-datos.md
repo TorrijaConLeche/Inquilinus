@@ -20,7 +20,7 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **reparto_linea** | reparto, inquilino (vacío = sin ocupar), días, importe, pagado_en | Quién ha pagado su parte y cuándo |
 | **cobro_alquiler** | inquilino, mes (`YYYY-MM`), renta, recargo_vacios, importe, fecha_cobro, origen (`auto` \| `manual`), editado, desactualizado, quitado_en, pagado_en | Foto fija del cálculo de la spec 002. Único por inquilino y mes, incluidos los quitados, para que el proceso no los recree (spec 005) |
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
-| **documento** | inquilino, tipo (`contrato` \| `dni` \| `nomina` \| `otro`), año, fichero, notas | Nunca pasa por la IA |
+| **documento** | inquilino, tipo (`contrato` \| `justificante_fianza`), fichero | Solo estos dos tipos; no se guardan DNI ni nóminas. Nunca pasa por la IA |
 | **fichero** | usuaria, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |
 | **enlace_inquilino** | inquilino, token_hash, permite_descarga (por defecto sí), caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
 

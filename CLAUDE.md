@@ -35,7 +35,7 @@ La app móvil (Expo) está fuera del MVP; todo lo reutilizable va en `packages/`
 ## RGPD (obligatorio)
 
 - Ningún dato personal (nombres, DNI, contenido de facturas) en logs ni en errores enviados a monitorización.
-- DNI, nóminas y contratos **nunca** se envían a la IA. A la IA solo llega la factura.
+- No se guardan DNI ni nóminas. Los contratos y justificantes de fianza **nunca** se envían a la IA. A la IA solo llega la factura.
 - Ficheros en bucket privado, servidos solo con URL firmada de corta duración tras comprobar permisos.
 - Toda consulta se filtra por la usuaria propietaria; cada endpoint nuevo lleva un test de aislamiento.
 - Datos alojados en la UE (Neon UE, S3 UE, Bedrock perfil EU, funciones de Vercel en Frankfurt).
