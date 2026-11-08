@@ -9,8 +9,8 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 | Fase | Resultado | Estado |
 | --- | --- | --- |
 | 0 · Definición y dominio | Specs 001-011, documentación y lógica de negocio probada | ✅ Hecha |
-| 1 · Infraestructura | La app desplegada en Vercel, conectada a la base de datos | ⏳ Siguiente |
-| 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | Pendiente |
+| 1 · Infraestructura | La app desplegada en Vercel, conectada a la base de datos | ✅ Hecha |
+| 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | ⏳ Siguiente |
 | 3 · Inmuebles e inquilinos | Tus pisos dados de alta | Pendiente |
 | 4 · Cobros y panel | Un mes de cobros gestionado con la app | Pendiente |
 | 5 · Facturas con IA y reparto | Una factura real leída y repartida | Pendiente |
@@ -31,7 +31,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 - [x] Monorepo y CI (GitHub Actions)
 - [x] Lógica de dominio de las specs 001-005, 007, 009 y 010 con sus tests
 
-## Fase 1 · Infraestructura
+## Fase 1 · Infraestructura ✅
 
 Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app vacía con su estilo y un chequeo de salud que consulta la base de datos.
 
