@@ -5,6 +5,7 @@ import {
 } from "@inquilinus/contracts";
 import { Hono, type Context } from "hono";
 import { matchedRoutes } from "hono/route";
+import type { Auth } from "./auth.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
 
 export interface Dependencias {
@@ -13,6 +14,8 @@ export interface Dependencias {
    * DATABASE_URL), el chequeo de salud no consulta la base.
    */
   comprobarBaseDatos?: () => Promise<void>;
+  /** Cuentas y sesiones (spec 008), en `<rutaBase>/auth/*`. Sin ella, no hay cuentas. */
+  auth?: Auth;
   /** Por defecto, JSON por consola (los logs de Vercel). */
   registro?: Registro;
 }
@@ -74,6 +77,12 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
   });
 
   app.get("/openapi.json", (c) => c.json(openapi));
+
+  const { auth } = dependencias;
+  if (auth) {
+    // En el log queda el patrón `/auth/*`, nunca la URL con tokens.
+    app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
+  }
 
   app.notFound((c) => c.json<RespuestaError>({ error: "no-encontrado" }, 404));
 

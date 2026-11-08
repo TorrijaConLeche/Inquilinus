@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { elegirIdioma } from "../src/i18n/idiomas";
+import { elegirIdioma } from "../src/idiomas.ts";
 
 describe("elegirIdioma", () => {
   it("usa el idioma elegido en los ajustes por encima del navegador", () => {

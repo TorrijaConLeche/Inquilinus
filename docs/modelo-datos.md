@@ -8,7 +8,10 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 
 | Entidad | Campos principales | Notas |
 | --- | --- | --- |
-| **usuario** | email, nombre | Gestionado por Better Auth |
+| **usuario** | email, nombre (opcional, vacío si no se indica), email_verificado, terminos_version, terminos_aceptados_en, imagen | Gestionado por Better Auth (spec 008). `imagen` la exige Better Auth y siempre queda vacía (R15) |
+| **sesion** | usuario, token, expira_en, ip, agente_usuario | Sesiones abiertas (Better Auth). La IP y el navegador sirven para la seguridad de la cuenta y nunca van a los logs |
+| **metodo_acceso** | usuario, proveedor (`credential` | `google`), id_en_proveedor, contrasena_hash, tokens del proveedor | Formas de entrar de cada usuario. De la contraseña solo se guarda el hash |
+| **verificacion** | identificador, valor, expira_en | Tokens de verificación de email y de recuperación de contraseña, de un solo uso |
 | **inmueble** | usuario, nombre, ultimo_numero_liquidacion, dirección (opcional), modalidad (`entero` \| `habitaciones`), meses_parciales (`prorrateo` \| `mes_completo`), dia_cobro (1–28, por defecto 1), archivado, bloqueado | La modalidad no se puede cambiar en la v1. Por defecto, mes completo |
 | **habitacion** | inmueble, nombre, archivada | Un piso entero = una sola habitación. Se archiva, no se borra, si tiene historial |
 | **precio_habitacion** | habitación, desde_mes (`YYYY-MM`), precio_mensual | Historial de precios; el vigente en un mes es el último con `desde_mes` igual o anterior (spec 007) |

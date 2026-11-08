@@ -77,14 +77,17 @@ describe("migraciones", () => {
         "inmueble",
         "inquilino",
         "liquidacion",
+        "metodo_acceso",
         "ocupacion",
         "precio_habitacion",
         "reparto",
         "reparto_linea",
+        "sesion",
         "suscripcion",
         "tipo_gasto",
         "uso_ia",
         "usuario",
+        "verificacion",
       ].sort(),
     );
   });
