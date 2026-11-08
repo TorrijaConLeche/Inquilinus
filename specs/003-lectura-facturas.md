@@ -21,6 +21,7 @@ La usuaria sube el PDF de una factura de un inmueble. La IA propone el periodo y
 - **R8** — Si la IA falla o tarda más de 60 s, la usuaria podrá rellenar los campos a mano. El PDF se conserva igualmente.
 - **R9** — Validaciones al confirmar: fin igual o posterior a inicio; importe entero en céntimos mayor que cero.
 - **R10** — A la IA solo se envía el PDF, sin datos del inmueble ni de los inquilinos. El PDF se guarda en el bucket privado (ver `docs/rgpd.md`).
+- **R11** — Toda factura confirmada se reparte entre los inquilinos según la spec 001. No hay gastos que solo se registren.
 
 Estados de la factura: `subida` → `propuesta` (o `error_extraccion`) → `confirmada` → `repartida`.
 
@@ -51,11 +52,7 @@ Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
 - Compañía, consumo y número de factura.
 - El reparto entre inquilinos (spec 001).
 - Abonos o facturas con importe negativo.
-
-## Preguntas abiertas
-
-- **P1** — ¿Todos los tipos de gasto se reparten entre los inquilinos, o algunos (comunidad, IBI, seguro…) los asume la propietaria y solo se registran?
-- **P2** — "Alquiler" como tipo de gasto: ¿a qué te refieres? La renta que pagan los inquilinos ya la calcula la spec 002.
+- El alquiler no es un tipo de gasto: lo calcula la spec 002 y se genera cada mes (spec 005).
 
 ## Tareas
 
