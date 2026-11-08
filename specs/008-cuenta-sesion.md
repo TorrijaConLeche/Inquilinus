@@ -32,7 +32,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 **Datos de la cuenta (RGPD)**
 
 - **R13** — Una persona por cuenta. Todo (inmuebles, inquilinos, facturas) pertenece a una cuenta y ninguna consulta cruza cuentas.
-- **R14** — La propietaria puede **exportar** todos sus datos (JSON y ficheros) y **borrar su cuenta**. Borrarla elimina todo, incluidos los ficheros, con confirmación escribiendo su email.
+- **R14** — La propietaria puede **exportar** todos sus datos (JSON y ficheros) y **borrar su cuenta**. La exportación incluye todo salvo los secretos (hash de la contraseña, tokens de sesión y de enlaces, clave y códigos del doble factor), que no le sirven y serían un riesgo si el fichero se pierde; los ficheros se añaden cuando existan (fase 3). Borrarla elimina todo, incluidos los ficheros, con confirmación escribiendo su email, y cierra todas sus sesiones.
 - **R15** — De la cuenta se guarda solo el email, el nombre (opcional) y el método de acceso. Con Google se piden solo los permisos de email y perfil básico.
 
 ## Casos de prueba
@@ -55,6 +55,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 | C10c | App activa, código por email (R7) | Con la app activa, pedir un código por email da error y no se envía nada |
 | C11 | Límite de IA (R12) | La factura 101 del mes no llama a la IA; se rellena a mano |
 | C12 | Borrar cuenta (R14) | No queda ningún dato ni fichero de la cuenta |
+| C12b | Exportar datos (R14) | El JSON trae los datos de la cuenta y sus inmuebles, nada de otra cuenta y ningún secreto |
 | C13 | Aislamiento (R13) | La usuaria A pide un inmueble de B: 404 |
 
 ## Fuera de alcance
