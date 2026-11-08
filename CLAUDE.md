@@ -1,6 +1,6 @@
-# Rentio
+# Inquilinus
 
-Plataforma web (y más adelante móvil) para que propietarias gestionen sus alquileres. El diferencial: leer facturas de suministros con IA y repartirlas por días entre los inquilinos, con un desglose transparente.
+Inquilinus (nombre provisional; el repositorio se llama Rentio). Plataforma web (y más adelante móvil) para que propietarias gestionen sus alquileres. El diferencial: leer facturas de suministros con IA y repartirlas por días entre los inquilinos, con un desglose transparente.
 
 Contexto completo en `docs/documento-arranque.md`. Modelo de datos en `docs/modelo-datos.md`. RGPD en `docs/rgpd.md`. Flujo de Git en `docs/flujo-git.md`. Estilo visual e idiomas en `docs/estilo.md`.
 
