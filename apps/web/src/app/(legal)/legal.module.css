@@ -1,0 +1,114 @@
+.pagina {
+  min-height: 100dvh;
+  padding: 32px 16px 64px;
+}
+
+.documento {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-ventana);
+}
+
+.marca {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primario);
+  text-decoration: none;
+}
+
+.titulo {
+  margin: 4px 0 4px;
+  font-size: 1.75rem;
+  line-height: 1.25;
+}
+
+.version {
+  margin: 0 0 24px;
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+}
+
+/* Texto convertido desde Markdown. */
+.contenido {
+  line-height: 1.6;
+}
+
+.contenido h2 {
+  margin: 32px 0 8px;
+  font-size: 1.25rem;
+}
+
+.contenido h3 {
+  margin: 24px 0 8px;
+  font-size: 1.0625rem;
+}
+
+.contenido p,
+.contenido ul {
+  margin: 0 0 12px;
+}
+
+.contenido ul {
+  padding-left: 1.25rem;
+}
+
+.contenido li {
+  margin-bottom: 6px;
+}
+
+.contenido code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 1px 4px;
+  background: var(--fondo);
+  border-radius: 4px;
+}
+
+/* Las tablas se desplazan en horizontal en el móvil, sin desbordar la página. */
+.contenido table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.contenido th,
+.contenido td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--borde);
+}
+
+.contenido th {
+  font-weight: 600;
+}
+
+.contenido > p:first-child {
+  padding: 12px 14px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.pie {
+  margin: 32px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--borde);
+}
+
+.enlace {
+  color: var(--primario);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.enlace:hover {
+  text-decoration: underline;
+}

@@ -176,12 +176,13 @@
     }
   },
   "Legal": {
-    "borrador": "Text in preparation (version {version}). It will be available before the app opens to more people.",
     "privacidad": {
       "titulo": "Privacy policy"
     },
     "terminos": {
       "titulo": "Terms of use"
-    }
+    },
+    "marca": "Inquilinus",
+    "version": "Version {version}"
   }
 }

@@ -34,7 +34,7 @@ pnpm --filter @inquilinus/web test
 | `/recuperar`, `/restablecer` | Enlace por email y contraseña nueva |
 | `/panel` | Provisional hasta la fase 4 |
 | `/ajustes` | Idioma, apariencia (claro, oscuro, como el dispositivo), doble factor con app (QR y códigos de recuperación) o con código por email, cerrar sesión en todos los dispositivos |
-| `/privacidad`, `/terminos` | Provisionales hasta la tarea 2.8 |
+| `/privacidad`, `/terminos` | Borradores de la tarea 2.8 (en `src/contenido/legal/`, uno por idioma, en Markdown), pendientes de revisión legal |
 
 - `src/servidor/api.ts`: la instancia de la API compartida por `/api` y las páginas (sesión del usuario en el servidor).
 - `src/lib/cliente-auth.ts`: cliente de Better Auth en el navegador. `src/lib/errores.ts` traduce los códigos de error de la API a textos propios.

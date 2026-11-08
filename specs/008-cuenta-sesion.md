@@ -77,5 +77,5 @@ Verificación y recuperación con **Amazon SES** en Estocolmo (`eu-north-1`; mis
 - [x] Límite de intentos (el límite mensual de IA, R12, se hace con la spec 003 en la fase 5)
 - [x] Pantallas de registro, acceso, recuperación y ajustes de cuenta
 - [x] Exportar y borrar cuenta (los ficheros se añaden con S3 en la fase 3)
-- [ ] Textos legales y aceptación versionada (con asesoría)
+- [ ] Textos legales y aceptación versionada (con asesoría): borrador y aceptación versionada hechos; falta la revisión del asesor (tarea 2.9)
 - [ ] Tests C1–C13 (hechos: C1–C10c y C12–C12b; faltan C11 con la fase 5 y C13 con los inmuebles en la fase 3)
