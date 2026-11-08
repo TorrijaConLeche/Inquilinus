@@ -42,7 +42,7 @@ Depende de: nada. **Hecho cuando** la previsualización de Vercel muestra la app
 - [x] **1.5 · Claude** — Esqueleto de `apps/web` (Next.js, tokens Salvia, Figtree, modo oscuro, traducciones es/en) · `chore/web-esqueleto`
 - [x] **1.6 · Claude** — `packages/contracts` con Zod y generación de OpenAPI · `chore/contracts`
 - [x] **1.7 · Claude** — Esquema de base de datos con Drizzle según `docs/modelo-datos.md` y primera migración · `feat/bd-esquema`
-- [ ] **1.8 · Claude + Tú** — Proyecto en Vercel conectado a GitHub, funciones en Frankfurt, variables de entorno y previsualizaciones por PR · `chore/vercel`
+- [x] **1.8 · Claude + Tú** — Proyecto en Vercel conectado a GitHub, funciones en Frankfurt, variables de entorno y previsualizaciones por PR · `chore/vercel`
 - [ ] **1.9 · Claude** — Registro de errores sin datos personales (RGPD) · `chore/logs`
 
 ## Fase 2 · Cuenta e inicio de sesión (spec 008)
@@ -64,6 +64,7 @@ Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la p
 
 Depende de: fase 2. **Hecho cuando** tienes tus pisos reales dados de alta con sus inquilinos.
 
+- [ ] **3.0 · Tú + Claude** — Rama de Neon solo para las previsualizaciones de Vercel, para que las pruebas no toquen los datos reales
 - [ ] **3.1 · Tú** — Crear el bucket privado de S3 (Frankfurt) y sus credenciales, con la guía de Claude
 - [ ] **3.2 · Claude** — API de inmuebles, habitaciones e historial de precios, con tests de aislamiento · `feat/007-api-inmuebles`
 - [ ] **3.3 · Claude** — API de inquilinos, ocupaciones y tipos de gasto · `feat/007-api-inquilinos`
