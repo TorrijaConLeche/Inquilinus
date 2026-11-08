@@ -16,7 +16,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 - **R4** — Al registrarse hay que aceptar la política de privacidad y los términos. Se guarda la fecha y la versión aceptada ⚖️. Con Google, la cuenta solo se crea desde la pantalla de registro con los términos aceptados; si se entra con Google desde la pantalla de acceso sin tener cuenta, no se crea y se lleva al registro.
 - **R5** — Contraseña de al menos 12 caracteres, sin reglas de composición ni lista de contraseñas comunes (el mínimo de 12, el límite de intentos de R11 y el doble factor opcional bastan para el MVP). Se guarda solo su hash (algoritmo de Better Auth).
 - **R6** — Recuperación de contraseña con un enlace por email, de un solo uso y válido 1 hora. El mensaje es el mismo exista o no el email.
-- **R7** — Doble factor **opcional** con una app de autenticación (TOTP), con códigos de recuperación.
+- **R7** — Doble factor **opcional**, a elegir: con una **app de autenticación** (TOTP), con códigos de recuperación, o con un **código por email** (6 cifras, válido 5 minutos), pensado para quien no se apaña con la app. Se usa uno de los dos: con la app activa no se puede entrar con un código por email, para no rebajar su protección a la del correo. Para cambiar de método se desactiva y se activa el otro.
 
 **Sesión**
 
@@ -51,6 +51,8 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 | C8 | Enlace de recuperación reutilizado (R6) | El segundo uso da error |
 | C9 | Recordar dispositivo (R8) | Sesión válida el día 30; el día 31 pide acceso |
 | C10 | Doble factor (R7) | Con 2FA activo, pide el código tras la contraseña |
+| C10b | Doble factor por email (R7) | Con el código por email activo, tras la contraseña llega un código al email y con él se entra |
+| C10c | App activa, código por email (R7) | Con la app activa, pedir un código por email da error y no se envía nada |
 | C11 | Límite de IA (R12) | La factura 101 del mes no llama a la IA; se rellena a mano |
 | C12 | Borrar cuenta (R14) | No queda ningún dato ni fichero de la cuenta |
 | C13 | Aislamiento (R13) | La usuaria A pide un inmueble de B: 404 |
