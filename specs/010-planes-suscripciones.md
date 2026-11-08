@@ -72,7 +72,7 @@ Dos planes: uno gratuito para probar la app con un inmueble real y uno de pago, 
 
 ## Tareas
 
-- [ ] Límites del plan en `packages/domain`
+- [x] Límites del plan en `packages/domain`
 - [ ] Contador mensual de facturas por IA
 - [ ] Checkout y portal de cliente de Paddle; webhooks con verificación de firma
 - [ ] Bajada de plan con elección de inmueble activo y modo solo lectura

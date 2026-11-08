@@ -63,3 +63,16 @@ export {
 } from './cobros.ts';
 /** Spec 001 R8 y spec 007 R7: valida las ocupaciones y devuelve sus tramos de presencia. */
 export { calcularTramos as validarOcupaciones, type Tramo } from './presencia.ts';
+export { fechaEnMadrid } from './fechas.ts';
+export {
+  LIMITES,
+  PRECIOS,
+  IVA_ESPANA,
+  altaDeInmueble,
+  puedeLeerConIa,
+  mesDeUsoIa,
+  inmueblesTrasBajada,
+  desgloseIva,
+  type Plan,
+  type Periodicidad,
+} from './planes.ts';
