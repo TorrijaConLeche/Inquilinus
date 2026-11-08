@@ -8,7 +8,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 
 | Dato | Para qué | Base legal (orientativa ⚖️) |
 | --- | --- | --- |
-| Nombre, contacto, DNI del inquilino | Gestionar el contrato | Ejecución del contrato |
+| Nombre del inquilino (único dato de su ficha) | Gestionar el contrato | Ejecución del contrato |
 | Fechas de estancia, cobros, repartos | Calcular y cobrar alquiler y suministros | Ejecución del contrato |
 | Nóminas, contratos firmados | Solvencia y prueba del contrato | Ejecución del contrato / interés legítimo |
 | Facturas de suministros | Repartir el gasto | Ejecución del contrato |
@@ -21,6 +21,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 - **Aislamiento:** cada consulta se filtra por la usuaria propietaria del inmueble; tests que lo verifiquen.
 - **Minimización en la IA:** solo se envía la imagen de la factura. DNI, nóminas y contratos nunca pasan por la IA. Bedrock no usa los datos para entrenar.
 - **Enlace del inquilino:** token aleatorio largo, guardado como hash; revocable; caduca 3 meses después de la salida; páginas con `noindex` y sin caché; solo muestra datos de esa estancia; de los demás, solo el nombre de pila en el detalle del cálculo, nunca lo que pagan o deben, ni documentos ni datos de contacto (spec 004).
+- **Minimización en la ficha:** del inquilino solo se guarda el nombre; ni DNI, ni email, ni teléfono (spec 007).
 - **Logs sin datos personales:** ni DNI, ni nombres, ni contenido de facturas en los logs ni en los errores enviados a monitorización.
 - **Acceso:** autenticación con Better Auth; doble factor disponible; secretos fuera del código.
 - **Derechos del inquilino:** exportar sus datos (acceso y portabilidad) y borrarlos o anonimizarlos (ver modelo de datos).
