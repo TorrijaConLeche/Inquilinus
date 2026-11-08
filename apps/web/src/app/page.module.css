@@ -1,0 +1,36 @@
+.principal {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.titulo {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: var(--primario);
+}
+
+.lema {
+  margin: 0 0 24px;
+  color: var(--texto-suave);
+}
+
+.estado {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radio-control);
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
