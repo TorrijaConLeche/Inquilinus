@@ -19,7 +19,7 @@ describe('Spec 009 · Panel y cobros', () => {
 
   it('C2 · agrupación por inmueble e inquilino (R2)', () => {
     const r = resumenPanel(conceptos, HOY);
-    expect(r.pendientes.map((i) => i.inmuebleId)).toEqual(['centro']);
+    expect(r.pendientes.map((i) => [i.inmuebleId, i.total])).toEqual([['centro', 103000]]);
     expect(r.pendientes[0]!.inquilinos.map((q) => [q.inquilinoId, q.total])).toEqual([
       ['A', 100000],
       ['B', 3000],

@@ -71,7 +71,7 @@ export function resumenPanel(conceptos: readonly Concepto[], hoy: Fecha): Resume
         .map((c) => ({ ...c, atrasado: c.mes < mesActual })),
     }));
     filas.sort((a, b) => b.total - a.total);
-    return { inmuebleId, total: sumar(filas), inquilinos: filas };
+    return { inmuebleId, total: filas.reduce((s, f) => s + f.total, 0), inquilinos: filas };
   });
   pendientes.sort((a, b) => b.total - a.total);
   return { totalPendiente: totalPendiente(conceptos), cobradoEsteMes: cobradoEnMes(conceptos, mesActual), pendientes };
