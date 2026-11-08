@@ -1,6 +1,10 @@
 # Estilo visual e idiomas
 
-Estado: aprobado (el nombre de la app está pendiente)
+Estado: aprobado
+
+## Nombre
+
+**Inquilinus** (del latín, "inquilino"). Nombre alternativo anotado: **Rentarium** (ojo: se parece a Rentari.ai, software de gestión de alquileres con IA). Pendiente: comprobar marca en OEPM y EUIPO y registrar `inquilinus.es` y `inquilinus.com`.
 
 ## Tono
 

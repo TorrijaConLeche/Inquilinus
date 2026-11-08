@@ -1,4 +1,4 @@
-# Rentio
+# Inquilinus
 
 Gestión de alquileres para propietarias: inmuebles, habitaciones, inquilinos, cobros y reparto de suministros por días con lectura de facturas por IA.
 

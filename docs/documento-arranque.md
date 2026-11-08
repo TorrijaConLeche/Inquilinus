@@ -1,4 +1,4 @@
-# App de gestión de alquileres — Documento de arranque
+# Inquilinus — Documento de arranque
 
 Nov 5, 2026 · @Moni · Última actualización: Nov 5, 2026
 
