@@ -86,8 +86,8 @@ Depende de: fase 3. **Hecho cuando** gestionas un mes completo de cobros con la 
 Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se reparte.
 
 - [ ] **5.1 · Tú** — Activar Claude Haiku 5.5 en Amazon Bedrock con el perfil de inferencia EU
-- [ ] **5.2 · Claude** — Subida del PDF a S3 y extractor con Bedrock (`InvoiceExtractor`) · `feat/003-extractor`
-- [ ] **5.3 · Claude** — Revisión y confirmación, con aviso de solapes · `feat/003-revision`
+- [ ] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`InvoiceExtractor`) que propone periodo, importe y tipo de gasto · `feat/003-extractor`
+- [ ] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [ ] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
 - [ ] **5.5 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos · `test/003-evaluacion`
 

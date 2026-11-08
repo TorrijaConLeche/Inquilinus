@@ -33,9 +33,9 @@ El núcleo es estándar en el mercado; el reparto inteligente de suministros es 
 
 **Diferencial: reparto de suministros con IA**
 
-1. La usuaria sube la factura en PDF (un PDF por factura; fotos más adelante).
-2. La IA extrae el periodo y el importe total.
-3. La usuaria elige el tipo de gasto, revisa y confirma. Si ya hay una factura de ese tipo con el periodo solapado, la app avisa.
+1. La usuaria sube una o varias facturas en PDF de una sola vez (hasta 20; un PDF por factura; fotos más adelante).
+2. La IA extrae el periodo y el importe total de cada una y sugiere su tipo de gasto.
+3. La usuaria revisa y confirma, una a una o todas a la vez. Si hay facturas del mismo tipo con el periodo solapado (también dentro del mismo lote), la app avisa.
 4. La app prorratea por días según quién vivía allí durante ese periodo, incluidas entradas y salidas a mitad de factura.
 5. Se genera un desglose para cada inquilino.
 6. Se sigue quién ha pagado su parte y quién no.
