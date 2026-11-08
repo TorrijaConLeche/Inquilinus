@@ -1,4 +1,4 @@
-import { aDia, fechaEnMadrid, mesDe, type Fecha, type Mes } from './fechas.ts';
+import { fechaEnMadrid, mesDe, type Fecha, type Mes } from './fechas.ts';
 
 export type Plan = 'starter' | 'advanced';
 export type Periodicidad = 'mensual' | 'anual';
@@ -45,12 +45,13 @@ export function inmueblesTrasBajada(
   return { activo, bloqueados: inmuebles.filter((i) => i.id !== activo).map((i) => i.id) };
 }
 
-/** Spec 010, R10c: días mínimos entre dos cambios del inmueble activo en Starter. */
-export const DIAS_ENTRE_CAMBIOS_DE_ACTIVO = 30;
-
-/** Spec 010, R10c: si se puede cambiar el inmueble activo hoy, según la fecha del último cambio. */
-export function puedeCambiarInmuebleActivo(hoy: Fecha, ultimoCambio: Fecha | null | undefined): boolean {
-  return !ultimoCambio || aDia(hoy) - aDia(ultimoCambio) >= DIAS_ENTRE_CAMBIOS_DE_ACTIVO;
+/**
+ * Spec 010, R10c: en Starter, el inmueble activo se elige una sola vez.
+ * `elegidoEn` es la fecha de la elección en el periodo actual en Starter (vacía si aún no ha elegido;
+ * se vacía al volver a Advanced).
+ */
+export function puedeElegirInmuebleActivo(plan: Plan, elegidoEn: Fecha | null | undefined): boolean {
+  return plan === 'starter' && !elegidoEn;
 }
 
 /** Spec 010, R7 y C12: base imponible e IVA de un precio con IVA incluido (céntimos). */
