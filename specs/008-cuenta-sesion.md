@@ -14,7 +14,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 - **R2** — Con email y contraseña, la cuenta no se puede usar hasta verificar el email con el enlace que se envía. Con Google, el email ya viene verificado.
 - **R3** — Si ya existe una cuenta con ese email y se entra con Google (con email verificado por Google), las dos formas de acceso se vinculan a la misma cuenta.
 - **R4** — Al registrarse hay que aceptar la política de privacidad y los términos. Se guarda la fecha y la versión aceptada ⚖️.
-- **R5** — Contraseña de al menos 12 caracteres, sin reglas de composición. Se rechazan las contraseñas más comunes. Se guarda solo su hash (algoritmo de Better Auth).
+- **R5** — Contraseña de al menos 12 caracteres, sin reglas de composición ni lista de contraseñas comunes (el mínimo de 12, el límite de intentos de R11 y el doble factor opcional bastan para el MVP). Se guarda solo su hash (algoritmo de Better Auth).
 - **R6** — Recuperación de contraseña con un enlace por email, de un solo uso y válido 1 hora. El mensaje es el mismo exista o no el email.
 - **R7** — Doble factor **opcional** con una app de autenticación (TOTP), con códigos de recuperación.
 
@@ -41,7 +41,7 @@ Cualquier propietaria puede crear su cuenta, con email y contraseña o con Googl
 | --- | --- | --- |
 | C1 | Registro con email (R2) | Cuenta creada pero bloqueada hasta verificar el email |
 | C2 | Contraseña corta (R5) | Con 10 caracteres, error de validación |
-| C3 | Contraseña común (R5) | "password1234" rechazada |
+| C3 | Contraseña larga sin reglas (R5) | "password1234" se acepta: solo cuenta la longitud |
 | C4 | Intentos fallidos (R11) | Al sexto fallo en 15 minutos, bloqueo de 15 minutos |
 | C5 | Google, email nuevo (R1, R2) | Cuenta creada y verificada |
 | C6 | Google, email existente (R3) | Se vincula a la cuenta existente; mismos inmuebles |
