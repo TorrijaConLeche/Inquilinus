@@ -21,7 +21,7 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
 | **documento** | inquilino, tipo (`contrato` \| `dni` \| `nomina` \| `otro`), año, fichero, notas | Nunca pasa por la IA |
 | **fichero** | usuaria, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |
-| **enlace_inquilino** | inquilino, token_hash, caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
+| **enlace_inquilino** | inquilino, token_hash, permite_descarga (por defecto sí), caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
 
 ## Relaciones
 

@@ -40,7 +40,7 @@ El núcleo es estándar en el mercado; el reparto inteligente de suministros es 
 5. Se genera un desglose para cada inquilino.
 6. Se sigue quién ha pagado su parte y quién no.
 
-**Enlace de solo lectura para el inquilino:** uno por estancia. La propietaria comparte un enlace web (sin cuenta) con un timeline del desglose: facturas, su parte, cuándo se pagó. Ve todo lo de su estancia: lo que le falta por pagar, cobros de alquiler, gastos con el detalle del cálculo y fianza. Las facturas se pueden descargar siempre. El enlace caduca 3 meses después de la salida. Si el inquilino pide una factura concreta, también se le puede enviar por otros medios (p. ej. WhatsApp).
+**Enlace de solo lectura para el inquilino:** uno por estancia. La propietaria comparte un enlace web (sin cuenta) con un timeline del desglose: facturas, su parte, cuándo se pagó. Ve todo lo de su estancia: lo que le falta por pagar, cobros de alquiler, gastos con el detalle del cálculo y fianza. Ve el nombre de pila de los demás en el detalle, pero no lo que pagan o deben. La propietaria decide en cada enlace si se pueden descargar las facturas. El enlace caduca 3 meses después de la salida. Si el inquilino pide una factura concreta, también se le puede enviar por otros medios (p. ej. WhatsApp).
 
 **Posibles ampliaciones (a validar):**
 
