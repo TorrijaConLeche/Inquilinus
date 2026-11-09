@@ -64,8 +64,8 @@ Depende de: fase 1. **Hecho cuando** te registras con email y con Google en la p
 
 Depende de: fase 2. **Hecho cuando** tienes tus pisos reales dados de alta con sus inquilinos.
 
-- [ ] **3.0 · Tú + Claude** — Rama de Neon solo para las previsualizaciones de Vercel, para que las pruebas no toquen los datos reales
-- [ ] **3.1 · Tú** — Pasar la cuenta de AWS al plan de pago (el gratuito limita regiones y caduca) y crear el bucket privado de S3 (Estocolmo) con permisos para el usuario `inquilinus-app`, con la guía de Claude
+- [x] **3.0 · Tú + Claude** — Rama de Neon solo para las previsualizaciones de Vercel, para que las pruebas no toquen los datos reales · `chore/bd-previsualizaciones`
+- [x] **3.1 · Tú** — Pasar la cuenta de AWS al plan de pago (el gratuito limita regiones y caduca) y crear el bucket privado de S3 (Estocolmo) con permisos para el usuario `inquilinus-app`, con la guía de Claude
 - [ ] **3.2 · Claude** — API de inmuebles, habitaciones e historial de precios, con tests de aislamiento · `feat/007-api-inmuebles`
 - [ ] **3.3 · Claude** — API de inquilinos, ocupaciones y tipos de gasto · `feat/007-api-inquilinos`
 - [ ] **3.4 · Claude** — Asistente de alta del inmueble · `feat/007-asistente`
