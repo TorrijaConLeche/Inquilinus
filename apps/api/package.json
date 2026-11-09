@@ -11,6 +11,8 @@
     "start": "node --env-file-if-exists=.env src/servidor.ts",
     "bd:generar": "drizzle-kit generate",
     "bd:migrar": "drizzle-kit migrate",
+    "bd:migrar:previsualizaciones": "drizzle-kit migrate --config drizzle.previsualizaciones.config.ts",
+    "bd:migrar:todo": "pnpm bd:migrar && pnpm bd:migrar:previsualizaciones",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },

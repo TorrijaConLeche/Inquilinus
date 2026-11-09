@@ -27,7 +27,7 @@ PostgreSQL en Neon (Frankfurt) con [Drizzle](https://orm.drizzle.team). Esquema 
 
 1. Copia `.env.example` como `.env` y pon las cadenas de conexión de Neon. El `.env` nunca se sube.
 2. Tras cambiar el esquema: `pnpm --filter @inquilinus/api bd:generar --name <descripcion>` crea la migración (se revisa y se sube con el cambio).
-3. `pnpm --filter @inquilinus/api bd:migrar` la aplica en la base de datos del `.env`.
+3. `pnpm --filter @inquilinus/api bd:migrar:todo` la aplica en las dos bases de datos: la de producción (`bd:migrar`) y la rama de Neon de las previsualizaciones de Vercel (`bd:migrar:previsualizaciones`, que se niega si apunta a producción). Así las pruebas de cada PR no tocan los datos reales.
 
 Los tests aplican las migraciones en PostgreSQL en memoria ([PGlite](https://pglite.dev)), sin conexión a Neon. Con `DATABASE_URL`, el chequeo de salud consulta la base de datos.
 
