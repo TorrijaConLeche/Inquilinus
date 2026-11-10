@@ -12,12 +12,13 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 
 - **R1** — Asistente por pasos: (1) nombre y dirección; (2) modalidad, meses parciales y día de cobro; (3) habitaciones con su precio; (4) tipos de gasto; (5) inquilinos. Obligatorio: nombre, modalidad y al menos una habitación con precio. La dirección y los pasos 4 y 5 son opcionales. Valores por defecto: mes completo y día de cobro 1.
 - **R2** — La modalidad no se puede cambiar después de crear el inmueble (spec 002). El resto de opciones sí.
+- **R2b** — Los límites de inmuebles de cada plan (spec 010, R1) se aplican cuando haya planes de pago (tarea 8.6 del plan); hasta entonces no hay límite.
 
 **Habitaciones y precios**
 
-- **R3** — Una habitación tiene nombre y precio mensual. Un piso alquilado entero es una sola habitación.
+- **R3** — Una habitación tiene nombre y precio mensual. Un piso alquilado entero es una sola habitación. El precio inicial aplica **desde el mes del alta**; se puede indicar un mes anterior (por ejemplo, si el inquilino ya vivía allí). Queda en el historial como cualquier otro cambio.
 - **R4** — Un cambio de precio se indica con el **mes desde el que aplica** ("550 € desde enero de 2027"). Aplica a ese mes y a los siguientes; los anteriores conservan su precio. Se guarda el historial de precios.
-- **R5** — Si un cambio de precio afecta a meses con cobros ya generados, esos cobros quedan desactualizados (spec 005, R6).
+- **R5** — Si un cambio de precio afecta a meses con cobros ya generados, esos cobros quedan desactualizados (spec 005, R6). Se implementa con los cobros (tarea 4.3 del plan).
 
 **Inquilinos y estancias**
 
