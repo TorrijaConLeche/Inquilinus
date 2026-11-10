@@ -29,6 +29,9 @@ importers:
       '@inquilinus/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@inquilinus/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@neondatabase/serverless':
         specifier: ^1.2.0
         version: 1.2.0
@@ -41,6 +44,9 @@ importers:
       hono:
         specifier: ^4.13.17
         version: 4.13.17
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@electric-sql/pglite':
         specifier: ^0.5.15

@@ -42,6 +42,7 @@ export {
 } from './pagos.ts';
 export {
   validarDiaCobro,
+  validarNombre,
   normalizarAltaInmueble,
   validarInquilino,
   precioVigente,

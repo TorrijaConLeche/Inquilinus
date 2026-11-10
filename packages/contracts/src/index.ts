@@ -14,5 +14,22 @@ export {
   rutasCuenta,
   VERSION_TERMINOS,
 } from './cuenta.ts';
+export {
+  AltaInmueble,
+  CambioPrecio,
+  Centimos,
+  EdicionHabitacion,
+  EdicionInmueble,
+  Habitacion,
+  Inmueble,
+  ListaInmuebles,
+  Mes,
+  MesesParciales,
+  Modalidad,
+  NuevaHabitacion,
+  PrecioDesde,
+  ResumenInmueble,
+  rutasInmuebles,
+} from './inmuebles.ts';
 export { generarOpenApi } from './openapi.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';
