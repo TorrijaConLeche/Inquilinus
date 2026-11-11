@@ -18,6 +18,12 @@ pnpm --filter @inquilinus/api test
 | `GET /openapi.json` | Documento OpenAPI generado desde `@inquilinus/contracts`. |
 | `GET /cuenta/exportacion` | Con sesión: todos los datos de la cuenta en JSON, sin secretos (spec 008, R14). |
 | `POST /cuenta/borrar` | Con sesión, `{ email }` y cabecera `Origin` de la propia app: borra la cuenta y todo lo suyo, primero los ficheros (R14, C12). |
+| `GET /inmuebles`, `POST /inmuebles` | Lista (sin archivados, salvo `?archivados=true`) y alta con habitaciones y precio inicial, todo o nada (spec 007, R1 y R3). |
+| `GET` y `PATCH /inmuebles/:id` | Detalle con el precio actual (hora de Madrid) y el historial; edición de todo menos la modalidad (R2). |
+| `POST /inmuebles/:id/habitaciones`, `PATCH …/habitaciones/:id` | Añadir y renombrar habitaciones. |
+| `POST …/habitaciones/:id/precios` | Precio desde un mes (R4); otro cambio en el mismo mes lo sustituye. |
+
+Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).
 
 Los errores nunca devuelven ni registran el mensaje original (RGPD).
 

@@ -224,5 +224,5 @@ describe("chequeo de salud con base de datos", () => {
     const app = crearApp({ comprobarBaseDatos: comprobadorBaseDatos(cerrada) });
     const respuesta = await app.request("/salud");
     expect(respuesta.status).toBe(503);
-  });
+  }, 20_000); // Arrancar una PGlite nueva tarda varios segundos con muchos tests en paralelo.
 });

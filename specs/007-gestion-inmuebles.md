@@ -62,8 +62,8 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 ## Tareas
 
 - [x] Validaciones y precio vigente por mes en `packages/domain`
-- [ ] Historial de precios por habitación
+- [x] Historial de precios por habitación (API)
 - [ ] Asistente de alta del inmueble
 - [ ] Formularios de habitaciones, tipos de gasto, inquilinos y ocupaciones
 - [ ] Archivar, borrar y anonimizar
-- [ ] Tests C1–C10
+- [ ] Tests C1–C10 (hechos: C1, C2, C3; C4 con la tarea 4.3; C5–C10 con las tareas 3.3 y 3.7)
