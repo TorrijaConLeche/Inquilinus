@@ -94,14 +94,24 @@
     "cuentaNoVinculada": "Ya hay una cuenta con ese email sin confirmar. Confírmala desde el email que te enviamos y vuelve a entrar con Google.",
     "generico": "Algo ha fallado. Vuelve a intentarlo en un momento.",
     "codigoCaducado": "El código ha caducado. Pide otro.",
-    "emailNoCoincide": "El email no coincide con el de tu cuenta."
+    "emailNoCoincide": "El email no coincide con el de tu cuenta.",
+    "nombreObligatorio": "Falta el nombre.",
+    "sinHabitaciones": "Añade al menos una habitación con su precio.",
+    "importeInvalido": "Escribe un importe válido, por ejemplo 450 o 450,50.",
+    "diaCobroInvalido": "El día de cobro debe estar entre el 1 y el 28.",
+    "precioInicialFuturo": "El precio no puede empezar en un mes futuro.",
+    "fechaInvalida": "Esa fecha no existe.",
+    "salidaAntesDeEntrada": "La salida no puede ser anterior a la entrada.",
+    "solape": "Esa habitación ya está ocupada en esas fechas.",
+    "datosInvalidos": "Hay algún dato que no es válido. Revísalo y vuelve a intentarlo."
   },
   "Privado": {
     "marca": "Inquilinus",
     "navegacion": "Navegación principal",
     "panel": "Panel",
     "ajustes": "Ajustes",
-    "salir": "Cerrar sesión"
+    "salir": "Cerrar sesión",
+    "inmuebles": "Inmuebles"
   },
   "Panel": {
     "titulo": "Panel",
@@ -184,5 +194,98 @@
     },
     "marca": "Inquilinus",
     "version": "Versión {version}"
+  },
+  "Inmuebles": {
+    "titulo": "Inmuebles",
+    "anadir": "Añadir inmueble",
+    "anadirPrimero": "Añadir mi primer inmueble",
+    "vacioTitulo": "Aún no tienes inmuebles",
+    "vacioTexto": "Da de alta tu primer piso con sus habitaciones y, si quieres, sus inquilinos y gastos. Son unos minutos.",
+    "creado": "«{nombre}» se ha dado de alta.",
+    "habitaciones": "{n, plural, one {# habitación} other {# habitaciones}}",
+    "modalidad": {
+      "habitaciones": "Por habitaciones",
+      "entero": "Piso entero"
+    }
+  },
+  "Asistente": {
+    "titulo": "Nuevo inmueble",
+    "contador": "Paso {paso} de {total}",
+    "pasos": {
+      "datos": "Nombre y dirección",
+      "opciones": "Cómo lo alquilas",
+      "habitaciones": "Habitaciones y precios",
+      "gastos": "Gastos que repartes",
+      "inquilinos": "Inquilinos"
+    },
+    "opcional": "opcional",
+    "siguiente": "Siguiente",
+    "atras": "Atrás",
+    "saltar": "Saltar",
+    "anadir": "Añadir",
+    "quitar": "Quitar",
+    "nombre": "Nombre del inmueble",
+    "nombreAyuda": "Como tú lo llames: «Piso Centro», «Casa de la playa»…",
+    "direccion": "Dirección",
+    "modalidad": "Modalidad",
+    "modalidades": {
+      "habitaciones": {
+        "titulo": "Por habitaciones",
+        "explicacion": "Cada habitación tiene su precio. Si una queda vacía, su renta la asumes tú."
+      },
+      "entero": {
+        "titulo": "Piso entero",
+        "explicacion": "Se alquila completo. Si una habitación queda vacía, su renta se reparte entre los que están."
+      }
+    },
+    "modalidadFija": "La modalidad no se puede cambiar después.",
+    "mesesParciales": "Si alguien entra o sale a mitad de mes",
+    "parciales": {
+      "mes_completo": {
+        "titulo": "Mes completo",
+        "explicacion": "Paga el mes entero aunque no esté todos los días."
+      },
+      "prorrateo": {
+        "titulo": "Por días",
+        "explicacion": "Paga solo los días que vive en el piso."
+      }
+    },
+    "diaCobro": "Día de cobro del alquiler",
+    "diaCobroAyuda": "Del 1 al 28. Ese día se generan los cobros del mes.",
+    "habitacionesAyuda": "Añade cada habitación con su precio al mes.",
+    "habitacionesAyudaEntero": "Si lo alquilas a una sola persona o familia, basta con una «habitación» que represente la vivienda.",
+    "habitacionNombre": "Habitación {n}",
+    "habitacionEjemplo": "Habitación {n}",
+    "vivienda": "Vivienda",
+    "precio": "Precio al mes (€)",
+    "anadirHabitacion": "Añadir habitación",
+    "quitarHabitacion": "Quitar la habitación {n}",
+    "desdeAntes": "Algún inquilino vivía ya antes de este mes",
+    "desdeMes": "Precio desde el mes",
+    "desdeMesAyuda": "Estos precios se aplicarán desde ese mes. Más adelante podrás cambiarlos.",
+    "crear": "Crear inmueble",
+    "creando": "Creando…",
+    "inmuebleCreado": "«{nombre}» se ha creado. Puedes completar el resto ahora o más tarde.",
+    "gastosAyuda": "Marca los gastos que repartes entre tus inquilinos. Si están incluidos en el alquiler, sáltalo.",
+    "sugerencias": {
+      "luz": "Luz",
+      "agua": "Agua",
+      "gas": "Gas",
+      "internet": "Internet",
+      "comunidad": "Comunidad"
+    },
+    "otroGasto": "Otro gasto",
+    "gastosColor": "Cada gasto recibe un color propio para verlo de un vistazo.",
+    "guardarSeguir": "Guardar y seguir",
+    "inquilinosAyuda": "Añade a quien vive ahora en el piso. Puedes hacerlo también más tarde.",
+    "inquilinoNombre": "Nombre del inquilino {n}",
+    "habitacion": "Habitación",
+    "entrada": "Fecha de entrada",
+    "anadirInquilino": "Añadir inquilino",
+    "quitarInquilino": "Quitar el inquilino {n}",
+    "soloNombre": "Del inquilino solo guardamos el nombre: ni DNI, ni teléfono, ni email.",
+    "saltarTerminar": "Saltar y terminar",
+    "terminar": "Terminar",
+    "guardando": "Guardando…"
   }
 }

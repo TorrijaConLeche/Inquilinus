@@ -4,3 +4,6 @@ export { borrarCuenta, exportarDatos, metodoDobleFactor, type MetodoDobleFactor 
 export { comprobadorBaseDatos, crearBaseDatos, type BaseDatos } from "./bd/cliente.ts";
 export { dependenciasDesdeEntorno, origenesVercel, urlPublica } from "./configuracion.ts";
 export { crearRegistro, describirError, type Campos, type Registro } from "./registro.ts";
+export { mesEnMadrid, hoyEnMadrid } from "./fechas.ts";
+export { listarInmuebles, verInmueble } from "./inmuebles.ts";
+export { listarInquilinos, listarTiposGasto } from "./inquilinos.ts";

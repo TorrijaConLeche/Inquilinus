@@ -94,14 +94,24 @@
     "cuentaNoVinculada": "There's already an unconfirmed account with that email. Confirm it from the email we sent you and sign in with Google again.",
     "generico": "Something went wrong. Please try again in a moment.",
     "codigoCaducado": "The code has expired. Ask for another one.",
-    "emailNoCoincide": "The email doesn't match your account's."
+    "emailNoCoincide": "The email doesn't match your account's.",
+    "nombreObligatorio": "The name is missing.",
+    "sinHabitaciones": "Add at least one room with its price.",
+    "importeInvalido": "Enter a valid amount, for example 450 or 450.50.",
+    "diaCobroInvalido": "The payment day must be between 1 and 28.",
+    "precioInicialFuturo": "The price can't start in a future month.",
+    "fechaInvalida": "That date doesn't exist.",
+    "salidaAntesDeEntrada": "The move-out date can't be before the move-in date.",
+    "solape": "That room is already occupied on those dates.",
+    "datosInvalidos": "Some information isn't valid. Please check it and try again."
   },
   "Privado": {
     "marca": "Inquilinus",
     "navegacion": "Main navigation",
     "panel": "Dashboard",
     "ajustes": "Settings",
-    "salir": "Sign out"
+    "salir": "Sign out",
+    "inmuebles": "Properties"
   },
   "Panel": {
     "titulo": "Dashboard",
@@ -184,5 +194,98 @@
     },
     "marca": "Inquilinus",
     "version": "Version {version}"
+  },
+  "Inmuebles": {
+    "titulo": "Properties",
+    "anadir": "Add property",
+    "anadirPrimero": "Add my first property",
+    "vacioTitulo": "You don't have any properties yet",
+    "vacioTexto": "Add your first flat with its rooms and, if you like, its tenants and expenses. It takes a few minutes.",
+    "creado": "“{nombre}” has been added.",
+    "habitaciones": "{n, plural, one {# room} other {# rooms}}",
+    "modalidad": {
+      "habitaciones": "By rooms",
+      "entero": "Whole flat"
+    }
+  },
+  "Asistente": {
+    "titulo": "New property",
+    "contador": "Step {paso} of {total}",
+    "pasos": {
+      "datos": "Name and address",
+      "opciones": "How you rent it",
+      "habitaciones": "Rooms and prices",
+      "gastos": "Expenses you split",
+      "inquilinos": "Tenants"
+    },
+    "opcional": "optional",
+    "siguiente": "Next",
+    "atras": "Back",
+    "saltar": "Skip",
+    "anadir": "Add",
+    "quitar": "Remove",
+    "nombre": "Property name",
+    "nombreAyuda": "Whatever you call it: “City flat”, “Beach house”…",
+    "direccion": "Address",
+    "modalidad": "Rental type",
+    "modalidades": {
+      "habitaciones": {
+        "titulo": "By rooms",
+        "explicacion": "Each room has its own price. If one is empty, you cover its rent."
+      },
+      "entero": {
+        "titulo": "Whole flat",
+        "explicacion": "It's rented as a whole. If a room is empty, its rent is split among the tenants who are there."
+      }
+    },
+    "modalidadFija": "The rental type can't be changed later.",
+    "mesesParciales": "If someone moves in or out mid-month",
+    "parciales": {
+      "mes_completo": {
+        "titulo": "Whole month",
+        "explicacion": "They pay the whole month even if they aren't there every day."
+      },
+      "prorrateo": {
+        "titulo": "By days",
+        "explicacion": "They only pay for the days they live in the flat."
+      }
+    },
+    "diaCobro": "Rent payment day",
+    "diaCobroAyuda": "From 1 to 28. The month's payments are created on that day.",
+    "habitacionesAyuda": "Add each room with its monthly price.",
+    "habitacionesAyudaEntero": "If you rent it to one person or family, a single “room” representing the home is enough.",
+    "habitacionNombre": "Room {n}",
+    "habitacionEjemplo": "Room {n}",
+    "vivienda": "Home",
+    "precio": "Price per month (€)",
+    "anadirHabitacion": "Add room",
+    "quitarHabitacion": "Remove room {n}",
+    "desdeAntes": "A tenant was already living there before this month",
+    "desdeMes": "Price from month",
+    "desdeMesAyuda": "These prices will apply from that month. You can change them later.",
+    "crear": "Create property",
+    "creando": "Creating…",
+    "inmuebleCreado": "“{nombre}” has been created. You can fill in the rest now or later.",
+    "gastosAyuda": "Tick the expenses you split among your tenants. If they're included in the rent, skip this.",
+    "sugerencias": {
+      "luz": "Electricity",
+      "agua": "Water",
+      "gas": "Gas",
+      "internet": "Internet",
+      "comunidad": "Building fees"
+    },
+    "otroGasto": "Other expense",
+    "gastosColor": "Each expense gets its own colour so you can spot it at a glance.",
+    "guardarSeguir": "Save and continue",
+    "inquilinosAyuda": "Add whoever lives in the flat now. You can also do it later.",
+    "inquilinoNombre": "Tenant {n} name",
+    "habitacion": "Room",
+    "entrada": "Move-in date",
+    "anadirInquilino": "Add tenant",
+    "quitarInquilino": "Remove tenant {n}",
+    "soloNombre": "We only keep the tenant's name: no ID, phone or email.",
+    "saltarTerminar": "Skip and finish",
+    "terminar": "Finish",
+    "guardando": "Saving…"
   }
 }

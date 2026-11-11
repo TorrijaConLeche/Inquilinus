@@ -34,6 +34,15 @@ describe("claveDeError", () => {
       "OTP_HAS_EXPIRED",
       "INVALID_TWO_FACTOR_COOKIE",
       "ACCOUNT_NOT_LINKED",
+      "NOMBRE_OBLIGATORIO",
+      "SIN_HABITACIONES",
+      "IMPORTE_INVALIDO",
+      "DIA_COBRO_INVALIDO",
+      "PRECIO_INICIAL_FUTURO",
+      "FECHA_INVALIDA",
+      "OCUPACION_INVALIDA",
+      "SOLAPE_OCUPACIONES",
+      "DATOS_INVALIDOS",
       "OTRO",
     ];
     for (const codigo of codigos) {

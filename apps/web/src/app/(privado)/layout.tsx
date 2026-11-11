@@ -18,6 +18,7 @@ export default async function LayoutPrivado({ children }: { children: ReactNode 
         </Link>
         <nav className={estilos.navegacion} aria-label={t("navegacion")}>
           <Link href="/panel">{t("panel")}</Link>
+          <Link href="/inmuebles">{t("inmuebles")}</Link>
           <Link href="/ajustes">{t("ajustes")}</Link>
           <BotonCerrarSesion />
         </nav>
