@@ -46,7 +46,11 @@ export default async function Inmuebles({ searchParams }: { searchParams: Promis
         <ul className={propias.lista}>
           {inmuebles.map((i) => (
             <li key={i.id} className={estilos.seccion}>
-              <h2>{i.nombre}</h2>
+              <h2>
+                <Link href={`/inmuebles/${i.id}`} className={propias.enlaceInmueble}>
+                  {i.nombre}
+                </Link>
+              </h2>
               {i.direccion && <p className={estilos.suave}>{i.direccion}</p>}
               <p className={propias.datos}>
                 <span>{t(`modalidad.${i.modalidad}`)}</span>

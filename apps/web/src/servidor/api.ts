@@ -4,12 +4,14 @@ import {
   crearApp,
   dependenciasDesdeEntorno,
   listarInmuebles,
+  listarInquilinos,
+  listarTiposGasto,
   mesEnMadrid,
   metodoDobleFactor,
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { Inmueble, ResumenInmueble } from "@inquilinus/contracts";
+import type { Inmueble, Inquilino, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -65,4 +67,18 @@ export async function inmueblesDe(usuario: UsuarioSesion): Promise<ResumenInmueb
 export async function inmuebleDe(usuario: UsuarioSesion, inmuebleId: string): Promise<Inmueble | null> {
   if (!dependencias.bd || !/^[0-9a-f-]{36}$/i.test(inmuebleId)) return null;
   return verInmueble(dependencias.bd, usuario.id, inmuebleId, mesEnMadrid());
+}
+
+/** Inmueble con sus inquilinos y tipos de gasto, o null si no es del usuario. */
+export async function detalleDe(
+  usuario: UsuarioSesion,
+  inmuebleId: string,
+): Promise<{ inmueble: Inmueble; inquilinos: Inquilino[]; tiposGasto: TipoGasto[] } | null> {
+  const inmueble = await inmuebleDe(usuario, inmuebleId);
+  if (!inmueble || !dependencias.bd) return null;
+  const [inquilinos, tiposGasto] = await Promise.all([
+    listarInquilinos(dependencias.bd, inmueble.id),
+    listarTiposGasto(dependencias.bd, inmueble.id),
+  ]);
+  return { inmueble, inquilinos, tiposGasto };
 }

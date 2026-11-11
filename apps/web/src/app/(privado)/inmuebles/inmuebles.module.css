@@ -162,3 +162,24 @@
   gap: 12px;
   margin-top: 8px;
 }
+
+.enlaceInmueble {
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.enlaceInmueble:hover {
+  color: var(--primario);
+  text-decoration: underline;
+}
+
+/* La tarjeta entera se puede pulsar (el enlace del título la cubre). */
+.lista > li {
+  position: relative;
+}
+
+.enlaceInmueble::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
