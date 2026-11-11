@@ -23,6 +23,11 @@ pnpm --filter @inquilinus/api test
 | `POST /inmuebles/:id/habitaciones`, `PATCH …/habitaciones/:id` | Añadir y renombrar habitaciones. |
 | `POST …/habitaciones/:id/precios` | Precio desde un mes (R4); otro cambio en el mismo mes lo sustituye. |
 
+| `GET`, `POST /inmuebles/:id/inquilinos`; `PATCH …/inquilinos/:id` | Inquilinos con sus estancias; alta solo con nombre (R6), opcionalmente con su primera estancia; renombrar. |
+| `POST …/inquilinos/:id/ocupaciones`; `PATCH /inmuebles/:id/ocupaciones/:id` | Nueva estancia o corregir fechas y poner la salida (R7, R9), sin solapes en la habitación (el día de relevo no cuenta). |
+| `POST …/inquilinos/:id/cambio-habitacion` | Cierra la estancia abierta el día anterior y abre otra en la habitación nueva, todo o nada (R8). |
+| `GET`, `POST /inmuebles/:id/tipos-gasto`; `PATCH …/tipos-gasto/:id` | Tipos de gasto; sin color, el primero libre de la paleta (`COLORES_GASTO`); renombrar y cambiar color (R10). |
+
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).
 
 Los errores nunca devuelven ni registran el mensaje original (RGPD).

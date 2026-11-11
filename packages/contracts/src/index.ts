@@ -31,5 +31,23 @@ export {
   ResumenInmueble,
   rutasInmuebles,
 } from './inmuebles.ts';
+export {
+  CambioHabitacion,
+  COLORES_GASTO,
+  ColorGasto,
+  EdicionInquilino,
+  EdicionOcupacion,
+  EdicionTipoGasto,
+  Fecha,
+  Inquilino,
+  ListaInquilinos,
+  ListaTiposGasto,
+  NuevaOcupacion,
+  NuevoInquilino,
+  NuevoTipoGasto,
+  Ocupacion,
+  rutasInquilinos,
+  TipoGasto,
+} from './inquilinos.ts';
 export { generarOpenApi } from './openapi.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';

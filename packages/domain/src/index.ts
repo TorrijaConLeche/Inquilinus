@@ -1,5 +1,6 @@
 export { ErrorValidacion, type CodigoError } from './errores.ts';
 export type { Fecha, Mes } from './fechas.ts';
+export { aDia, desdeDia } from './fechas.ts';
 export type { Ocupacion } from './presencia.ts';
 export {
   repartirSuministro,

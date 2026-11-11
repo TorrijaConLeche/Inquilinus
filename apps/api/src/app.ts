@@ -15,6 +15,7 @@ import { ErrorPeticion } from "./inmuebles.ts";
 import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
+import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 
 export interface Dependencias {
   /** Reloj (por defecto, la hora real). Los tests lo fijan para controlar el mes actual. */
@@ -124,6 +125,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     for (const ruta of ["/cuenta/*", "/inmuebles", "/inmuebles/*"]) app.use(ruta, soloMismoOrigen);
 
     registrarRutasInmuebles(app, { auth, bd, ahora: dependencias.ahora ?? (() => new Date()) });
+    registrarRutasInquilinos(app, { bd });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);

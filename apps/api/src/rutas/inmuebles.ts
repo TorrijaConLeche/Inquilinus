@@ -10,7 +10,6 @@ import {
   type RespuestaError,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
-import { z } from "zod";
 import type { Auth } from "../auth.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
 import { mesEnMadrid } from "../fechas.ts";
@@ -24,8 +23,7 @@ import {
   renombrarHabitacion,
   verInmueble,
 } from "../inmuebles.ts";
-
-type Entorno = { Variables: { idPeticion: string; usuarioId: string } };
+import { ids, leer, noEncontrado, type EntornoSesion as Entorno } from "./comunes.ts";
 
 interface Opciones {
   auth: Auth;
@@ -34,17 +32,7 @@ interface Opciones {
   ahora: () => Date;
 }
 
-const Uuid = z.uuid();
-
-/** Lee el cuerpo y lo valida; si no encaja, 400 con DATOS_INVALIDOS. */
-async function leer<T extends z.ZodType>(c: Context, esquema: T): Promise<z.infer<T>> {
-  const datos = esquema.safeParse(await c.req.json().catch(() => undefined));
-  if (!datos.success) throw new ErrorPeticion("DATOS_INVALIDOS");
-  return datos.data;
-}
-
 export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, ahora }: Opciones) {
-  const noEncontrado = (c: Context) => c.json<RespuestaError>({ error: "no-encontrado" }, 404);
   const mesActual = () => mesEnMadrid(ahora());
 
   // Todas exigen sesión; el usuario sale de la sesión, nunca de la petición.
@@ -56,12 +44,6 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, ahora }:
     c.set("usuarioId", s.user.id);
     await next();
   }
-
-  /** Ids de la URL: si no tienen forma de UUID, el recurso no existe. */
-  const ids = (c: Context, ...nombres: string[]) => {
-    const valores = nombres.map((n) => c.req.param(n) ?? "");
-    return valores.every((v) => Uuid.safeParse(v).success) ? valores : null;
-  };
 
   const detalle = async (c: Context<Entorno>, inmuebleId: string, estado: 200 | 201 = 200) => {
     const inmueble = await verInmueble(bd, c.get("usuarioId"), inmuebleId, mesActual());

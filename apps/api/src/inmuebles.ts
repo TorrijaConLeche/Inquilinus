@@ -172,7 +172,7 @@ export async function crearInmueble(
 }
 
 /** ¿Es suyo el inmueble? Lo que no es suyo se trata como si no existiera. */
-async function esSuyo(bd: ConexionBd, usuarioId: string, inmuebleId: string): Promise<boolean> {
+export async function esSuyo(bd: ConexionBd, usuarioId: string, inmuebleId: string): Promise<boolean> {
   const [fila] = await bd
     .select({ id: t.inmueble.id })
     .from(t.inmueble)
