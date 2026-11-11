@@ -4,16 +4,21 @@ import {
   type RespuestaError,
   type RespuestaSalud,
 } from "@inquilinus/contracts";
+import { ErrorValidacion } from "@inquilinus/domain";
 import { Hono, type Context } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
 import type { Auth } from "./auth.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import { borrarCuenta, exportarDatos } from "./cuenta.ts";
+import { ErrorPeticion } from "./inmuebles.ts";
 import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
+import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 
 export interface Dependencias {
+  /** Reloj (por defecto, la hora real). Los tests lo fijan para controlar el mes actual. */
+  ahora?: () => Date;
   /** Conexión a la base de datos (Neon en producción, PGlite en los tests). */
   bd?: ConexionBd;
   /** Limitador de intentos, para olvidar el contador de una cuenta al borrarla. */
@@ -39,7 +44,7 @@ export interface Opciones {
 /** Cabecera con el identificador de la petición, para cruzarla con los logs. */
 export const CABECERA_ID_PETICION = "x-id-peticion";
 
-type Entorno = { Variables: { idPeticion: string } };
+type Entorno = { Variables: { idPeticion: string; usuarioId: string } };
 
 /** El patrón de la ruta (`/inmuebles/:id`), nunca la URL real. */
 function patronRuta(c: Context): string {
@@ -95,15 +100,15 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));
   }
 
-  // Exportar y borrar la cuenta (spec 008, R14). Solo con sesión y, para
-  // cambiar datos, solo desde la propia app (cabecera Origin igual a la de la API).
+  // Rutas con sesión: cuenta (spec 008) e inmuebles (spec 007). Para cambiar
+  // datos, solo desde la propia app (cabecera Origin igual a la de la API).
   if (auth && bd) {
     const sesionDe = (c: Context) => auth.api.getSession({ headers: c.req.raw.headers });
 
     // Contra peticiones desde otras webs (CSRF): todo lo que no sea leer exige
     // la cabecera Origin del mismo dominio. El middleware csrf de Hono no sirve
     // aquí: solo mira formularios, y un atacante podría mandar el JSON como texto.
-    app.use("/cuenta/*", async (c, next) => {
+    const soloMismoOrigen = async (c: Context, next: () => Promise<void>) => {
       if (c.req.method !== "GET" && c.req.method !== "HEAD") {
         const host = c.req.header("host") ?? new URL(c.req.url).host;
         let hostOrigen: string | null = null;
@@ -115,7 +120,10 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
         if (hostOrigen !== host) return c.json<RespuestaError>({ error: "origen-no-permitido" }, 403);
       }
       await next();
-    });
+    };
+    for (const ruta of ["/cuenta/*", "/inmuebles", "/inmuebles/*"]) app.use(ruta, soloMismoOrigen);
+
+    registrarRutasInmuebles(app, { auth, bd, ahora: dependencias.ahora ?? (() => new Date()) });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);
@@ -152,6 +160,10 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
   app.notFound((c) => c.json<RespuestaError>({ error: "no-encontrado" }, 404));
 
   app.onError((error, c) => {
+    // Datos que no cumplen las reglas (dominio o petición): 400 con el código.
+    if (error instanceof ErrorValidacion || error instanceof ErrorPeticion) {
+      return c.json<RespuestaError>({ error: error.codigo }, 400);
+    }
     registro.error("error_no_controlado", {
       idPeticion: c.get("idPeticion"),
       metodo: c.req.method,

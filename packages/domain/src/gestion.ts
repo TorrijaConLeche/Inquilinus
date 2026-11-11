@@ -10,7 +10,8 @@ export function validarDiaCobro(dia: number): number {
   return dia;
 }
 
-function nombreValido(nombre: string | null | undefined, que: string): string {
+/** Nombre obligatorio, sin espacios sobrantes. `que` completa el mensaje ("del inmueble"). */
+export function validarNombre(nombre: string | null | undefined, que: string): string {
   const limpio = (nombre ?? '').trim();
   if (!limpio) throw new ErrorValidacion('NOMBRE_OBLIGATORIO', `Falta el nombre ${que}`);
   return limpio;
@@ -43,7 +44,7 @@ export interface InmuebleNuevo {
 
 /** Spec 007, R1: valida el alta y aplica los valores por defecto (mes completo, día de cobro 1). */
 export function normalizarAltaInmueble(alta: AltaInmueble): InmuebleNuevo {
-  const nombre = nombreValido(alta.nombre, 'del inmueble');
+  const nombre = validarNombre(alta.nombre, 'del inmueble');
   if (alta.habitaciones.length === 0) {
     throw new ErrorValidacion('SIN_HABITACIONES', 'El inmueble necesita al menos una habitación con precio');
   }
@@ -55,7 +56,7 @@ export function normalizarAltaInmueble(alta: AltaInmueble): InmuebleNuevo {
     mesesParciales: alta.mesesParciales ?? 'mes_completo',
     diaCobro: validarDiaCobro(alta.diaCobro ?? 1),
     habitaciones: alta.habitaciones.map((h) => ({
-      nombre: nombreValido(h.nombre, 'de la habitación'),
+      nombre: validarNombre(h.nombre, 'de la habitación'),
       precioMensual: precioValido(h.precioMensual),
     })),
   };
@@ -63,7 +64,7 @@ export function normalizarAltaInmueble(alta: AltaInmueble): InmuebleNuevo {
 
 /** Spec 007, R6: del inquilino solo se guarda el nombre, obligatorio. */
 export function validarInquilino(datos: { nombre: string }): { nombre: string } {
-  return { nombre: nombreValido(datos.nombre, 'del inquilino') };
+  return { nombre: validarNombre(datos.nombre, 'del inquilino') };
 }
 
 export interface PrecioDesde {
