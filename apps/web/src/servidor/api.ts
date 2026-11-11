@@ -1,6 +1,15 @@
 // Una sola instancia de la API para la ruta /api y para las páginas del servidor.
 import "server-only";
-import { crearApp, dependenciasDesdeEntorno, metodoDobleFactor, type MetodoDobleFactor } from "@inquilinus/api";
+import {
+  crearApp,
+  dependenciasDesdeEntorno,
+  listarInmuebles,
+  mesEnMadrid,
+  metodoDobleFactor,
+  verInmueble,
+  type MetodoDobleFactor,
+} from "@inquilinus/api";
+import type { Inmueble, ResumenInmueble } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -44,4 +53,16 @@ export async function tieneContrasena(): Promise<boolean> {
 export async function metodoDobleFactorDe(usuario: UsuarioSesion): Promise<MetodoDobleFactor | null> {
   if (!dependencias.bd) return null;
   return metodoDobleFactor(dependencias.bd, usuario);
+}
+
+/** Inmuebles del usuario (spec 007), consultados directamente sin pasar por HTTP. */
+export async function inmueblesDe(usuario: UsuarioSesion): Promise<ResumenInmueble[]> {
+  if (!dependencias.bd) return [];
+  return listarInmuebles(dependencias.bd, usuario.id, { archivados: false });
+}
+
+/** Detalle de un inmueble del usuario, o null si no es suyo o no existe. */
+export async function inmuebleDe(usuario: UsuarioSesion, inmuebleId: string): Promise<Inmueble | null> {
+  if (!dependencias.bd || !/^[0-9a-f-]{36}$/i.test(inmuebleId)) return null;
+  return verInmueble(dependencias.bd, usuario.id, inmuebleId, mesEnMadrid());
 }

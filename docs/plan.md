@@ -68,7 +68,7 @@ Depende de: fase 2. **Hecho cuando** tienes tus pisos reales dados de alta con s
 - [x] **3.1 · Tú** — Pasar la cuenta de AWS al plan de pago (el gratuito limita regiones y caduca) y crear el bucket privado de S3 (Estocolmo) con permisos para el usuario `inquilinus-app`, con la guía de Claude
 - [x] **3.2 · Claude** — API de inmuebles, habitaciones e historial de precios, con tests de aislamiento · `feat/007-api-inmuebles`
 - [x] **3.3 · Claude** — API de inquilinos, ocupaciones y tipos de gasto · `feat/007-api-inquilinos`
-- [ ] **3.4 · Claude** — Asistente de alta del inmueble · `feat/007-asistente`
+- [x] **3.4 · Claude** — Asistente de alta del inmueble · `feat/007-asistente`
 - [ ] **3.5 · Claude** — Detalle del inmueble y formularios de edición · `feat/007-detalle`
 - [ ] **3.6 · Claude** — Documentos (contrato y justificante de fianza) y fianza · `feat/007-documentos`
 - [ ] **3.7 · Claude** — Archivar, borrar y anonimizar · `feat/007-archivar-borrar`

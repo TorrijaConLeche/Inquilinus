@@ -1,0 +1,164 @@
+.lista {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+/* --- Asistente de alta --------------------------------------------------- */
+
+.pasos {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--borde);
+}
+
+.pasoHecho {
+  composes: paso;
+  background: var(--primario);
+}
+
+.contadorPaso {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+}
+
+/* Opciones grandes (modalidad, meses parciales) con su explicación. */
+.tarjetas {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tarjetaOpcion {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  padding: 14px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.tarjetaOpcion:has(input:checked) {
+  border-color: var(--primario);
+  background: var(--primario-suave);
+}
+
+.tarjetaOpcion:has(input:focus-visible) {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.tarjetaOpcion input {
+  grid-row: span 2;
+  margin-top: 3px;
+  accent-color: var(--primario);
+}
+
+.tarjetaOpcion strong {
+  font-weight: 600;
+}
+
+.tarjetaOpcion span {
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.leyenda {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+/* Filas de habitaciones e inquilinos: en el móvil, una debajo de otra. */
+.filaHabitacion,
+.filaInquilino {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+@media (min-width: 560px) {
+  .filaHabitacion {
+    grid-template-columns: 2fr 1fr auto;
+  }
+
+  .filaInquilino {
+    grid-template-columns: 2fr 1.5fr 1.5fr auto;
+  }
+}
+
+.quitar {
+  min-height: 44px;
+}
+
+.selector {
+  composes: entrada from "../../../componentes/formulario.module.css";
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip:has(input:checked) {
+  border-color: var(--primario);
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  font-weight: 600;
+}
+
+.chip:has(input:focus-visible) {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.chip input {
+  accent-color: var(--primario);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
