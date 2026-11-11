@@ -1,0 +1,126 @@
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.datos dt {
+  color: var(--texto-suave);
+}
+
+.datos dd {
+  margin: 0;
+}
+
+.lista {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.elemento {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nombre {
+  font-weight: 600;
+}
+
+.importe {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.suave {
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.historial {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.historial summary {
+  cursor: pointer;
+  margin-left: -1.25rem;
+  list-style-position: inside;
+}
+
+/* Formulario que se abre dentro de un elemento. */
+.enLinea {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  background: var(--fondo);
+  border-radius: var(--radio-control);
+}
+
+@media (min-width: 560px) {
+  .dosColumnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: end;
+  }
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selector {
+  composes: entrada from "../../../../componentes/formulario.module.css";
+}
+
+.estancias {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etiquetaColor {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--texto-suave);
+}

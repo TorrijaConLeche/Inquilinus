@@ -155,7 +155,7 @@ export function Asistente({ mesActual, hoy }: { mesActual: string; hoy: string }
       }
       guardados.push(q.clave);
     }
-    router.push(`/inmuebles?creado=${inmueble.id}`);
+    router.push(`/inmuebles/${inmueble.id}?creado=1`);
     router.refresh();
   };
 
@@ -461,7 +461,7 @@ export function Asistente({ mesActual, hoy }: { mesActual: string; hoy: string }
               type="button"
               className={formulario.botonSecundario}
               onClick={() => {
-                router.push(`/inmuebles?creado=${inmueble.id}`);
+                router.push(`/inmuebles/${inmueble.id}?creado=1`);
                 router.refresh();
               }}
             >

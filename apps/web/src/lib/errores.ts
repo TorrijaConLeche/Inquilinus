@@ -30,6 +30,9 @@ const POR_CODIGO: Record<string, ClaveError> = {
   SOLAPE_OCUPACIONES: "solape",
   HABITACION_DESCONOCIDA: "generico",
   DATOS_INVALIDOS: "datosInvalidos",
+  SIN_ESTANCIA_ABIERTA: "sinEstanciaAbierta",
+  MISMA_HABITACION: "mismaHabitacion",
+  CAMBIO_ANTES_DE_LA_ENTRADA: "cambioAntesDeEntrada",
 };
 
 export type ClaveError =
@@ -54,6 +57,9 @@ export type ClaveError =
   | "salidaAntesDeEntrada"
   | "solape"
   | "datosInvalidos"
+  | "sinEstanciaAbierta"
+  | "mismaHabitacion"
+  | "cambioAntesDeEntrada"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

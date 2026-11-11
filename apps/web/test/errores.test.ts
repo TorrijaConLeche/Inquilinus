@@ -43,6 +43,9 @@ describe("claveDeError", () => {
       "OCUPACION_INVALIDA",
       "SOLAPE_OCUPACIONES",
       "DATOS_INVALIDOS",
+      "SIN_ESTANCIA_ABIERTA",
+      "MISMA_HABITACION",
+      "CAMBIO_ANTES_DE_LA_ENTRADA",
       "OTRO",
     ];
     for (const codigo of codigos) {
