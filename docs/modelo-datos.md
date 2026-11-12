@@ -29,8 +29,8 @@ Convenciones: ids UUID; importes en céntimos (enteros); fechas de negocio como 
 | **suscripcion** | usuario, plan (`starter` \| `advanced`), periodicidad (`mensual` \| `anual`), estado, paddle_cliente_id, paddle_suscripcion_id, periodo_fin, cancela_al_final, inmueble_activo, activo_elegido_en (vacío = aún no elegido; la elección es única mientras siga en Starter) | Solo cambia por webhooks de Paddle (spec 010) |
 | **evento_pago** | id del evento, tipo, procesado_en | Para procesar cada webhook de Paddle una sola vez |
 | **uso_ia** | usuario, mes, facturas_leidas | Contador mensual de facturas leídas por IA |
-| **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, fichero (opcional), notas | `importe_devuelto` permite devoluciones parciales |
-| **documento** | inquilino, tipo (`contrato` \| `justificante_fianza`), fichero | Solo estos dos tipos; no se guardan DNI ni nóminas. Nunca pasa por la IA |
+| **fianza** | inquilino, importe, recibida_en, devuelta_en, importe_devuelto, notas | Una por inquilino. `importe_devuelto` permite devoluciones parciales; las notas (300 caracteres) explican los descuentos. El justificante es un `documento` (spec 007, R6d) |
+| **documento** | inquilino, tipo (`contrato` \| `justificante_fianza`), fichero | Solo estos dos tipos y uno de cada por inquilino; no se guardan DNI ni nóminas. Nunca pasa por la IA |
 | **fichero** | usuario, clave_s3, nombre_original, mime, tamaño, sha256 | Bucket privado; se sirve con URL firmada de corta duración |
 | **enlace_inquilino** | inquilino, token_hash, permite_descarga (por defecto sí), caduca_en, revocado_en | Uno por estancia (= inquilino en ese inmueble). Se guarda el hash del token, nunca el token |
 
