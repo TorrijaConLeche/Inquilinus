@@ -6,7 +6,9 @@
     "node": ">=22.18"
   },
   "scripts": {
+    "dev": "node scripts/dev.mjs",
     "test": "turbo run test",
+
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
