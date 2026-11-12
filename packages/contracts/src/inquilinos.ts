@@ -1,13 +1,11 @@
 import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
-import { RespuestaError } from './comunes.ts';
+import { Fecha, RespuestaError } from './comunes.ts';
+import { Documento, Fianza } from './documentos.ts';
 
 // Inquilinos, ocupaciones y tipos de gasto (spec 007). Fechas como día natural `YYYY-MM-DD`.
 
-export const Fecha = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .meta({ id: 'Fecha', description: 'Día natural `YYYY-MM-DD`, sin hora.', example: '2026-10-15' });
+export { Fecha };
 
 /**
  * Colores de los tipos de gasto (spec 006, R7), en el orden en que se asignan
@@ -73,7 +71,11 @@ export const Inquilino = z
     anonimizado: z.boolean(),
     /** Ordenadas por entrada. */
     ocupaciones: z.array(Ocupacion),
+    /** Como mucho uno de cada tipo (R6b). */
+    documentos: z.array(Documento),
+    fianza: Fianza.nullable(),
   })
+
   .meta({ id: 'Inquilino' });
 export type Inquilino = z.infer<typeof Inquilino>;
 

@@ -27,6 +27,9 @@ pnpm --filter @inquilinus/api test
 | `POST …/inquilinos/:id/ocupaciones`; `PATCH /inmuebles/:id/ocupaciones/:id` | Nueva estancia o corregir fechas y poner la salida (R7, R9), sin solapes en la habitación (el día de relevo no cuenta). |
 | `POST …/inquilinos/:id/cambio-habitacion` | Cierra la estancia abierta el día anterior y abre otra en la habitación nueva, todo o nada (R8). |
 | `GET`, `POST /inmuebles/:id/tipos-gasto`; `PATCH …/tipos-gasto/:id` | Tipos de gasto; sin color, el primero libre de la paleta (`COLORES_GASTO`); renombrar y cambiar color (R10). |
+| `POST …/inquilinos/:id/subidas` | Permiso firmado (5 minutos) para que el navegador suba un PDF de hasta 10 MB directamente al bucket, a `pendientes/<usuario>/<id>.pdf` (R6c). |
+| `PUT`, `GET`, `DELETE …/inquilinos/:id/documentos/:tipo` | `tipo` es `contrato` o `justificante_fianza`. `PUT { subidaId, nombre }` comprueba que es un PDF por su contenido, lo mueve a `documentos/<usuario>/<id>.pdf` y reemplaza el anterior del mismo tipo (R6b); `GET` redirige a una URL firmada de 5 minutos; `DELETE` lo borra del bucket y de la base de datos. |
+| `PUT`, `DELETE …/inquilinos/:id/fianza` | Una fianza por inquilino: importe, recepción y devolución (fecha e importe juntos, nunca mayor que la fianza) y notas cortas (R6d). |
 
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).
 
@@ -64,3 +67,18 @@ Eventos: `peticion`, `error_no_controlado` y `base_datos_no_responde`. En la API
 - Seguridad (tarea 2.5): sesión de 30 días exactos sin renovación con «recordar» y cookie de navegador sin él (R8); `/revoke-sessions` cierra todas (R10); doble factor con app (TOTP, 10 códigos de recuperación) o con código por email de 6 cifras válido 5 minutos (R7; con la app activa, `/two-factor/send-otp` y `verify-otp` responden `403 METODO_NO_PERMITIDO`); y límite de intentos en `src/limitador.ts`: 5 fallos en 15 minutos por cuenta o por IP bloquean 15 minutos (R11), guardando solo huellas HMAC. El doble factor se pide al entrar con email; con Google se aplica el de la cuenta de Google.
 - Google no funciona en las previsualizaciones de Vercel: su dirección cambia en cada rama y Google solo acepta direcciones registradas. Se prueba en local y en producción.
 - `src/configuracion.ts` monta todo desde las variables de entorno (`.env.example`). Sin alguna de ellas, la API funciona pero sin cuentas.
+
+## Ficheros (spec 007, R6b y R6c)
+
+Bucket privado de S3 en Estocolmo (`APP_S3_BUCKET`; uno para producción y otro, `…-preview`, para las previsualizaciones y local), con las mismas credenciales que SES. `src/almacen.ts` define la interfaz `Almacen` (en los tests, `test/almacen-memoria.ts`):
+
+- La API nunca recibe el fichero: firma un permiso de subida y el navegador lo manda directamente al bucket. Así no hay límite de tamaño de las funciones de Vercel (4,5 MB).
+- Al confirmar, la API lee el objeto, comprueba que es un PDF, calcula su SHA-256 y lo copia a su clave definitiva. Si no es válido, lo borra.
+- Para ver un documento, la API comprueba el permiso y redirige a una URL firmada de 5 minutos.
+- Sin `APP_S3_BUCKET`, las rutas de documentos responden `503` y una cuenta con ficheros no se puede borrar.
+
+Configuración de cada bucket (en la consola de AWS; el usuario de la app no tiene permiso para cambiarla):
+
+- **CORS**: `POST` desde la URL de la app (en el de previsualizaciones, también `http://localhost:3000` y `https://*.vercel.app`).
+- **Ciclo de vida**: regla `borrar-subidas-pendientes` que borra lo que hay en `pendientes/` al día siguiente (subidas que no se llegaron a confirmar).
+

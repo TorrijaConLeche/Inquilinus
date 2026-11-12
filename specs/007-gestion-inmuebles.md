@@ -27,6 +27,13 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 - **R8** — Cambiar de habitación es cerrar la ocupación actual y abrir otra nueva para el mismo inquilino.
 - **R9** — Cuando un inquilino se va, se le pone fecha de salida. Su enlace caduca 3 meses después (spec 004).
 
+**Documentos y fianza**
+
+- **R6b** — Cada inquilino tiene como mucho **un contrato y un justificante de la fianza**. Solo PDF (se comprueba el contenido, no la extensión) y hasta 10 MB. Subir otro del mismo tipo reemplaza al anterior, que se borra del almacenamiento. Se pueden borrar. Nunca se envían a la IA ni aparecen en el enlace del inquilino (spec 004, R9).
+- **R6c** — El fichero se sube directamente al bucket privado con un permiso firmado que caduca a los 5 minutos y solo vale para esa subida. Lo subido y no confirmado se borra solo al día siguiente. Se descarga con una URL firmada que caduca a los 5 minutos, después de comprobar que el inquilino es de la propietaria.
+- **R6d** — Cada inquilino tiene como mucho **una fianza**: importe (obligatorio, mayor que 0) y fecha en que se recibió (opcional). Al devolverla se indican **juntos** la fecha y el importe devuelto; el importe devuelto puede ser menor que la fianza (descuentos), nunca mayor, y la fecha no puede ser anterior a la de recepción. Notas opcionales de hasta 300 caracteres para explicar los descuentos; la pantalla pide no escribir datos personales en ellas.
+- **R6e** — La fianza es solo un registro: no entra en los cobros ni en los repartos.
+
 **Tipos de gasto**
 
 - **R10** — Un tipo de gasto tiene nombre y color (spec 006). Se puede renombrar y cambiar de color.
@@ -52,6 +59,11 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 | C8 | Archivar o borrar (R11) | H3 con cobros; H4 sin historial | H3 solo se puede archivar; H4 se puede borrar |
 | C9 | Borrar inquilino (R12) | Se borra a A, con cobros y repartos | Aparece como "Inquilino 1"; los importes no cambian; su enlace ya no funciona; sus ficheros no existen |
 | C10 | Borrar inmueble (R13) | Confirmación con un nombre distinto | No se borra |
+| C11 | Documento que no es PDF (R6b) | Un fichero de texto con extensión `.pdf` | Error; no queda nada guardado ni en la base de datos ni en el bucket |
+| C12 | Reemplazar el contrato (R6b) | A tiene contrato y se sube otro | A tiene un solo contrato; el fichero anterior ya no existe |
+| C13 | Descarga ajena (R6c) | Otra propietaria pide el contrato de A | 404 |
+| C14 | Devolución mayor que la fianza (R6d) | Fianza de 800 €; se devuelven 900 € | Error de validación |
+| C15 | Devolución sin fecha (R6d) | Importe devuelto sin fecha de devolución | Error de validación |
 
 ## Fuera de alcance
 
@@ -65,5 +77,6 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 - [x] Historial de precios por habitación (API)
 - [x] Asistente de alta del inmueble
 - [x] Formularios de habitaciones, tipos de gasto, inquilinos y ocupaciones
+- [x] Documentos (contrato y justificante de la fianza) y fianza
 - [ ] Archivar, borrar y anonimizar
-- [ ] Tests C1–C10 (hechos: C1, C2, C3, C5, C6, C7; C4 con la tarea 4.3; C8–C10 con la tarea 3.7)
+- [ ] Tests C1–C15 (hechos: C1, C2, C3, C5, C6, C7, C11–C15; C4 con la tarea 4.3; C8–C10 con la tarea 3.7)

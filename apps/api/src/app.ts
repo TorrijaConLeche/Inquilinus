@@ -8,12 +8,14 @@ import { ErrorValidacion } from "@inquilinus/domain";
 import { Hono, type Context } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
+import type { Almacen } from "./almacen.ts";
 import type { Auth } from "./auth.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import { borrarCuenta, exportarDatos } from "./cuenta.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
 import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
+import { registrarRutasDocumentos } from "./rutas/documentos.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 
@@ -24,8 +26,11 @@ export interface Dependencias {
   bd?: ConexionBd;
   /** Limitador de intentos, para olvidar el contador de una cuenta al borrarla. */
   limitador?: Limitador;
-  /** Borra ficheros del bucket privado (fase 3). Sin él, una cuenta con ficheros no se borra. */
-  borrarFicheros?: (claves: string[]) => Promise<void>;
+  /**
+   * Bucket privado de ficheros (spec 007, R6c). Sin él no se pueden subir
+   * documentos ni borrar una cuenta que tenga ficheros.
+   */
+  almacen?: Almacen;
   /**
    * Lanza si la base de datos no responde. Sin ella (por ejemplo, sin
    * DATABASE_URL), el chequeo de salud no consulta la base.
@@ -124,8 +129,10 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     };
     for (const ruta of ["/cuenta/*", "/inmuebles", "/inmuebles/*"]) app.use(ruta, soloMismoOrigen);
 
-    registrarRutasInmuebles(app, { auth, bd, ahora: dependencias.ahora ?? (() => new Date()) });
+    const ahora = dependencias.ahora ?? (() => new Date());
+    registrarRutasInmuebles(app, { auth, bd, ahora });
     registrarRutasInquilinos(app, { bd });
+    registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);
@@ -146,7 +153,8 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
         return c.json<RespuestaError>({ error: "email-no-coincide" }, 400);
       }
       await borrarCuenta(bd, sesion.user.id, {
-        ...(dependencias.borrarFicheros && { borrarFicheros: dependencias.borrarFicheros }),
+        ...(dependencias.almacen && { borrarFicheros: dependencias.almacen.borrar }),
+
         ...(dependencias.limitador && { claveIntentos: dependencias.limitador.claves(email, null).cuenta }),
       });
       registro.info("cuenta_borrada", { idPeticion: c.get("idPeticion") });

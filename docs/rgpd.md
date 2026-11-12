@@ -11,6 +11,7 @@ La propietaria es **responsable del tratamiento** de los datos de sus inquilinos
 | Nombre del inquilino (único dato de su ficha) | Gestionar el contrato | Ejecución del contrato |
 | Fechas de estancia, cobros, repartos | Calcular y cobrar alquiler y suministros | Ejecución del contrato |
 | Contrato firmado y justificante de la fianza | Prueba del contrato y de la fianza | Ejecución del contrato |
+| Fianza: importe, fechas y notas sobre descuentos (sin datos personales) | Registrar la fianza y su devolución | Ejecución del contrato |
 | Facturas de suministros | Repartir el gasto | Ejecución del contrato |
 
 ## Medidas técnicas (v1)

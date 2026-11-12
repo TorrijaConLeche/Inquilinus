@@ -414,12 +414,13 @@ export const fianza = pgTable(
     recibidaEn: dia(),
     devueltaEn: dia(),
     importeDevuelto: importe(),
-    ficheroId: uuid().references(() => fichero.id, { onDelete: "set null" }),
+    /** Solo para explicar descuentos, sin datos personales (spec 007, R6d). El justificante es un `documento`. */
     notas: text(),
     ...marcas,
   },
   (t) => [
-    index().on(t.inquilinoId),
+    // Una fianza por inquilino (R6d).
+    unique().on(t.inquilinoId),
     check("fianza_importes", sql`${t.importe} >= 0 and coalesce(${t.importeDevuelto}, 0) >= 0`),
   ],
 );
@@ -438,8 +439,10 @@ export const documento = pgTable(
       .references(() => fichero.id, { onDelete: "cascade" }),
     ...marcas,
   },
-  (t) => [index().on(t.inquilinoId)],
+  // Uno de cada tipo por inquilino (R6b).
+  (t) => [unique().on(t.inquilinoId, t.tipo)],
 );
+
 
 /** Se guarda el hash del token, nunca el token. */
 export const enlaceInquilino = pgTable(

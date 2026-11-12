@@ -9,6 +9,7 @@ import { formatoFecha } from "../../../../lib/fechas";
 import { useAccion } from "../../../../lib/use-accion";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
+import { DocumentosInquilino } from "./DocumentosInquilino";
 
 /** Qué formulario está abierto: uno cada vez en toda la sección. */
 type Abierto =
@@ -244,8 +245,10 @@ export function Inquilinos({
                   </button>
                 </div>
               )}
+              <DocumentosInquilino inmuebleId={inmuebleId} inquilino={q} />
             </li>
           );
+
         })}
       </ul>
 

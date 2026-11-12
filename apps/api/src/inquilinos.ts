@@ -18,13 +18,18 @@ import { and, asc, eq, ne } from "drizzle-orm";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
+import { documentosYFianzas, type DocumentosYFianzas } from "./documentos.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
 
 // --- Inquilinos -------------------------------------------------------------
 
 type FilaOcupacion = typeof t.ocupacion.$inferSelect;
 
-function aInquilino(fila: typeof t.inquilino.$inferSelect, ocupaciones: FilaOcupacion[]): Inquilino {
+function aInquilino(
+  fila: typeof t.inquilino.$inferSelect,
+  ocupaciones: FilaOcupacion[],
+  { documentos, fianzas }: DocumentosYFianzas,
+): Inquilino {
   return {
     id: fila.id,
     nombre: fila.nombre,
@@ -33,6 +38,8 @@ function aInquilino(fila: typeof t.inquilino.$inferSelect, ocupaciones: FilaOcup
       .filter((o) => o.inquilinoId === fila.id)
       .sort((a, b) => (a.entrada < b.entrada ? -1 : a.entrada > b.entrada ? 1 : 0))
       .map((o) => ({ id: o.id, habitacionId: o.habitacionId, entrada: o.entrada, salida: o.salida })),
+    documentos: documentos.get(fila.id) ?? [],
+    fianza: fianzas.get(fila.id) ?? null,
   };
 }
 
@@ -41,7 +48,11 @@ export async function listarInquilinos(bd: ConexionBd, inmuebleId: string): Prom
     bd.select().from(t.inquilino).where(eq(t.inquilino.inmuebleId, inmuebleId)).orderBy(asc(t.inquilino.creadoEn)),
     bd.select().from(t.ocupacion).where(eq(t.ocupacion.inmuebleId, inmuebleId)),
   ]);
-  return inquilinos.map((q) => aInquilino(q, ocupaciones));
+  const extras = await documentosYFianzas(
+    bd,
+    inquilinos.map((q) => q.id),
+  );
+  return inquilinos.map((q) => aInquilino(q, ocupaciones, extras));
 }
 
 /** El inquilino con sus estancias, si es de ese inmueble. */
@@ -51,8 +62,12 @@ export async function verInquilino(bd: ConexionBd, inmuebleId: string, inquilino
     .from(t.inquilino)
     .where(and(eq(t.inquilino.id, inquilinoId), eq(t.inquilino.inmuebleId, inmuebleId)));
   if (!fila) return null;
-  const ocupaciones = await bd.select().from(t.ocupacion).where(eq(t.ocupacion.inquilinoId, inquilinoId));
-  return aInquilino(fila, ocupaciones);
+  const [ocupaciones, extras] = await Promise.all([
+    bd.select().from(t.ocupacion).where(eq(t.ocupacion.inquilinoId, inquilinoId)),
+    documentosYFianzas(bd, [inquilinoId]),
+  ]);
+  return aInquilino(fila, ocupaciones, extras);
+
 }
 
 /**

@@ -51,7 +51,14 @@ export {
   accionAlEliminar,
   nombreAnonimo,
   confirmaBorradoInmueble,
+  TAMANO_MAXIMO_DOCUMENTO,
+  LONGITUD_MAXIMA_NOTAS_FIANZA,
+  validarDocumento,
+  validarFianza,
+  type DatosFianza,
+  type FianzaValida,
   type AltaInmueble,
+
   type InmuebleNuevo,
   type PrecioDesde,
 } from './gestion.ts';

@@ -49,5 +49,16 @@ export {
   rutasInquilinos,
   TipoGasto,
 } from './inquilinos.ts';
+export {
+  ConfirmacionDocumento,
+  Documento,
+  Fianza,
+  PermisoSubida,
+  PeticionFianza,
+  rutasDocumentos,
+  TIPOS_DOCUMENTO,
+  TipoDocumento,
+} from './documentos.ts';
 export { generarOpenApi } from './openapi.ts';
+
 export { RespuestaSalud, rutasSalud } from './salud.ts';
