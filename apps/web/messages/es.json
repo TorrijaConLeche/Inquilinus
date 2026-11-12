@@ -106,7 +106,15 @@
     "datosInvalidos": "Hay algún dato que no es válido. Revísalo y vuelve a intentarlo.",
     "sinEstanciaAbierta": "Este inquilino no vive ahora en ninguna habitación.",
     "mismaHabitacion": "Elige una habitación distinta de la actual.",
-    "cambioAntesDeEntrada": "El cambio tiene que ser después del día de entrada."
+    "cambioAntesDeEntrada": "El cambio tiene que ser después del día de entrada.",
+    "ficheroInvalido": "Tiene que ser un PDF de 10 MB como máximo.",
+    "subidaCaducada": "La subida ha caducado. Vuelve a elegir el fichero.",
+    "subidaFallida": "No se ha podido subir el fichero. Comprueba la conexión y vuelve a intentarlo.",
+    "almacenNoConfigurado": "Ahora mismo no se pueden subir documentos. Inténtalo más tarde.",
+    "devolucionIncompleta": "Para la devolución indica la fecha y el importe devuelto.",
+    "devolucionMayor": "No puedes devolver más que la fianza.",
+    "devolucionAntesDeRecepcion": "La devolución no puede ser anterior a la fecha en que recibiste la fianza.",
+    "notasLargas": "Las notas admiten como máximo 300 caracteres."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -349,6 +357,32 @@
       "oliva": "Oliva",
       "coral": "Coral",
       "pizarra": "Pizarra"
-    }
+    },
+    "opcional": "opcional",
+    "borrar": "Borrar",
+    "siBorrar": "Sí, borrar",
+    "confirmarBorrar": "¿Borrar {que}? No se puede deshacer.",
+    "documentosYFianza": "Documentos y fianza",
+    "tiposDocumento": {
+      "contrato": "Contrato",
+      "justificante_fianza": "Justificante de la fianza"
+    },
+    "sinDocumento": "sin subir",
+    "subir": "Subir PDF",
+    "reemplazar": "Reemplazar",
+    "subiendo": "Subiendo…",
+    "documentoAyuda": "Solo PDF, hasta 10 MB. El inquilino no los ve y nunca pasan por la IA.",
+    "fianza": "Fianza",
+    "sinFianza": "sin registrar",
+    "anadirFianza": "Añadir fianza",
+    "recibidaEl": "recibida el {fecha}",
+    "devueltaEl": "devueltos {importe} el {fecha}",
+    "importeFianza": "Importe de la fianza (€)",
+    "fechaRecepcion": "Fecha en que la recibiste",
+    "yaDevuelta": "Ya la he devuelto",
+    "importeDevuelto": "Importe devuelto (€)",
+    "fechaDevolucion": "Fecha de devolución",
+    "notasFianza": "Notas sobre descuentos",
+    "notasAyuda": "Por ejemplo, «pintura del cuarto». No escribas datos personales."
   }
 }

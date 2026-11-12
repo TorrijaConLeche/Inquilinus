@@ -65,18 +65,34 @@ describe("dependenciasDesdeEntorno", () => {
     expect(lineas.join()).not.toContain("secreto");
   });
 
+  const completo = {
+    DATABASE_URL: "postgresql://usuario:clave@ejemplo.test/bd",
+    BETTER_AUTH_SECRET: "x".repeat(32),
+    APP_AWS_REGION: "eu-north-1",
+    APP_AWS_ACCESS_KEY_ID: "AKIAEJEMPLO",
+    APP_AWS_SECRET_ACCESS_KEY: "clave",
+    EMAIL_REMITENTE: "remitente@ejemplo.test",
+  };
+
   it("con todas las variables monta las cuentas", () => {
-    const d = dependenciasDesdeEntorno(
-      {
-        DATABASE_URL: "postgresql://usuario:clave@ejemplo.test/bd",
-        BETTER_AUTH_SECRET: "x".repeat(32),
-        APP_AWS_REGION: "eu-north-1",
-        APP_AWS_ACCESS_KEY_ID: "AKIAEJEMPLO",
-        APP_AWS_SECRET_ACCESS_KEY: "clave",
-        EMAIL_REMITENTE: "remitente@ejemplo.test",
-      },
-      { rutaBase: "/api", urlPorDefecto: LOCAL },
-    );
+    const d = dependenciasDesdeEntorno(completo, { rutaBase: "/api", urlPorDefecto: LOCAL });
     expect(d.auth).toBeDefined();
   });
+
+  it("sin APP_S3_BUCKET no hay almacén de ficheros, y lo avisa", () => {
+    const lineas: string[] = [];
+    const registro = crearRegistro((_n, l) => lineas.push(l));
+    const d = dependenciasDesdeEntorno(completo, { rutaBase: "/api", urlPorDefecto: LOCAL, registro });
+    expect(d.almacen).toBeUndefined();
+    expect(lineas.join()).toContain("FALTA_APP_S3_BUCKET");
+  });
+
+  it("con APP_S3_BUCKET monta el almacén de ficheros", () => {
+    const d = dependenciasDesdeEntorno(
+      { ...completo, APP_S3_BUCKET: "inquilinus-pruebas" },
+      { rutaBase: "/api", urlPorDefecto: LOCAL },
+    );
+    expect(d.almacen).toBeDefined();
+  });
+
 });

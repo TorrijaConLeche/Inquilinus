@@ -1,5 +1,6 @@
 // Monta las dependencias de la API a partir de las variables de entorno.
 // Lo usan el servidor local (src/servidor.ts) y la web en Vercel (/api).
+import { crearAlmacenS3 } from "./almacen.ts";
 import type { Dependencias } from "./app.ts";
 import { crearAuth } from "./auth.ts";
 import { comprobadorBaseDatos, crearBaseDatos } from "./bd/cliente.ts";
@@ -61,6 +62,18 @@ export function dependenciasDesdeEntorno(
   // Un solo limitador: lo usan el acceso (R11) y el borrado de la cuenta (R14).
   const limitador = crearLimitador(bd, entorno["BETTER_AUTH_SECRET"]!);
   dependencias.limitador = limitador;
+  // Bucket privado de ficheros (spec 007, R6c): mismas credenciales de AWS que el correo.
+  if (entorno["APP_S3_BUCKET"]) {
+    dependencias.almacen = crearAlmacenS3({
+      region: entorno["APP_AWS_REGION"]!,
+      idClave: entorno["APP_AWS_ACCESS_KEY_ID"]!,
+      claveSecreta: entorno["APP_AWS_SECRET_ACCESS_KEY"]!,
+      bucket: entorno["APP_S3_BUCKET"],
+    });
+  } else {
+    registro.aviso("almacen_desactivado", { codigo: "FALTA_APP_S3_BUCKET" });
+  }
+
   dependencias.auth = crearAuth({
     limitador,
     bd,

@@ -106,7 +106,15 @@
     "datosInvalidos": "Some information isn't valid. Please check it and try again.",
     "sinEstanciaAbierta": "This tenant isn't living in any room right now.",
     "mismaHabitacion": "Choose a room other than the current one.",
-    "cambioAntesDeEntrada": "The change must be after the move-in date."
+    "cambioAntesDeEntrada": "The change must be after the move-in date.",
+    "ficheroInvalido": "It must be a PDF of up to 10 MB.",
+    "subidaCaducada": "The upload has expired. Choose the file again.",
+    "subidaFallida": "The file couldn't be uploaded. Check your connection and try again.",
+    "almacenNoConfigurado": "Documents can't be uploaded right now. Please try again later.",
+    "devolucionIncompleta": "For the refund, enter both the date and the amount returned.",
+    "devolucionMayor": "You can't return more than the deposit.",
+    "devolucionAntesDeRecepcion": "The refund can't be earlier than the date you received the deposit.",
+    "notasLargas": "Notes can be at most 300 characters."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -349,6 +357,32 @@
       "oliva": "Olive",
       "coral": "Coral",
       "pizarra": "Slate"
-    }
+    },
+    "opcional": "optional",
+    "borrar": "Delete",
+    "siBorrar": "Yes, delete",
+    "confirmarBorrar": "Delete the {que}? This can't be undone.",
+    "documentosYFianza": "Documents and deposit",
+    "tiposDocumento": {
+      "contrato": "Contract",
+      "justificante_fianza": "Deposit receipt"
+    },
+    "sinDocumento": "not uploaded",
+    "subir": "Upload PDF",
+    "reemplazar": "Replace",
+    "subiendo": "Uploading…",
+    "documentoAyuda": "PDF only, up to 10 MB. The tenant can't see them and they never go through the AI.",
+    "fianza": "Deposit",
+    "sinFianza": "not recorded",
+    "anadirFianza": "Add deposit",
+    "recibidaEl": "received on {fecha}",
+    "devueltaEl": "{importe} returned on {fecha}",
+    "importeFianza": "Deposit amount (€)",
+    "fechaRecepcion": "Date you received it",
+    "yaDevuelta": "I've already returned it",
+    "importeDevuelto": "Amount returned (€)",
+    "fechaDevolucion": "Refund date",
+    "notasFianza": "Notes on deductions",
+    "notasAyuda": "For example, “repainting the room”. Don't include personal data."
   }
 }

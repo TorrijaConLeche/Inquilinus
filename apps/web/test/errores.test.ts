@@ -46,7 +46,15 @@ describe("claveDeError", () => {
       "SIN_ESTANCIA_ABIERTA",
       "MISMA_HABITACION",
       "CAMBIO_ANTES_DE_LA_ENTRADA",
+      "FICHERO_INVALIDO",
+      "SUBIDA_NO_ENCONTRADA",
+      "almacen-no-configurado",
+      "DEVOLUCION_INCOMPLETA",
+      "DEVOLUCION_MAYOR_QUE_FIANZA",
+      "DEVOLUCION_ANTES_DE_RECEPCION",
+      "NOTAS_DEMASIADO_LARGAS",
       "OTRO",
+
     ];
     for (const codigo of codigos) {
       const clave = claveDeError(codigo);

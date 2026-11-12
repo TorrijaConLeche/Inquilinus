@@ -7,6 +7,9 @@ import {
   nombreAnonimo,
   normalizarAltaInmueble,
   precioVigente,
+  TAMANO_MAXIMO_DOCUMENTO,
+  validarDocumento,
+  validarFianza,
   validarInquilino,
   validarOcupaciones,
 } from '../src/index.ts';
@@ -85,5 +88,67 @@ describe('Spec 007 · Gestión', () => {
   it('C10 · confirmación al borrar un inmueble (R13)', () => {
     expect(confirmaBorradoInmueble('Piso Centro', 'Piso centro')).toBe(false);
     expect(confirmaBorradoInmueble('Piso Centro', 'Piso Centro')).toBe(true);
+  });
+
+  const bytes = (texto: string) => new TextEncoder().encode(texto);
+
+  it('C11 · documento que no es PDF (R6b)', () => {
+    expect(() => validarDocumento(bytes('Esto es un texto con extensión .pdf'))).toThrow(ErrorValidacion);
+    expect(() => validarDocumento(bytes(''))).toThrow(ErrorValidacion);
+    expect(() => validarDocumento(bytes('%PDF-1.7\n...'))).not.toThrow();
+    // La cabecera puede ir detrás de algo de basura, pero dentro de los primeros 1024 bytes.
+    expect(() => validarDocumento(bytes(`${' '.repeat(100)}%PDF-1.4`))).not.toThrow();
+    expect(() => validarDocumento(bytes(`${' '.repeat(1100)}%PDF-1.4`))).toThrow(ErrorValidacion);
+  });
+
+  it('documento de más de 10 MB (R6b)', () => {
+    const grande = new Uint8Array(TAMANO_MAXIMO_DOCUMENTO + 1);
+    grande.set(bytes('%PDF-1.7'));
+    expect(() => validarDocumento(grande)).toThrow(ErrorValidacion);
+  });
+
+  it('C14 · devolución mayor que la fianza (R6d)', () => {
+    expect(() => validarFianza({ importe: 80_000, devueltaEn: '2027-07-01', importeDevuelto: 90_000 })).toThrow(
+      expect.objectContaining({ codigo: 'DEVOLUCION_MAYOR_QUE_FIANZA' }),
+    );
+  });
+
+  it('C15 · devolución sin fecha (R6d)', () => {
+    expect(() => validarFianza({ importe: 80_000, importeDevuelto: 80_000 })).toThrow(
+      expect.objectContaining({ codigo: 'DEVOLUCION_INCOMPLETA' }),
+    );
+    expect(() => validarFianza({ importe: 80_000, devueltaEn: '2027-07-01' })).toThrow(
+      expect.objectContaining({ codigo: 'DEVOLUCION_INCOMPLETA' }),
+    );
+  });
+
+  it('fianza válida, con devolución parcial y notas (R6d)', () => {
+    expect(validarFianza({ importe: 80_000 })).toEqual({
+      importe: 80_000,
+      recibidaEn: null,
+      devueltaEn: null,
+      importeDevuelto: null,
+      notas: null,
+    });
+    expect(
+      validarFianza({
+        importe: 80_000,
+        recibidaEn: '2026-09-01',
+        devueltaEn: '2027-07-10',
+        importeDevuelto: 75_000,
+        notas: '  Pintura del cuarto  ',
+      }),
+    ).toMatchObject({ importeDevuelto: 75_000, notas: 'Pintura del cuarto' });
+  });
+
+  it('fianza no válida (R6d)', () => {
+    const codigo = (codigo: string) => expect.objectContaining({ codigo });
+    expect(() => validarFianza({ importe: 0 })).toThrow(codigo('IMPORTE_INVALIDO'));
+    expect(() => validarFianza({ importe: 800.5 })).toThrow(codigo('IMPORTE_INVALIDO'));
+    expect(() =>
+      validarFianza({ importe: 80_000, recibidaEn: '2026-09-01', devueltaEn: '2026-08-31', importeDevuelto: 0 }),
+    ).toThrow(codigo('DEVOLUCION_ANTES_DE_RECEPCION'));
+    expect(() => validarFianza({ importe: 80_000, recibidaEn: '2026-02-30' })).toThrow(codigo('FECHA_INVALIDA'));
+    expect(() => validarFianza({ importe: 80_000, notas: 'x'.repeat(301) })).toThrow(codigo('NOTAS_DEMASIADO_LARGAS'));
   });
 });

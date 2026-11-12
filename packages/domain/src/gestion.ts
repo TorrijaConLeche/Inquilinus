@@ -1,6 +1,6 @@
 import type { MesesParciales, Modalidad } from './alquiler.ts';
 import { ErrorValidacion } from './errores.ts';
-import { rangoDelMes, type Mes } from './fechas.ts';
+import { aDia, rangoDelMes, type Fecha, type Mes } from './fechas.ts';
 
 /** Spec 005, R1: el día de cobro va del 1 al 28. */
 export function validarDiaCobro(dia: number): number {
@@ -104,4 +104,81 @@ export function nombreAnonimo(numero: number): string {
 /** Spec 007, R13: para borrar un inmueble hay que escribir exactamente su nombre. */
 export function confirmaBorradoInmueble(nombreInmueble: string, escrito: string): boolean {
   return nombreInmueble.trim() !== '' && nombreInmueble.trim() === escrito.trim();
+}
+
+/** Spec 007, R6b: tamaño máximo del contrato o del justificante de la fianza (10 MB). */
+export const TAMANO_MAXIMO_DOCUMENTO = 10 * 1024 * 1024;
+
+/** La cabecera `%PDF-` puede ir precedida de basura, pero siempre en los primeros 1024 bytes. */
+const ZONA_CABECERA_PDF = 1024;
+const CABECERA_PDF = [0x25, 0x50, 0x44, 0x46, 0x2d]; // "%PDF-"
+
+/**
+ * Spec 007, R6b: el documento debe ser un PDF de hasta 10 MB. Se mira el contenido,
+ * no la extensión ni el tipo que diga el navegador.
+ */
+export function validarDocumento(contenido: Uint8Array): void {
+  if (contenido.length === 0 || contenido.length > TAMANO_MAXIMO_DOCUMENTO) {
+    throw new ErrorValidacion('FICHERO_INVALIDO', 'El documento debe ocupar como máximo 10 MB');
+  }
+  const limite = Math.min(contenido.length, ZONA_CABECERA_PDF) - CABECERA_PDF.length;
+  for (let i = 0; i <= limite; i++) {
+    if (CABECERA_PDF.every((byte, j) => contenido[i + j] === byte)) return;
+  }
+  throw new ErrorValidacion('FICHERO_INVALIDO', 'El documento tiene que ser un PDF');
+}
+
+/** Spec 007, R6d: longitud máxima de las notas de la fianza. */
+export const LONGITUD_MAXIMA_NOTAS_FIANZA = 300;
+
+export interface DatosFianza {
+  /** Céntimos. */
+  importe: number;
+  recibidaEn?: Fecha | null | undefined;
+  devueltaEn?: Fecha | null | undefined;
+  /** Céntimos. */
+  importeDevuelto?: number | null | undefined;
+  notas?: string | null | undefined;
+}
+
+export interface FianzaValida {
+
+  importe: number;
+  recibidaEn: Fecha | null;
+  devueltaEn: Fecha | null;
+  importeDevuelto: number | null;
+  notas: string | null;
+}
+
+/** Spec 007, R6d: importe mayor que 0; la devolución lleva fecha e importe juntos, sin pasarse ni adelantarse. */
+export function validarFianza(datos: DatosFianza): FianzaValida {
+  if (!Number.isSafeInteger(datos.importe) || datos.importe <= 0) {
+    throw new ErrorValidacion('IMPORTE_INVALIDO', 'La fianza debe ser un número entero de céntimos mayor que 0');
+  }
+  const recibidaEn = datos.recibidaEn ?? null;
+  const devueltaEn = datos.devueltaEn ?? null;
+  const importeDevuelto = datos.importeDevuelto ?? null;
+  if (recibidaEn !== null) aDia(recibidaEn);
+  if (devueltaEn !== null) aDia(devueltaEn);
+
+  if ((devueltaEn === null) !== (importeDevuelto === null)) {
+    throw new ErrorValidacion('DEVOLUCION_INCOMPLETA', 'La devolución necesita la fecha y el importe devuelto');
+  }
+  if (importeDevuelto !== null) {
+    if (!Number.isSafeInteger(importeDevuelto) || importeDevuelto < 0) {
+      throw new ErrorValidacion('IMPORTE_INVALIDO', 'El importe devuelto debe ser un número entero de céntimos no negativo');
+    }
+    if (importeDevuelto > datos.importe) {
+      throw new ErrorValidacion('DEVOLUCION_MAYOR_QUE_FIANZA', 'No se puede devolver más que la fianza');
+    }
+  }
+  if (recibidaEn !== null && devueltaEn !== null && devueltaEn < recibidaEn) {
+    throw new ErrorValidacion('DEVOLUCION_ANTES_DE_RECEPCION', 'La devolución no puede ser anterior a la recepción');
+  }
+
+  const notas = (datos.notas ?? '').trim();
+  if (notas.length > LONGITUD_MAXIMA_NOTAS_FIANZA) {
+    throw new ErrorValidacion('NOTAS_DEMASIADO_LARGAS', `Las notas admiten como máximo ${LONGITUD_MAXIMA_NOTAS_FIANZA} caracteres`);
+  }
+  return { importe: datos.importe, recibidaEn, devueltaEn, importeDevuelto, notas: notas || null };
 }

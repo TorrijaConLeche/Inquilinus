@@ -11,7 +11,11 @@ export type CodigoError =
   | 'NOMBRE_OBLIGATORIO'
   | 'SIN_HABITACIONES'
   | 'SIN_PRECIO'
-  | 'DIA_COBRO_INVALIDO';
+  | 'DIA_COBRO_INVALIDO'
+  | 'DEVOLUCION_INCOMPLETA'
+  | 'DEVOLUCION_MAYOR_QUE_FIANZA'
+  | 'DEVOLUCION_ANTES_DE_RECEPCION'
+  | 'NOTAS_DEMASIADO_LARGAS';
 
 /** Error de datos de entrada. Los cálculos nunca devuelven un resultado parcial. */
 export class ErrorValidacion extends Error {

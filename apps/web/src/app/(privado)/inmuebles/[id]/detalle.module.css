@@ -124,3 +124,44 @@
   font-size: 0.8125rem;
   color: var(--texto-suave);
 }
+
+/* Documentos y fianza dentro de cada inquilino (spec 007, R6b–R6e). */
+.bloque {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--borde);
+}
+
+.subtitulo {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.documento {
+  display: grid;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+.confirmacion {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--fondo);
+  border-radius: var(--radio-control);
+}
+
+.ayudaPequena {
+  color: var(--texto-suave);
+  font-size: 0.8125rem;
+}
+
+.notas {
+  composes: entrada from "../../../../componentes/formulario.module.css";
+  resize: vertical;
+  font: inherit;
+}

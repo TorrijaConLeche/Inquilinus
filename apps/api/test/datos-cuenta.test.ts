@@ -14,6 +14,8 @@ import type { Correo } from "../src/correo/enviador.ts";
 import { TABLAS_NO_EXPORTADAS } from "../src/cuenta.ts";
 import { crearLimitador } from "../src/limitador.ts";
 import { crearRegistro } from "../src/registro.ts";
+import { crearAlmacenMemoria } from "./almacen-memoria.ts";
+
 
 const URL_BASE = "http://localhost:3000";
 const SECRETO = "secreto-de-pruebas-con-mas-de-32-caracteres";
@@ -48,12 +50,19 @@ async function montar(bucket: Bucket = "funciona") {
     rutaBase: "/api/auth",
   });
   const dependencias: Dependencias = { auth, bd, limitador, registro };
-  if (bucket === "funciona") dependencias.borrarFicheros = async (claves) => void ficherosBorrados.push(claves);
+  if (bucket === "funciona") {
+    const almacen = crearAlmacenMemoria();
+    almacen.borrar = async (claves) => void ficherosBorrados.push(claves);
+    dependencias.almacen = almacen;
+  }
   if (bucket === "falla") {
-    dependencias.borrarFicheros = async () => {
+    const almacen = crearAlmacenMemoria();
+    almacen.borrar = async () => {
       throw new Error("S3 no responde");
     };
+    dependencias.almacen = almacen;
   }
+
   app = crearApp(dependencias, { rutaBase: "/api" });
 }
 
@@ -109,7 +118,7 @@ async function sembrar(usuarioId: string, etiqueta: string) {
   const reparto = await uno(bd.insert(t.reparto).values({ facturaId: factura.id, detalle: {} }).returning());
   await bd.insert(t.repartoLinea).values({ repartoId: reparto.id, inquilinoId: inquilino.id, dias: 31, importe: 1_000 });
   await bd.insert(t.cobroAlquiler).values({ inquilinoId: inquilino.id, mes: "2026-01", renta: 45_000, importe: 45_000, fechaCobro: "2026-01-01", origen: "auto" });
-  await bd.insert(t.fianza).values({ inquilinoId: inquilino.id, importe: 90_000, ficheroId: fichero.id });
+  await bd.insert(t.fianza).values({ inquilinoId: inquilino.id, importe: 90_000 });
   await bd.insert(t.documento).values({ inquilinoId: inquilino.id, tipo: "contrato", ficheroId: fichero.id });
   await bd.insert(t.enlaceInquilino).values({ inquilinoId: inquilino.id, tokenHash: `hash-secreto-${etiqueta}` });
   await bd.insert(t.actividad).values({ inmuebleId: inmueble.id, inquilinoId: inquilino.id, tipo: "alta", detalle: {} });
