@@ -3,7 +3,9 @@
 Next.js (App Router): panel de la propietaria y enlace público del inquilino.
 
 ```
-pnpm --filter @inquilinus/web dev     # http://localhost:3000
+pnpm dev                              # desde la raíz: con la base y el bucket de previsualizaciones (recomendado)
+pnpm --filter @inquilinus/web dev     # http://localhost:3000, sin variables de entorno
+
 pnpm --filter @inquilinus/web build
 pnpm --filter @inquilinus/web test
 ```
