@@ -45,7 +45,20 @@ export function disposicion(nombre: string): string {
   return `inline; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(nombre)}`;
 }
 
+/**
+ * El usuario de la app no tiene permiso para listar el bucket (mínimo
+ * privilegio), así que S3 responde 403 AccessDenied, y no 404, cuando el
+ * objeto no existe. Las claves las construye siempre la API, así que un 403
+ * al leer solo puede ser eso.
+ */
+export function noExiste(error: unknown): boolean {
+  if (error instanceof NoSuchKey) return true;
+  const { name, $metadata } = (error ?? {}) as { name?: string; $metadata?: { httpStatusCode?: number } };
+  return name === "NoSuchKey" || (name === "AccessDenied" && $metadata?.httpStatusCode === 403);
+}
+
 export function crearAlmacenS3(config: {
+
   region: string;
   idClave: string;
   claveSecreta: string;
@@ -77,7 +90,7 @@ export function crearAlmacenS3(config: {
         const respuesta = await cliente.send(new GetObjectCommand({ Bucket, Key: clave }));
         return respuesta.Body ? await respuesta.Body.transformToByteArray() : new Uint8Array();
       } catch (error) {
-        if (error instanceof NoSuchKey) return null;
+        if (noExiste(error)) return null;
         throw error;
       }
     },

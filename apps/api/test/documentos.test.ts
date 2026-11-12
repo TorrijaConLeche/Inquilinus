@@ -6,7 +6,8 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { disposicion } from "../src/almacen.ts";
+import { disposicion, noExiste } from "../src/almacen.ts";
+
 import { crearApp } from "../src/app.ts";
 import { crearAuth } from "../src/auth.ts";
 import * as t from "../src/bd/esquema.ts";
@@ -284,5 +285,14 @@ describe("Nombre del PDF al verlo", () => {
     expect(disposicion('Contrato "Ana" Muñoz.pdf')).toBe(
       `inline; filename="Contrato _Ana_ Mu_oz.pdf"; filename*=UTF-8''Contrato%20%22Ana%22%20Mu%C3%B1oz.pdf`,
     );
+  });
+});
+
+describe("Objeto que no existe en S3", () => {
+  it("sin permiso de listar, S3 responde 403 AccessDenied: cuenta como que no existe", () => {
+    expect(noExiste(Object.assign(new Error("x"), { name: "NoSuchKey" }))).toBe(true);
+    expect(noExiste(Object.assign(new Error("x"), { name: "AccessDenied", $metadata: { httpStatusCode: 403 } }))).toBe(true);
+    expect(noExiste(Object.assign(new Error("x"), { name: "SlowDown", $metadata: { httpStatusCode: 503 } }))).toBe(false);
+    expect(noExiste(new Error("red"))).toBe(false);
   });
 });
