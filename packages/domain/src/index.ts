@@ -68,6 +68,12 @@ export {
   cobrosAGenerarHoy,
   inquilinosConCobroDesactualizado,
   recalcularPideConfirmacion,
+  habitacionesDelMes,
+  validarMesGenerable,
+  validarFechaPago,
+  validarFecha,
+  importesEditados,
+  cobroManual,
   type CobroGenerado,
   type EntradaCobros,
 } from './cobros.ts';

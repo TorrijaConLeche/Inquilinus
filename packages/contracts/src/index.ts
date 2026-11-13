@@ -1,5 +1,14 @@
 export { RespuestaError } from './comunes.ts';
 export {
+  Cobro,
+  EdicionCobro,
+  GeneracionCobros,
+  ListaCobros,
+  NuevoCobro,
+  ResultadoGeneracion,
+  rutasCobros,
+} from './cobros.ts';
+export {
   COOKIE_IDIOMA,
   elegirIdioma,
   esIdioma,
