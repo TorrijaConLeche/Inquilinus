@@ -29,6 +29,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 - **R12** — Las facturas de un lote se leen en paralelo y de forma independiente: si una falla, las demás siguen (R8).
 - **R13** — Tras la subida, las facturas aparecen en una lista **por revisar**. Se pueden confirmar una a una o con **"Confirmar todas"**, que confirma las que están completas y deja en la lista las que tienen algún campo vacío. Al terminar, la app propone agrupar las confirmadas en una liquidación (spec 011).
 - **R14** — El aviso de solapes (R6) también compara las facturas del mismo lote entre sí.
+- **R14b** — Para el aviso de solapes cuentan las facturas ya confirmadas del inmueble y las del mismo lote que tengan tipo y periodo. Con **"Confirmar todas"**, las que se solapan con otra se quedan por revisar con su aviso (como las incompletas), y la usuaria las confirma una a una si quiere continuar.
 - **R15** — Si en un lote hay más facturas que lecturas de IA disponibles en el plan (spec 010, R2), se leen con IA las primeras en orden de subida y las demás quedan para rellenar a mano.
 - **R16** — Una factura que aún no está confirmada se puede **descartar**: se borra con su PDF. La subida va directa al bucket privado con permisos firmados, como los documentos (spec 007, R6c).
 
