@@ -10,6 +10,8 @@ export const ConceptoPendiente = z
     id: z.uuid(),
     /** Hasta la fase 5 solo hay alquileres. */
     tipo: z.enum(['alquiler', 'gasto']),
+    /** Nombre del tipo de gasto («Luz»); null en el alquiler. */
+    nombreGasto: z.string().nullable(),
     mes: Mes,
     importe: Centimos,
     /** De un mes anterior al actual (R3): va destacado y primero. */

@@ -2,12 +2,16 @@
 // ya la exige el middleware de inmuebles; aquí se comprueba que el inmueble es suyo.
 import {
   ConfirmacionFactura,
+  ConfirmacionReparto,
+  EdicionParte,
   ConfirmacionTodas,
   EdicionFactura,
   NuevasFacturas,
   PeticionSubidasFacturas,
   type Factura,
   type ListaFacturas,
+  type ParteReparto,
+  type RepartoFactura,
   type RespuestaSolape,
   type ResultadoConfirmacionTodas,
   type PermisosSubida,
@@ -28,7 +32,10 @@ import {
   listarFacturas,
   prepararSubidasFacturas,
   urlPdfFactura,
+  verFactura,
 } from "../facturas.ts";
+import { hoyEnMadrid } from "../fechas.ts";
+import { deshacerReparto, marcarParte, recalcularReparto, verReparto } from "../repartos.ts";
 import { esSuyo } from "../inmuebles.ts";
 import { ids, leer, noEncontrado, type EntornoSesion } from "./comunes.ts";
 
@@ -91,7 +98,7 @@ export function registrarRutasFacturas(
     const v = await delInmueble(c);
     if (!v) return noEncontrado(c);
     const { lote } = await leer(c, ConfirmacionTodas);
-    return c.json<ResultadoConfirmacionTodas>(await confirmarTodas(bd, v[0]!, lote));
+    return c.json<ResultadoConfirmacionTodas>(await confirmarTodas(bd, v[0]!, lote, ahora()));
   });
 
   app.post("/inmuebles/:idInmueble/facturas/:idFactura/confirmar", async (c) => {
@@ -99,7 +106,7 @@ export function registrarRutasFacturas(
     if (!v) return noEncontrado(c);
     const { continuarConSolapes } = await leer(c, ConfirmacionFactura);
     try {
-      const factura = await confirmarFactura(bd, v[0]!, v[1]!, continuarConSolapes === true);
+      const factura = await confirmarFactura(bd, v[0]!, v[1]!, continuarConSolapes === true, ahora());
       return factura ? c.json<Factura>(factura) : noEncontrado(c);
     } catch (error) {
       // R6: se avisa mostrando las facturas con las que se solapa; la usuaria decide.
@@ -108,6 +115,39 @@ export function registrarRutasFacturas(
       }
       throw error;
     }
+  });
+
+  // --- Reparto guardado (spec 001, R10–R14) --------------------------------
+
+  app.get("/inmuebles/:idInmueble/facturas/:idFactura/reparto", async (c) => {
+    const v = await delInmueble(c, "idFactura");
+    if (!v) return noEncontrado(c);
+    const reparto = await verReparto(bd, v[0]!, v[1]!);
+    return reparto ? c.json<RepartoFactura>(reparto) : noEncontrado(c);
+  });
+
+  app.post("/inmuebles/:idInmueble/facturas/:idFactura/recalcular", async (c) => {
+    const v = await delInmueble(c, "idFactura");
+    if (!v) return noEncontrado(c);
+    const { confirmar } = await leer(c, ConfirmacionReparto);
+    if (!(await recalcularReparto(bd, v[0]!, v[1]!, confirmar === true))) return noEncontrado(c);
+    return c.json<Factura>(await verFactura(bd, v[1]!));
+  });
+
+  app.post("/inmuebles/:idInmueble/facturas/:idFactura/deshacer", async (c) => {
+    const v = await delInmueble(c, "idFactura");
+    if (!v) return noEncontrado(c);
+    const { confirmar } = await leer(c, ConfirmacionReparto);
+    if (!(await deshacerReparto(bd, v[0]!, v[1]!, confirmar === true))) return noEncontrado(c);
+    return c.json<Factura>(await verFactura(bd, v[1]!));
+  });
+
+  app.patch("/inmuebles/:idInmueble/partes/:idParte", async (c) => {
+    const v = await delInmueble(c, "idParte");
+    if (!v) return noEncontrado(c);
+    const { pagadoEn } = await leer(c, EdicionParte);
+    const parte = await marcarParte(bd, v[0]!, v[1]!, pagadoEn, hoyEnMadrid(ahora()));
+    return parte ? c.json<ParteReparto>(parte) : noEncontrado(c);
   });
 
   app.delete("/inmuebles/:idInmueble/facturas/:idFactura", async (c) => {

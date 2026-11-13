@@ -117,3 +117,10 @@ export function repartirSuministro(entrada: EntradaRepartoSuministro): Resultado
     sinOcupar: { dias: diasSinOcupar, importe: redondeados[orden.length]! },
   };
 }
+
+/** Spec 001, R13: ¿cambia el reparto? Cuenta lo de cada inquilino y lo sin ocupar, no el orden. */
+export function repartosDistintos(a: ResultadoRepartoSuministro, b: ResultadoRepartoSuministro): boolean {
+  const clave = (r: ResultadoRepartoSuministro) =>
+    [...r.lineas.map((l) => `${l.inquilinoId}:${l.dias}:${l.importe}`).sort(), `sin:${r.sinOcupar.dias}:${r.sinOcupar.importe}`].join("|");
+  return clave(a) !== clave(b);
+}

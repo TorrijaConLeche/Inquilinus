@@ -47,7 +47,7 @@ pnpm --filter @inquilinus/api test
 | `PATCH /inmuebles/:id/cobros/:id` | Renta, recargo o fecha (queda editado si cambia algo), `quitado` para quitar o restaurar, y `pagadoEn` (no posterior a hoy) o `null` (R7, R10, R11). |
 | `PUT`, `DELETE …/inquilinos/:id/fianza` | Una fianza por inquilino: importe, recepción y devolución (fecha e importe juntos, nunca mayor que la fianza) y notas cortas (R6d). |
 
-Cualquier cambio que pueda alterar el cálculo de meses con cobros (estancias, precios, meses a medias, habitaciones nuevas, archivadas o borradas, borrar un inquilino) pasa por `vigilarCobros` (`src/cobros.ts`): calcula esos meses antes y después y marca como desactualizados los cobros no quitados cuyo cálculo cambia (spec 005, R6).
+Cualquier cambio que pueda alterar el cálculo de meses con cobros (estancias, precios, meses a medias, habitaciones nuevas, archivadas o borradas, borrar un inquilino) pasa por `vigilarCalculos` (`src/cobros.ts`): calcula esos meses y los repartos de facturas antes y después y marca como desactualizados los cobros no quitados y los repartos cuyo cálculo cambia (spec 005, R6; spec 001, R13).
 
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).
 

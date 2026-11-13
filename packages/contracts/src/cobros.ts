@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { Fecha, RespuestaError } from './comunes.ts';
 import { Centimos, Mes } from './inmuebles.ts';
+import { ParteGasto } from './repartos.ts';
 
 // Cobros de alquiler (spec 005). Importes en céntimos; el mes del cobro no cambia nunca.
 
@@ -75,8 +76,10 @@ export type ListaCobros = z.infer<typeof ListaCobros>;
 export const ResultadoGeneracion = z.object({ creados: z.array(Cobro) }).meta({ id: 'ResultadoGeneracion' });
 export type ResultadoGeneracion = z.infer<typeof ResultadoGeneracion>;
 
-/** Lo marcado por «Todo pagado», para poder deshacerlo (spec 009, R10). */
-export const ResultadoPagoTodo = z.object({ marcados: z.array(Cobro) }).meta({ id: 'ResultadoPagoTodo' });
+/** Lo marcado por «Todo pagado» (alquiler y partes de gastos), para poder deshacerlo (spec 009, R10). */
+export const ResultadoPagoTodo = z
+  .object({ marcados: z.array(Cobro), partes: z.array(ParteGasto) })
+  .meta({ id: 'ResultadoPagoTodo' });
 export type ResultadoPagoTodo = z.infer<typeof ResultadoPagoTodo>;
 
 /** Spec 009, R6–R12: todo lo de la pantalla de cobros de un mes del inmueble. */
@@ -91,6 +94,12 @@ export const CobrosDelMes = z
     atrasados: z.array(Cobro),
     /** Renta de habitaciones vacías que asume la propietaria ese mes (R11); null si no se puede calcular. */
     asumePropietario: Centimos.nullable(),
+    /** R8: partes de gastos de las facturas repartidas ese mes. */
+    gastos: z.array(ParteGasto),
+    /** R7: partes de gastos pendientes de meses anteriores al mes en curso, sin el elegido. */
+    gastosAtrasados: z.array(ParteGasto),
+    /** R11: lo sin ocupar de las facturas repartidas ese mes, que también asume la propietaria. */
+    asumePropietarioGastos: Centimos,
   })
   .meta({ id: 'CobrosDelMes' });
 export type CobrosDelMes = z.infer<typeof CobrosDelMes>;

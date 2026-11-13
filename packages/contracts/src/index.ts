@@ -76,6 +76,7 @@ export {
 } from './documentos.ts';
 export {
   ConfirmacionFactura,
+  ConfirmacionReparto,
   ConfirmacionTodas,
   EdicionFactura,
   EstadoFactura,
@@ -89,6 +90,7 @@ export {
   ResultadoSubidaFacturas,
   rutasFacturas,
 } from './facturas.ts';
+export { EdicionParte, ParteGasto, ParteReparto, RepartoFactura, ResumenReparto } from './repartos.ts';
 export { generarOpenApi } from './openapi.ts';
 export { ConceptoPendiente, Panel, rutasPanel } from './panel.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';

@@ -356,6 +356,8 @@ export const reparto = pgTable("reparto", {
   calculadoEn: momento().notNull().defaultNow(),
   /** Tramos de días con los presentes, para la vista del inquilino (spec 004). */
   detalle: jsonb().notNull(),
+  /** Las estancias cambiaron después de repartir (spec 001, R13). */
+  desactualizado: boolean().notNull().default(false),
   ...marcas,
 });
 

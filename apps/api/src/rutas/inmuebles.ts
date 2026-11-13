@@ -16,7 +16,7 @@ import type { Almacen } from "../almacen.ts";
 import { borrarInmueble } from "../archivo.ts";
 import type { Auth } from "../auth.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
-import { vigilarCobros } from "../cobros.ts";
+import { vigilarCalculos } from "../cobros.ts";
 import { resumenDelPanel } from "../panel.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import {
@@ -51,7 +51,7 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
    * marca los que salen distintos. Primero se comprueba que el inmueble es suyo.
    */
   const vigilado = async (c: Context<Entorno>, inmuebleId: string, cambio: () => Promise<boolean>) =>
-    (await esSuyo(bd, c.get("usuarioId"), inmuebleId)) ? vigilarCobros(bd, inmuebleId, cambio) : false;
+    (await esSuyo(bd, c.get("usuarioId"), inmuebleId)) ? vigilarCalculos(bd, inmuebleId, cambio) : false;
 
   // Todas exigen sesión; el usuario sale de la sesión, nunca de la petición.
   app.use("/inmuebles", async (c, next) => sesion(c, next));

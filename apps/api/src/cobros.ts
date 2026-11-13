@@ -1,7 +1,7 @@
 // Cobros de alquiler (spec 005): listar, generar a mano, añadir, editar,
 // mover, quitar, restaurar y marcar pagado. Las funciones reciben un inmueble
 // que ya se ha comprobado que es del usuario; aquí todo se filtra además por él.
-import type { Cobro, EdicionCobro, NuevoCobro } from "@inquilinus/contracts";
+import type { Cobro, CobrosDelMes, EdicionCobro, NuevoCobro, ParteGasto } from "@inquilinus/contracts";
 import {
   calcularAlquilerMes,
   cobroManual,
@@ -19,12 +19,15 @@ import {
   validarFechaPago,
   validarMesGenerable,
   type EntradaCobros,
+  repartosDistintos,
   type ResultadoAlquilerMes,
+  type ResultadoRepartoSuministro,
 } from "@inquilinus/domain";
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
+import { calcularReparto, pagarPartesDelMes, partesDeGastos, repartosVigilados, sinOcuparDelMes } from "./repartos.ts";
 
 type FilaCobro = typeof t.cobroAlquiler.$inferSelect;
 
@@ -301,23 +304,59 @@ function calculosDeMeses(datos: DatosInmueble, meses: string[]): Map<string, Res
   return calculos;
 }
 
+/** El reparto de una factura con unas estancias; null si no se puede calcular. */
+function repartoSeguro(
+  factura: { periodoInicio: string | null; periodoFin: string | null; importeTotal: number | null },
+  ocupaciones: Parameters<typeof calcularReparto>[1],
+): ResultadoRepartoSuministro | null {
+  if (!factura.periodoInicio || !factura.periodoFin || factura.importeTotal === null) return null;
+  try {
+    return calcularReparto(
+      { periodoInicio: factura.periodoInicio, periodoFin: factura.periodoFin, importeTotal: factura.importeTotal },
+      ocupaciones,
+    );
+  } catch (error) {
+    if (!(error instanceof ErrorValidacion)) throw error;
+    return null;
+  }
+}
+
 /**
  * R6: hace un cambio en el inmueble y marca como desactualizados los cobros
  * (no quitados) cuyo cálculo sale distinto después. Compara cálculo con
  * cálculo, no con lo guardado, así que lo editado a mano solo se marca si
  * cambia su cálculo. Si el cambio falla, no se marca nada.
  */
-export async function vigilarCobros<T>(bd: ConexionBd, inmuebleId: string, cambio: () => Promise<T>): Promise<T> {
-  const cobros = await bd
-    .select({ mes: t.cobroAlquiler.mes, inquilinoId: t.cobroAlquiler.inquilinoId })
-    .from(t.cobroAlquiler)
-    .where(and(inArray(t.cobroAlquiler.inquilinoId, inquilinosDe(bd, inmuebleId)), isNull(t.cobroAlquiler.quitadoEn)));
-  if (cobros.length === 0) return cambio();
+export async function vigilarCalculos<T>(bd: ConexionBd, inmuebleId: string, cambio: () => Promise<T>): Promise<T> {
+  const [cobros, repartos] = await Promise.all([
+    bd
+      .select({ mes: t.cobroAlquiler.mes, inquilinoId: t.cobroAlquiler.inquilinoId })
+      .from(t.cobroAlquiler)
+      .where(and(inArray(t.cobroAlquiler.inquilinoId, inquilinosDe(bd, inmuebleId)), isNull(t.cobroAlquiler.quitadoEn))),
+    repartosVigilados(bd, inmuebleId),
+  ]);
+  if (cobros.length === 0 && repartos.length === 0) return cambio();
 
   const meses = [...new Set(cobros.map((c) => c.mes))];
-  const antes = calculosDeMeses(await datosDelInmueble(bd, inmuebleId), meses);
+  const datosAntes = await datosDelInmueble(bd, inmuebleId);
+  const antes = calculosDeMeses(datosAntes, meses);
+  const repartosAntes = repartos.map((r) => repartoSeguro(r, datosAntes.ocupaciones));
   const resultado = await cambio();
-  const despues = calculosDeMeses(await datosDelInmueble(bd, inmuebleId), meses);
+  const datosDespues = await datosDelInmueble(bd, inmuebleId);
+  const despues = calculosDeMeses(datosDespues, meses);
+
+  // Spec 001, R13: los repartos cuyo cálculo sale distinto quedan desactualizados.
+  const repartosCambiados = repartos.filter((r, n) => {
+    const a = repartosAntes[n] ?? null;
+    const d = repartoSeguro(r, datosDespues.ocupaciones);
+    return a && d ? repartosDistintos(a, d) : a !== d;
+  });
+  if (repartosCambiados.length > 0) {
+    await bd
+      .update(t.reparto)
+      .set({ desactualizado: true, actualizadoEn: new Date() })
+      .where(inArray(t.reparto.id, repartosCambiados.map((r) => r.repartoId)));
+  }
 
   for (const mes of meses) {
     const a = antes.get(mes) ?? null;
@@ -390,8 +429,14 @@ export async function cobrosDelMes(
   inmuebleId: string,
   mes: string,
   mesActual: string,
-): Promise<{ mes: string; cobros: Cobro[]; quitados: Cobro[]; atrasados: Cobro[]; asumePropietario: number | null }> {
-  const [todos, datos] = await Promise.all([listarCobros(bd, inmuebleId, { quitados: true }), datosDelInmueble(bd, inmuebleId)]);
+): Promise<CobrosDelMes> {
+  const [todos, datos, partes, asumePropietarioGastos] = await Promise.all([
+    listarCobros(bd, inmuebleId, { quitados: true }),
+    datosDelInmueble(bd, inmuebleId),
+    partesDeGastos(bd, [inmuebleId]),
+    sinOcuparDelMes(bd, inmuebleId, mes),
+  ]);
+  const sinInmueble = partes.map(({ inmuebleId: _, ...p }) => p);
   let asumePropietario: number | null = null;
   try {
     asumePropietario = calcularAlquilerMes({ ...entradaParaMes(datos, mes), mes }).propietario;
@@ -406,6 +451,12 @@ export async function cobrosDelMes(
       .filter((c) => c.mes < mesActual && c.mes !== mes && !c.quitado && c.pagadoEn === null)
       .sort((a, b) => (a.mes === b.mes ? 0 : a.mes < b.mes ? -1 : 1)),
     asumePropietario,
+    // Spec 009, R8: las partes de gastos van con el mes en que se repartió la factura.
+    gastos: sinInmueble.filter((p) => p.mes === mes),
+    gastosAtrasados: sinInmueble
+      .filter((p) => p.mes < mesActual && p.mes !== mes && p.pagadoEn === null)
+      .sort((a, b) => (a.mes === b.mes ? 0 : a.mes < b.mes ? -1 : 1)),
+    asumePropietarioGastos,
   };
 }
 
@@ -419,7 +470,7 @@ export async function pagarTodo(
   inmuebleId: string,
   pago: { inquilinoId: string; mes: string; fecha?: string | undefined },
   hoy: string,
-): Promise<Cobro[] | null> {
+): Promise<{ marcados: Cobro[]; partes: ParteGasto[] } | null> {
   const [inquilino] = await bd
     .select({ id: t.inquilino.id })
     .from(t.inquilino)
@@ -438,5 +489,7 @@ export async function pagarTodo(
       ),
     )
     .returning();
-  return filas.map(aCobro);
+  // Y sus partes de gastos de ese mes (spec 009, R10).
+  const partes = await pagarPartesDelMes(bd, inmuebleId, pago.inquilinoId, pago.mes, fecha);
+  return { marcados: filas.map(aCobro), partes };
 }

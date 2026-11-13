@@ -1,7 +1,7 @@
 // Facturas de suministros (spec 003): subida múltiple al bucket privado,
 // lectura con IA si está activada y lista por revisar. Las funciones reciben
 // un inmueble que ya se ha comprobado que es del usuario; todo se filtra por él.
-import type { EdicionFactura, Factura, PermisoSubida } from "@inquilinus/contracts";
+import type { EdicionFactura, Factura, PermisoSubida, ResumenReparto } from "@inquilinus/contracts";
 import {
   aDia,
   ErrorValidacion,
@@ -21,13 +21,14 @@ import * as t from "./bd/esquema.ts";
 import { prepararSubida, SEGUNDOS_PERMISO } from "./documentos.ts";
 import { ErrorPeticion } from "./errores.ts";
 import { leerConLimite, type ExtractorFacturas } from "./extractor.ts";
+import { crearReparto, resumenesDeReparto } from "./repartos.ts";
 
 /** R13: las que faltan por confirmar. */
 const POR_REVISAR = ["subida", "propuesta", "error_extraccion"] as const;
 
 type FilaFactura = typeof t.factura.$inferSelect & { nombreFichero: string };
 
-function aFactura(fila: FilaFactura): Factura {
+function aFactura(fila: FilaFactura, reparto: ResumenReparto | null = null): Factura {
   const propuesta = fila.propuestaIa as PropuestaFactura | null;
   return {
     id: fila.id,
@@ -42,7 +43,17 @@ function aFactura(fila: FilaFactura): Factura {
       ? { inicio: propuesta.inicio, fin: propuesta.fin, importe: propuesta.importe, tipoGastoId: propuesta.tipoGastoId }
       : null,
     subidaEn: fila.creadoEn.toISOString(),
+    reparto,
   };
+}
+
+/** Las facturas con el resumen de su reparto (spec 001, R10), si lo tienen. */
+async function conRepartos(bd: ConexionBd, filas: FilaFactura[]): Promise<Factura[]> {
+  const repartos = await resumenesDeReparto(
+    bd,
+    filas.filter((f) => f.estado === "repartida").map((f) => f.id),
+  );
+  return filas.map((f) => aFactura(f, repartos.get(f.id) ?? null));
 }
 
 function consultaFacturas(bd: ConexionBd) {
@@ -74,7 +85,7 @@ export async function listarFacturas(bd: ConexionBd, inmuebleId: string, opcione
       and(eq(t.factura.inmuebleId, inmuebleId), ...(opciones.porRevisar ? [inArray(t.factura.estado, [...POR_REVISAR])] : [])),
     )
     .orderBy(asc(t.factura.creadoEn), asc(t.fichero.nombreOriginal));
-  return filas.map(aFactura);
+  return conRepartos(bd, filas);
 }
 
 /** R1 y R16: un permiso firmado por PDF, de 1 a 20. */
@@ -196,7 +207,7 @@ export async function crearFacturas(
       : await consultaFacturas(bd)
           .where(inArray(t.factura.id, aceptadas.map((a) => a.facturaId)))
           .orderBy(asc(t.fichero.nombreOriginal));
-  return { lote, facturas: facturas.map(aFactura), rechazadas };
+  return { lote, facturas: await conRepartos(bd, facturas), rechazadas };
 }
 
 async function facturaDe(bd: ConexionBd, inmuebleId: string, facturaId: string) {
@@ -282,8 +293,7 @@ export async function editarFactura(
   if (Object.keys(cambios).length > 0) {
     await bd.update(t.factura).set({ ...cambios, actualizadoEn: new Date() }).where(eq(t.factura.id, facturaId));
   }
-  const [fila] = await consultaFacturas(bd).where(eq(t.factura.id, facturaId));
-  return aFactura(fila!);
+  return verFactura(bd, facturaId);
 }
 
 /** R6, R14 y R14b: las confirmadas del inmueble y las del mismo lote con tipo y periodo que se solapan. */
@@ -306,7 +316,10 @@ async function solapadasCon(
     factura,
     candidatas.map((c) => ({ id: c.id, tipoGastoId: c.tipoGastoId!, inicio: c.periodoInicio!, fin: c.periodoFin! })),
   );
-  return candidatas.filter((c) => ids.includes(c.id)).map(aFactura);
+  return conRepartos(
+    bd,
+    candidatas.filter((c) => ids.includes(c.id)),
+  );
 }
 
 /**
@@ -319,6 +332,7 @@ export async function confirmarFactura(
   inmuebleId: string,
   facturaId: string,
   continuarConSolapes: boolean,
+  ahora: Date = new Date(),
 ): Promise<Factura | null> {
   const actual = await porRevisarDe(bd, inmuebleId, facturaId);
   if (!actual) return null;
@@ -330,9 +344,14 @@ export async function confirmarFactura(
   });
   const solapadas = await solapadasCon(bd, inmuebleId, { id: facturaId, lote: actual.lote, ...valida });
   if (solapadas.length > 0 && !continuarConSolapes) throw new ErrorSolape(solapadas);
-  await bd.update(t.factura).set({ estado: "confirmada", actualizadoEn: new Date() }).where(eq(t.factura.id, facturaId));
-  const [fila] = await consultaFacturas(bd).where(eq(t.factura.id, facturaId));
-  return aFactura(fila!);
+  // Spec 001, R10 y spec 003, R11: toda factura confirmada se reparte en ese momento.
+  await crearReparto(bd, inmuebleId, {
+    id: facturaId,
+    periodoInicio: valida.inicio,
+    periodoFin: valida.fin,
+    importeTotal: valida.importe,
+  }, ahora);
+  return verFactura(bd, facturaId);
 }
 
 /**
@@ -343,13 +362,14 @@ export async function confirmarTodas(
   bd: ConexionBd,
   inmuebleId: string,
   lote: string | undefined,
+  ahora: Date = new Date(),
 ): Promise<{ confirmadas: Factura[]; pendientes: { id: string; motivo: "incompleta" | "solape"; solapadas: string[] }[] }> {
   const porRevisar = (await listarFacturas(bd, inmuebleId, { porRevisar: true })).filter((f) => !lote || f.lote === lote);
   const confirmadas: Factura[] = [];
   const pendientes: { id: string; motivo: "incompleta" | "solape"; solapadas: string[] }[] = [];
   for (const factura of porRevisar) {
     try {
-      const confirmada = await confirmarFactura(bd, inmuebleId, factura.id, false);
+      const confirmada = await confirmarFactura(bd, inmuebleId, factura.id, false, ahora);
       if (confirmada) confirmadas.push(confirmada);
     } catch (error) {
       if (error instanceof ErrorSolape) {
@@ -362,4 +382,10 @@ export async function confirmarTodas(
     }
   }
   return { confirmadas, pendientes };
+}
+
+/** Una factura con su reparto. */
+export async function verFactura(bd: ConexionBd, facturaId: string): Promise<Factura> {
+  const filas = await consultaFacturas(bd).where(eq(t.factura.id, facturaId));
+  return (await conRepartos(bd, filas))[0]!;
 }

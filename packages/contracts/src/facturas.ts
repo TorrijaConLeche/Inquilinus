@@ -3,6 +3,7 @@ import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { Fecha, RespuestaError } from './comunes.ts';
 import { PermisoSubida } from './documentos.ts';
 import { Centimos } from './inmuebles.ts';
+import { EdicionParte, ParteReparto, RepartoFactura, ResumenReparto } from './repartos.ts';
 
 // Facturas de suministros (spec 003). Importes en céntimos; periodos como días naturales.
 
@@ -47,6 +48,10 @@ export const ConfirmacionFactura = z
   .meta({ id: 'ConfirmacionFactura' });
 export type ConfirmacionFactura = z.infer<typeof ConfirmacionFactura>;
 
+/** Spec 001, R13 y R14: recalcular o deshacer con partes pagadas pide `confirmar: true`. */
+export const ConfirmacionReparto = z.strictObject({ confirmar: z.boolean().optional() }).meta({ id: 'ConfirmacionReparto' });
+export type ConfirmacionReparto = z.infer<typeof ConfirmacionReparto>;
+
 /** R13: confirma las completas y sin solapes; con `lote`, solo las de ese lote. */
 export const ConfirmacionTodas = z.strictObject({ lote: z.uuid().optional() }).meta({ id: 'ConfirmacionTodas' });
 export type ConfirmacionTodas = z.infer<typeof ConfirmacionTodas>;
@@ -75,6 +80,8 @@ export const Factura = z
       })
       .nullable(),
     subidaEn: z.iso.datetime(),
+    /** Spec 001, R10: el reparto de una factura repartida; null si aún no se ha repartido. */
+    reparto: ResumenReparto.nullable(),
   })
   .meta({ id: 'Factura' });
 export type Factura = z.infer<typeof Factura>;
@@ -194,6 +201,45 @@ export const rutasFacturas = {
       tags: ['Facturas'],
       requestParams: { path: conFactura },
       responses: { '204': { description: 'Descartada' }, ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/facturas/{idFactura}/reparto': {
+    get: {
+      operationId: 'verReparto',
+      summary: 'Reparto guardado de una factura con su detalle por tramos (spec 001, R10)',
+      tags: ['Facturas'],
+      requestParams: { path: conFactura },
+      responses: { '200': json(RepartoFactura, 'Reparto'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/facturas/{idFactura}/recalcular': {
+    post: {
+      operationId: 'recalcularReparto',
+      summary: 'Pone las partes del cálculo actual; cada inquilino conserva su pago; con partes pagadas pide confirmar (spec 001, R13)',
+      tags: ['Facturas'],
+      requestParams: { path: conFactura },
+      requestBody: cuerpo(ConfirmacionReparto),
+      responses: { '200': json(Factura, 'Recalculada'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/facturas/{idFactura}/deshacer': {
+    post: {
+      operationId: 'deshacerConfirmacion',
+      summary: 'Devuelve la factura a por revisar y borra su reparto; con partes pagadas pide confirmar (spec 001, R14)',
+      tags: ['Facturas'],
+      requestParams: { path: conFactura },
+      requestBody: cuerpo(ConfirmacionReparto),
+      responses: { '200': json(Factura, 'Por revisar otra vez'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/partes/{idParte}': {
+    patch: {
+      operationId: 'editarParte',
+      summary: 'Marcar una parte de gasto pagada o pendiente (spec 001, R11)',
+      tags: ['Facturas'],
+      requestParams: { path: enInmueble.extend({ idParte: z.uuid() }) },
+      requestBody: cuerpo(EdicionParte),
+      responses: { '200': json(ParteReparto, 'Parte'), ...errores },
     },
   },
   '/inmuebles/{idInmueble}/facturas/{idFactura}/pdf': {
