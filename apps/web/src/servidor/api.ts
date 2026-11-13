@@ -58,9 +58,10 @@ export async function metodoDobleFactorDe(usuario: UsuarioSesion): Promise<Metod
 }
 
 /** Inmuebles del usuario (spec 007), consultados directamente sin pasar por HTTP. */
-export async function inmueblesDe(usuario: UsuarioSesion): Promise<ResumenInmueble[]> {
+/** Inmuebles del usuario; con `archivados`, también los archivados (spec 007, R11c). */
+export async function inmueblesDe(usuario: UsuarioSesion, { archivados = false } = {}): Promise<ResumenInmueble[]> {
   if (!dependencias.bd) return [];
-  return listarInmuebles(dependencias.bd, usuario.id, { archivados: false });
+  return listarInmuebles(dependencias.bd, usuario.id, { archivados });
 }
 
 /** Detalle de un inmueble del usuario, o null si no es suyo o no existe. */

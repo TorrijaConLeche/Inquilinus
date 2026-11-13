@@ -12,9 +12,9 @@ import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
 
 /** Qué formulario está abierto: uno cada vez. */
-type Abierto = { tipo: "renombrar" | "precio"; id: string } | { tipo: "nueva" } | null;
+type Abierto = { tipo: "renombrar" | "precio" | "borrar"; id: string } | { tipo: "nueva" } | null;
 
-/** Habitaciones con su precio actual e historial (spec 007, R3 y R4). */
+/** Habitaciones con su precio actual e historial (spec 007, R3 y R4); archivar, restaurar y borrar (R11). */
 export function Habitaciones({
   inmuebleId,
   habitaciones,
@@ -57,6 +57,20 @@ export function Habitaciones({
     await ejecutar(`/inmuebles/${inmuebleId}/habitaciones/${id}/precios`, { cuerpo: { desdeMes, precioMensual: centimos } }, cerrar);
   };
 
+  const borrar = async (e: FormEvent, id: string) => {
+    e.preventDefault();
+    await ejecutar(`/inmuebles/${inmuebleId}/habitaciones/${id}`, { metodo: "DELETE" }, cerrar);
+  };
+
+  /** R11: archivar o restaurar al momento; si no se puede (R11b), el error sale arriba. */
+  const archivar = (id: string, archivada: boolean) => {
+    setAbierto(null);
+    void ejecutar(`/inmuebles/${inmuebleId}/habitaciones/${id}`, { metodo: "PATCH", cuerpo: { archivada } });
+  };
+
+  const activas = habitaciones.filter((h) => !h.archivada);
+  const archivadas = habitaciones.filter((h) => h.archivada);
+
   const anadir = async (e: FormEvent) => {
     e.preventDefault();
     setRevisado(true);
@@ -93,8 +107,9 @@ export function Habitaciones({
   return (
     <section className={estilos.seccion} aria-labelledby="titulo-habitaciones">
       <h2 id="titulo-habitaciones">{t("habitaciones")}</h2>
+      {error && !abierto && <Aviso tipo="error">{te(error)}</Aviso>}
       <ul className={propias.lista}>
-        {habitaciones.map((h) => (
+        {activas.map((h) => (
           <li key={h.id} className={propias.elemento}>
             <div className={propias.fila}>
               <span className={propias.nombre}>{h.nombre}</span>
@@ -136,6 +151,19 @@ export function Habitaciones({
                 <p className={propias.suave}>{t("precioExplicacion")}</p>
                 {botones(t("guardarPrecio"))}
               </form>
+            ) : abierto && abierto.tipo === "borrar" && abierto.id === h.id ? (
+              <form className={propias.confirmacion} onSubmit={(e) => borrar(e, h.id)} noValidate>
+                {error && <Aviso tipo="error">{te(error)}</Aviso>}
+                <span>{t("confirmarBorrar", { que: h.nombre })}</span>
+                <div className={propias.botones}>
+                  <button type="button" className={formulario.botonSecundario} onClick={cerrar}>
+                    {t("cancelar")}
+                  </button>
+                  <button type="submit" className={formulario.botonPeligro} disabled={enviando}>
+                    {t("siBorrar")}
+                  </button>
+                </div>
+              </form>
             ) : (
               <div className={propias.acciones}>
                 <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "precio", id: h.id })}>
@@ -148,11 +176,37 @@ export function Habitaciones({
                 >
                   {t("renombrar")}
                 </button>
+                {/* R11: con estancias se archiva; sin ellas, se borra. */}
+                {h.conEstancias ? (
+                  <button type="button" className={formulario.botonEnlace} disabled={enviando} onClick={() => archivar(h.id, true)}>
+                    {t("archivar")}
+                  </button>
+                ) : (
+                  <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "borrar", id: h.id })}>
+                    {t("borrar")}
+                  </button>
+                )}
               </div>
             )}
           </li>
         ))}
       </ul>
+
+      {archivadas.length > 0 && (
+        <details className={propias.archivadas}>
+          <summary>{t("habitacionesArchivadas", { n: archivadas.length })}</summary>
+          <ul className={propias.estancias}>
+            {archivadas.map((h) => (
+              <li key={h.id} className={propias.fila}>
+                <span>{h.nombre}</span>
+                <button type="button" className={formulario.botonEnlace} disabled={enviando} onClick={() => archivar(h.id, false)}>
+                  {t("restaurar")}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
 
       {abierto?.tipo === "nueva" ? (
         <form className={propias.enLinea} onSubmit={anadir} noValidate>

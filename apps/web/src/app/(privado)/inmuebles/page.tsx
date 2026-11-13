@@ -1,3 +1,4 @@
+import type { ResumenInmueble } from "@inquilinus/contracts";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Aviso } from "../../../componentes/Aviso";
@@ -11,13 +12,36 @@ export async function generateMetadata() {
   return { title: t("titulo") };
 }
 
-/** Lista de los inmuebles de la cuenta (spec 007). El detalle llega en la tarea 3.5. */
-export default async function Inmuebles({ searchParams }: { searchParams: Promise<{ creado?: string }> }) {
+/** Lista de los inmuebles de la cuenta (spec 007). Los archivados, aparte y solo si se piden (R11c). */
+export default async function Inmuebles({
+  searchParams,
+}: {
+  searchParams: Promise<{ creado?: string; archivados?: string }>;
+}) {
   const t = await getTranslations("Inmuebles");
   const usuario = await usuarioActual();
-  const inmuebles = usuario ? await inmueblesDe(usuario) : [];
-  const { creado } = await searchParams;
+  const todos = usuario ? await inmueblesDe(usuario, { archivados: true }) : [];
+  const inmuebles = todos.filter((i) => !i.archivado);
+  const archivados = todos.filter((i) => i.archivado);
+  const { creado, archivados: verArchivados } = await searchParams;
   const nuevo = inmuebles.find((i) => i.id === creado);
+  const mostrarArchivados = verArchivados === "1" && archivados.length > 0;
+
+  const tarjeta = (i: ResumenInmueble) => (
+    <li key={i.id} className={estilos.seccion}>
+      <h2>
+        <Link href={`/inmuebles/${i.id}`} className={propias.enlaceInmueble}>
+          {i.nombre}
+        </Link>
+      </h2>
+      {i.direccion && <p className={estilos.suave}>{i.direccion}</p>}
+      <p className={propias.datos}>
+        <span>{t(`modalidad.${i.modalidad}`)}</span>
+        <span aria-hidden="true">·</span>
+        <span>{t("habitaciones", { n: i.numeroHabitaciones })}</span>
+      </p>
+    </li>
+  );
 
   return (
     <>
@@ -43,23 +67,23 @@ export default async function Inmuebles({ searchParams }: { searchParams: Promis
           </div>
         </section>
       ) : (
-        <ul className={propias.lista}>
-          {inmuebles.map((i) => (
-            <li key={i.id} className={estilos.seccion}>
-              <h2>
-                <Link href={`/inmuebles/${i.id}`} className={propias.enlaceInmueble}>
-                  {i.nombre}
-                </Link>
-              </h2>
-              {i.direccion && <p className={estilos.suave}>{i.direccion}</p>}
-              <p className={propias.datos}>
-                <span>{t(`modalidad.${i.modalidad}`)}</span>
-                <span aria-hidden="true">·</span>
-                <span>{t("habitaciones", { n: i.numeroHabitaciones })}</span>
-              </p>
-            </li>
-          ))}
-        </ul>
+        <ul className={propias.lista}>{inmuebles.map(tarjeta)}</ul>
+      )}
+
+      {archivados.length > 0 && (
+        <p>
+          <Link href={mostrarArchivados ? "/inmuebles" : "/inmuebles?archivados=1"} className={formulario.enlace}>
+            {mostrarArchivados ? t("ocultarArchivados") : t("verArchivados", { n: archivados.length })}
+          </Link>
+        </p>
+      )}
+      {mostrarArchivados && (
+        <section aria-labelledby="titulo-archivados" className={propias.archivados}>
+          <h2 id="titulo-archivados" className={propias.tituloArchivados}>
+            {t("archivados")}
+          </h2>
+          <ul className={propias.lista}>{archivados.map(tarjeta)}</ul>
+        </section>
       )}
     </>
   );

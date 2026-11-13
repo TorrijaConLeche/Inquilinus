@@ -114,7 +114,14 @@
     "devolucionIncompleta": "Para la devolución indica la fecha y el importe devuelto.",
     "devolucionMayor": "No puedes devolver más que la fianza.",
     "devolucionAntesDeRecepcion": "La devolución no puede ser anterior a la fecha en que recibiste la fianza.",
-    "notasLargas": "Las notas admiten como máximo 300 caracteres."
+    "notasLargas": "Las notas admiten como máximo 300 caracteres.",
+    "alguienViviendo": "No se puede archivar mientras alguien vive allí o tiene una entrada prevista. Registra antes su salida.",
+    "ultimaHabitacion": "El inmueble necesita al menos una habitación activa.",
+    "habitacionConEstancias": "Esta habitación ha tenido inquilinos: archívala en vez de borrarla.",
+    "tipoGastoConFacturas": "Este gasto tiene facturas: archívalo en vez de borrarlo.",
+    "inquilinoViviendo": "Solo se puede borrar a quien ya no vive allí. Registra antes su salida.",
+    "inquilinoAnonimizado": "Este inquilino se borró y sus datos ya no se pueden cambiar.",
+    "confirmacionIncorrecta": "El nombre no coincide. Escríbelo exactamente igual."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -217,7 +224,10 @@
     "modalidad": {
       "habitaciones": "Por habitaciones",
       "entero": "Piso entero"
-    }
+    },
+    "verArchivados": "{n, plural, one {Ver el inmueble archivado} other {Ver los # inmuebles archivados}}",
+    "ocultarArchivados": "Ocultar los archivados",
+    "archivados": "Archivados"
   },
   "Asistente": {
     "titulo": "Nuevo inmueble",
@@ -383,6 +393,26 @@
     "importeDevuelto": "Importe devuelto (€)",
     "fechaDevolucion": "Fecha de devolución",
     "notasFianza": "Notas sobre descuentos",
-    "notasAyuda": "Por ejemplo, «pintura del cuarto». No escribas datos personales."
+    "notasAyuda": "Por ejemplo, «pintura del cuarto». No escribas datos personales.",
+    "archivar": "Archivar",
+    "restaurar": "Restaurar",
+    "habitacionesArchivadas": "{n, plural, one {# habitación archivada} other {# habitaciones archivadas}}",
+    "gastosArchivados": "{n, plural, one {# gasto archivado} other {# gastos archivados}}",
+    "antiguos": "{n, plural, one {# antiguo inquilino} other {# antiguos inquilinos}}",
+    "sinInquilinosActuales": "Ahora mismo no vive nadie.",
+    "anonimizado": "Borrado",
+    "confirmarBorrarInquilino": "¿Borrar a {nombre}? Se borrarán también sus estancias, sus documentos y su fianza. No se puede deshacer.",
+    "confirmarAnonimizar": "¿Borrar a {nombre}? Tiene cobros o repartos, así que en ellos pasará a llamarse «Inquilino N» con los mismos importes. Se borrarán su nombre, sus documentos y su fianza. No se puede deshacer.",
+    "siAnonimizar": "Sí, borrar sus datos",
+    "archivadoAviso": "Este inmueble está archivado: no aparece en tu lista ni genera cobros. Puedes restaurarlo abajo.",
+    "archivarYBorrar": "Archivar o borrar",
+    "archivarExplicacion": "Si ya no lo alquilas, archívalo: deja de aparecer en tu lista y conserva todo su historial. Puedes restaurarlo cuando quieras.",
+    "restaurarExplicacion": "Vuelve a aparecer en tu lista con todo lo que tenía.",
+    "archivarInmueble": "Archivar inmueble",
+    "restaurarInmueble": "Restaurar inmueble",
+    "borrarInmuebleExplicacion": "Borrarlo elimina todo lo que contiene: habitaciones, inquilinos, cobros, facturas y documentos. No se puede deshacer.",
+    "borrarInmueble": "Borrar inmueble",
+    "borrarInmuebleDefinitivo": "Borrar para siempre",
+    "escribeNombre": "Para confirmar, escribe «{nombre}»"
   }
 }

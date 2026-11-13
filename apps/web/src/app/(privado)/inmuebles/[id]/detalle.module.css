@@ -165,3 +165,34 @@
   resize: vertical;
   font: inherit;
 }
+
+/* Archivar y borrar el inmueble (spec 007, R11c y R13). */
+.opcionPeligro {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borde);
+}
+
+.opcionPeligro:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Elementos archivados, dentro de un <details> plegado. */
+.archivadas {
+  color: var(--texto-suave);
+}
+
+.archivadas summary {
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
+
+.archivadas ul {
+  margin-top: 10px;
+}
+
+.etiquetaEstado {
+  composes: etiquetaColor;
+}

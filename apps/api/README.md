@@ -29,6 +29,10 @@ pnpm --filter @inquilinus/api test
 | `GET`, `POST /inmuebles/:id/tipos-gasto`; `PATCH …/tipos-gasto/:id` | Tipos de gasto; sin color, el primero libre de la paleta (`COLORES_GASTO`); renombrar y cambiar color (R10). |
 | `POST …/inquilinos/:id/subidas` | Permiso firmado (5 minutos) para que el navegador suba un PDF de hasta 10 MB directamente al bucket, a `pendientes/<usuario>/<id>.pdf` (R6c). |
 | `PUT`, `GET`, `DELETE …/inquilinos/:id/documentos/:tipo` | `tipo` es `contrato` o `justificante_fianza`. `PUT { subidaId, nombre }` comprueba que es un PDF por su contenido, lo mueve a `documentos/<usuario>/<id>.pdf` y reemplaza el anterior del mismo tipo (R6b); `GET` redirige a una URL firmada de 5 minutos; `DELETE` lo borra del bucket y de la base de datos. |
+| `DELETE /inmuebles/:id` | Con `{ nombre }` exactamente igual al del inmueble: lo borra con todo, ficheros del bucket incluidos (R13). `PATCH { archivado }` lo archiva o restaura (R11c). |
+| `PATCH { archivada }`, `DELETE …/habitaciones/:id` | Archivar o restaurar (con estancias) y borrar (sin estancias); nunca con alguien viviendo ni dejando el inmueble sin habitaciones activas (R11, R11b). |
+| `PATCH { archivado }`, `DELETE …/tipos-gasto/:id` | Archivar o restaurar; borrar solo sin facturas (R11). |
+| `DELETE …/inquilinos/:id` | Derecho de supresión, solo si ya no vive allí: con cobros o repartos lo anonimiza como «Inquilino N» y borra sus documentos, fianza, ficheros y enlace; sin ellos, lo borra del todo. Un anonimizado ya no se puede editar (R12). |
 | `PUT`, `DELETE …/inquilinos/:id/fianza` | Una fianza por inquilino: importe, recepción y devolución (fecha e importe juntos, nunca mayor que la fianza) y notas cortas (R6d). |
 
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).

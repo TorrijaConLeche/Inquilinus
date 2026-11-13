@@ -33,9 +33,9 @@ pnpm --filter @inquilinus/web test
 | `/registro` | Email, contraseña (12+), nombre opcional, aceptación de términos y Google (solo con los términos aceptados) |
 | `/acceso` | Email y contraseña, «recordar este dispositivo», paso del doble factor (app o código de recuperación), reenviar la verificación y Google |
 | `/recuperar`, `/restablecer` | Enlace por email y contraseña nueva |
-| `/inmuebles` | Lista de inmuebles (cada tarjeta lleva al detalle); si no hay ninguno, invita a crear el primero |
+| `/inmuebles` | Lista de inmuebles (cada tarjeta lleva al detalle); si no hay ninguno, invita a crear el primero. Los archivados, aparte con `?archivados=1` |
 | `/inmuebles/nuevo` | Asistente de alta en 5 pasos (spec 007, R1): el inmueble se crea al terminar el paso 3, todo o nada; los tipos de gasto y los inquilinos (opcionales) se guardan al momento |
-| `/inmuebles/[id]` | Detalle del inmueble (lo ajeno da 404): editar datos, habitaciones con precio actual e historial (cambiar precio desde un mes), inquilinos con sus estancias (entrada, salida, cambio de habitación, corregir fechas), sus documentos (contrato y justificante, en PDF, subidos directamente al bucket) y su fianza, y tipos de gasto. Cada acción guarda al momento |
+| `/inmuebles/[id]` | Detalle del inmueble (lo ajeno da 404): editar datos, habitaciones con precio actual e historial (cambiar precio desde un mes), inquilinos con sus estancias (entrada, salida, cambio de habitación, corregir fechas), sus documentos (contrato y justificante, en PDF, subidos directamente al bucket) y su fianza, y tipos de gasto. Cada acción guarda al momento. Habitaciones y gastos se archivan si tienen historial y se borran si no; los inquilinos que ya se fueron pasan a «Antiguos inquilinos» y se pueden borrar (anonimizados si tienen cobros o repartos); el inmueble se archiva, se restaura o se borra escribiendo su nombre |
 | `/panel` | Provisional hasta la fase 4 |
 | `/ajustes` | Idioma, apariencia (claro, oscuro, como el dispositivo), doble factor con app (QR y códigos de recuperación) o con código por email, cerrar sesión en todos los dispositivos |
 | `/privacidad`, `/terminos` | Borradores de la tarea 2.8 (en `src/contenido/legal/`, uno por idioma, en Markdown), pendientes de revisión legal |

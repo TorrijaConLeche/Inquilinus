@@ -183,3 +183,16 @@
   position: absolute;
   inset: 0;
 }
+
+/* --- Archivados (spec 007, R11c) ------------------------------------------ */
+
+.archivados {
+  display: grid;
+  gap: 12px;
+  opacity: 0.85;
+}
+
+.tituloArchivados {
+  font-size: 1rem;
+  color: var(--texto-suave);
+}
