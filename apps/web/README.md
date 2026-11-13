@@ -24,6 +24,7 @@ pnpm --filter @inquilinus/web test
 
 - La web sirve la API de `apps/api` en `/api` (`src/app/api/[[...ruta]]/route.ts`): un solo proyecto en Vercel, un solo dominio y sin CORS. `apps/api` sigue siendo independiente y se puede desplegar aparte más adelante.
 - Vercel: proyecto con *Root Directory* `apps/web`, funciones en Frankfurt (`vercel.json`, `fra1`) y la variable `DATABASE_URL` (Neon con pooler) en Production y Preview.
+- Cron (`vercel.json`): `/api/procesos/cobros-diarios` cada día a la 01:00 UTC (entre las 2 y las 4 en Madrid). Vercel solo lo lanza en producción y manda la variable `CRON_SECRET`, que solo existe en Production.
 - Vercel se salta los despliegues de los commits que no tocan `apps/web` ni los paquetes de los que depende (por ejemplo, cambios solo en `docs/` o `specs/`).
 
 ## Pantallas de la cuenta (spec 008)

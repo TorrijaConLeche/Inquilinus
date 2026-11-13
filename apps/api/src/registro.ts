@@ -23,6 +23,10 @@ export interface Campos {
   tipoCausa?: string;
   /** Solo las líneas `at …` de la pila. */
   pila?: string;
+  /** Recuentos de un proceso por lotes (spec 005, R8b). */
+  inmuebles?: number;
+  creados?: number;
+  fallidos?: number;
 }
 
 export interface Registro {
@@ -49,6 +53,9 @@ const CAMPOS: ReadonlyArray<keyof Campos> = [
   "codigo",
   "tipoCausa",
   "pila",
+  "inmuebles",
+  "creados",
+  "fallidos",
 ];
 
 /** Los eventos son identificadores fijos en código, no texto libre. */
