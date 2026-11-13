@@ -1,6 +1,7 @@
 // Rutas de inmuebles, habitaciones y precios (spec 007).
 import {
   AltaInmueble,
+  BorradoInmueble,
   CambioPrecio,
   EdicionHabitacion,
   EdicionInmueble,
@@ -10,17 +11,20 @@ import {
   type RespuestaError,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
+import type { Almacen } from "../almacen.ts";
+import { borrarInmueble } from "../archivo.ts";
 import type { Auth } from "../auth.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
-import { mesEnMadrid } from "../fechas.ts";
+import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import {
+  borrarHabitacionSuya,
   cambiarPrecio,
   crearHabitacion,
   crearInmueble,
+  editarHabitacion,
   editarInmueble,
   ErrorPeticion,
   listarInmuebles,
-  renombrarHabitacion,
   verInmueble,
 } from "../inmuebles.ts";
 import { ids, leer, noEncontrado, type EntornoSesion as Entorno } from "./comunes.ts";
@@ -28,12 +32,15 @@ import { ids, leer, noEncontrado, type EntornoSesion as Entorno } from "./comune
 interface Opciones {
   auth: Auth;
   bd: ConexionBd;
+  /** Bucket de ficheros, para borrar los de un inmueble (R13). */
+  almacen: Almacen | undefined;
   /** Reloj, para fijar el mes actual en los tests. */
   ahora: () => Date;
 }
 
-export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, ahora }: Opciones) {
+export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen, ahora }: Opciones) {
   const mesActual = () => mesEnMadrid(ahora());
+  const hoy = () => hoyEnMadrid(ahora());
 
   // Todas exigen sesión; el usuario sale de la sesión, nunca de la petición.
   app.use("/inmuebles", async (c, next) => sesion(c, next));
@@ -75,8 +82,16 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, ahora }:
     const crudo = await c.req.raw.clone().json().catch(() => undefined);
     if (crudo && typeof crudo === "object" && "modalidad" in crudo) throw new ErrorPeticion("MODALIDAD_NO_EDITABLE");
     const edicion = await leer(c, EdicionInmueble);
-    if (!(await editarInmueble(bd, c.get("usuarioId"), valores[0]!, edicion))) return noEncontrado(c);
+    if (!(await editarInmueble(bd, c.get("usuarioId"), valores[0]!, edicion, hoy()))) return noEncontrado(c);
     return detalle(c, valores[0]!);
+  });
+
+  app.delete("/inmuebles/:idInmueble", async (c) => {
+    const valores = ids(c, "idInmueble");
+    if (!valores) return noEncontrado(c);
+    const { nombre } = await leer(c, BorradoInmueble);
+    if (!(await borrarInmueble(bd, almacen, c.get("usuarioId"), valores[0]!, nombre))) return noEncontrado(c);
+    return c.body(null, 204);
   });
 
   app.post("/inmuebles/:idInmueble/habitaciones", async (c) => {
@@ -90,8 +105,17 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, ahora }:
   app.patch("/inmuebles/:idInmueble/habitaciones/:idHabitacion", async (c) => {
     const valores = ids(c, "idInmueble", "idHabitacion");
     if (!valores) return noEncontrado(c);
-    const { nombre } = await leer(c, EdicionHabitacion);
-    if (!(await renombrarHabitacion(bd, c.get("usuarioId"), valores[0]!, valores[1]!, nombre))) return noEncontrado(c);
+    const edicion = await leer(c, EdicionHabitacion);
+    if (!(await editarHabitacion(bd, c.get("usuarioId"), valores[0]!, valores[1]!, edicion, hoy()))) {
+      return noEncontrado(c);
+    }
+    return detalle(c, valores[0]!);
+  });
+
+  app.delete("/inmuebles/:idInmueble/habitaciones/:idHabitacion", async (c) => {
+    const valores = ids(c, "idInmueble", "idHabitacion");
+    if (!valores) return noEncontrado(c);
+    if (!(await borrarHabitacionSuya(bd, c.get("usuarioId"), valores[0]!, valores[1]!))) return noEncontrado(c);
     return detalle(c, valores[0]!);
   });
 

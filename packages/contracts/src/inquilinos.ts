@@ -51,9 +51,9 @@ export const NuevoTipoGasto = z
   .meta({ id: 'NuevoTipoGasto' });
 export type NuevoTipoGasto = z.infer<typeof NuevoTipoGasto>;
 
-/** R10: se puede renombrar y cambiar de color. */
+/** R10: se puede renombrar y cambiar de color. R11: archivar o restaurar. */
 export const EdicionTipoGasto = z
-  .strictObject({ nombre: texto.optional(), color: ColorGasto.optional() })
+  .strictObject({ nombre: texto.optional(), color: ColorGasto.optional(), archivado: z.boolean().optional() })
   .meta({ id: 'EdicionTipoGasto' });
 export type EdicionTipoGasto = z.infer<typeof EdicionTipoGasto>;
 
@@ -68,7 +68,10 @@ export const Inquilino = z
   .object({
     id: z.uuid(),
     nombre: z.string(),
+    /** R12: borrado con historial; ya no se puede editar. */
     anonimizado: z.boolean(),
+    /** R12: con cobros o repartos, borrarlo lo anonimiza; sin ellos, lo borra del todo. */
+    conHistorial: z.boolean(),
     /** Ordenadas por entrada. */
     ocupaciones: z.array(Ocupacion),
     /** Como mucho uno de cada tipo (R6b). */
@@ -82,12 +85,25 @@ export const ListaInquilinos = z.object({ inquilinos: z.array(Inquilino) }).meta
 export type ListaInquilinos = z.infer<typeof ListaInquilinos>;
 
 export const TipoGasto = z
-  .object({ id: z.uuid(), nombre: z.string(), color: ColorGasto, archivado: z.boolean() })
+  .object({
+    id: z.uuid(),
+    nombre: z.string(),
+    color: ColorGasto,
+    archivado: z.boolean(),
+    /** R11: con facturas solo se puede archivar; sin ellas, borrar. */
+    conFacturas: z.boolean(),
+  })
   .meta({ id: 'TipoGasto' });
 export type TipoGasto = z.infer<typeof TipoGasto>;
 
 export const ListaTiposGasto = z.object({ tiposGasto: z.array(TipoGasto) }).meta({ id: 'ListaTiposGasto' });
 export type ListaTiposGasto = z.infer<typeof ListaTiposGasto>;
+
+/** R12: qué ha pasado al borrar un inquilino. */
+export const BorradoInquilino = z
+  .object({ resultado: z.enum(['anonimizado', 'borrado']) })
+  .meta({ id: 'BorradoInquilino' });
+export type BorradoInquilino = z.infer<typeof BorradoInquilino>;
 
 // --- Rutas ------------------------------------------------------------------
 
@@ -132,6 +148,13 @@ export const rutasInquilinos = {
       requestParams: { path: conInquilino },
       requestBody: cuerpo(EdicionInquilino),
       responses: { '200': json(Inquilino, 'Editado'), ...errores },
+    },
+    delete: {
+      operationId: 'borrarInquilino',
+      summary: 'Derecho de supresión: anonimiza si tiene historial; si no, lo borra del todo (R12)',
+      tags: ['Inquilinos'],
+      requestParams: { path: conInquilino },
+      responses: { '200': json(BorradoInquilino, 'Resultado'), ...errores },
     },
   },
   '/inmuebles/{idInmueble}/inquilinos/{idInquilino}/ocupaciones': {
@@ -184,11 +207,18 @@ export const rutasInquilinos = {
   '/inmuebles/{idInmueble}/tipos-gasto/{idTipoGasto}': {
     patch: {
       operationId: 'editarTipoGasto',
-      summary: 'Renombrar o cambiar de color (R10)',
+      summary: 'Renombrar, cambiar de color, archivar o restaurar (R10, R11)',
       tags: ['Tipos de gasto'],
       requestParams: { path: conTipo },
       requestBody: cuerpo(EdicionTipoGasto),
       responses: { '200': json(TipoGasto, 'Editado'), ...errores },
+    },
+    delete: {
+      operationId: 'borrarTipoGasto',
+      summary: 'Borra un tipo de gasto sin facturas (R11)',
+      tags: ['Tipos de gasto'],
+      requestParams: { path: conTipo },
+      responses: { '204': { description: 'Borrado' }, ...errores },
     },
   },
 } satisfies ZodOpenApiPathsObject;

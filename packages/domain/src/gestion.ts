@@ -96,6 +96,20 @@ export function accionAlEliminar(tieneHistorial: boolean): 'archivar' | 'borrar'
   return tieneHistorial ? 'archivar' : 'borrar';
 }
 
+/**
+ * Spec 007, R11b: una estancia está vigente si alguien vive o va a vivir en
+ * ella: sin salida, o con salida de hoy en adelante (incluye las que aún no han empezado).
+ */
+export function estanciaVigente(estancia: { salida: Fecha | null }, hoy: Fecha): boolean {
+  aDia(hoy);
+  return estancia.salida === null || estancia.salida >= hoy;
+}
+
+/** Spec 007, R11d: antiguo = tuvo estancias y todas terminaron antes de hoy. */
+export function esInquilinoAntiguo(estancias: readonly { salida: Fecha | null }[], hoy: Fecha): boolean {
+  return estancias.length > 0 && !estancias.some((e) => estanciaVigente(e, hoy));
+}
+
 /** Spec 007, R12: nombre que sustituye al de un inquilino borrado. */
 export function nombreAnonimo(numero: number): string {
   return `Inquilino ${numero}`;

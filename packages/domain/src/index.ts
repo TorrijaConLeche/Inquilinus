@@ -51,6 +51,8 @@ export {
   accionAlEliminar,
   nombreAnonimo,
   confirmaBorradoInmueble,
+  estanciaVigente,
+  esInquilinoAntiguo,
   TAMANO_MAXIMO_DOCUMENTO,
   LONGITUD_MAXIMA_NOTAS_FIANZA,
   validarDocumento,

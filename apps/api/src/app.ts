@@ -130,8 +130,8 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     for (const ruta of ["/cuenta/*", "/inmuebles", "/inmuebles/*"]) app.use(ruta, soloMismoOrigen);
 
     const ahora = dependencias.ahora ?? (() => new Date());
-    registrarRutasInmuebles(app, { auth, bd, ahora });
-    registrarRutasInquilinos(app, { bd });
+    registrarRutasInmuebles(app, { auth, bd, almacen: dependencias.almacen, ahora });
+    registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {

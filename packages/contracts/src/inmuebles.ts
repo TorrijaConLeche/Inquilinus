@@ -46,19 +46,27 @@ export const AltaInmueble = z
   .meta({ id: 'AltaInmueble' });
 export type AltaInmueble = z.infer<typeof AltaInmueble>;
 
-/** R2: la modalidad no se puede cambiar; el resto, sí. */
+/** R2: la modalidad no se puede cambiar; el resto, sí. `archivado` archiva o restaura (R11c). */
 export const EdicionInmueble = z
   .strictObject({
     nombre: texto.optional(),
     direccion: texto.nullable().optional(),
     mesesParciales: MesesParciales.optional(),
     diaCobro: z.number().int().optional(),
+    archivado: z.boolean().optional(),
   })
   .meta({ id: 'EdicionInmueble' });
 export type EdicionInmueble = z.infer<typeof EdicionInmueble>;
 
-export const EdicionHabitacion = z.strictObject({ nombre: texto }).meta({ id: 'EdicionHabitacion' });
+/** Renombrar, archivar o restaurar (R11, R11b). */
+export const EdicionHabitacion = z
+  .strictObject({ nombre: texto.optional(), archivada: z.boolean().optional() })
+  .meta({ id: 'EdicionHabitacion' });
 export type EdicionHabitacion = z.infer<typeof EdicionHabitacion>;
+
+/** R13: para borrar el inmueble hay que escribir su nombre. */
+export const BorradoInmueble = z.strictObject({ nombre: z.string().max(200) }).meta({ id: 'BorradoInmueble' });
+export type BorradoInmueble = z.infer<typeof BorradoInmueble>;
 
 /** R4: precio desde un mes, para ese mes y los siguientes. */
 export const CambioPrecio = z
@@ -75,6 +83,8 @@ export const Habitacion = z
     id: z.uuid(),
     nombre: z.string(),
     archivada: z.boolean(),
+    /** R11: con alguna estancia solo se puede archivar; sin ninguna, borrar. */
+    conEstancias: z.boolean(),
     /** Precio del mes en curso (hora de Madrid); null si aún no tiene precio este mes. */
     precioActual: Centimos.nullable(),
     /** Del más antiguo al más reciente. */
@@ -162,6 +172,14 @@ export const rutasInmuebles = {
       requestBody: cuerpo(EdicionInmueble),
       responses: { '200': json(Inmueble, 'Editado'), ...errores },
     },
+    delete: {
+      operationId: 'borrarInmueble',
+      summary: 'Borra el inmueble con todo lo que contiene, también sus ficheros (R13)',
+      tags: ['Inmuebles'],
+      requestParams: { path: idInmueble },
+      requestBody: cuerpo(BorradoInmueble),
+      responses: { '204': { description: 'Borrado' }, ...errores },
+    },
   },
   '/inmuebles/{idInmueble}/habitaciones': {
     post: {
@@ -176,11 +194,18 @@ export const rutasInmuebles = {
   '/inmuebles/{idInmueble}/habitaciones/{idHabitacion}': {
     patch: {
       operationId: 'editarHabitacion',
-      summary: 'Renombrar una habitación',
+      summary: 'Renombrar, archivar o restaurar una habitación (R11, R11b)',
       tags: ['Inmuebles'],
       requestParams: { path: idHabitacion },
       requestBody: cuerpo(EdicionHabitacion),
       responses: { '200': json(Inmueble, 'Editada'), ...errores },
+    },
+    delete: {
+      operationId: 'borrarHabitacion',
+      summary: 'Borra una habitación sin estancias que no sea la última activa (R11, R11b)',
+      tags: ['Inmuebles'],
+      requestParams: { path: idHabitacion },
+      responses: { '200': json(Inmueble, 'Inmueble sin la habitación'), ...errores },
     },
   },
   '/inmuebles/{idInmueble}/habitaciones/{idHabitacion}/precios': {
