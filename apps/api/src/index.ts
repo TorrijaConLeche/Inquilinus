@@ -8,3 +8,4 @@ export { mesEnMadrid, hoyEnMadrid } from "./fechas.ts";
 export { listarInmuebles, verInmueble } from "./inmuebles.ts";
 export { listarInquilinos, listarTiposGasto } from "./inquilinos.ts";
 export { cobrosDelMes } from "./cobros.ts";
+export { resumenDelPanel } from "./panel.ts";

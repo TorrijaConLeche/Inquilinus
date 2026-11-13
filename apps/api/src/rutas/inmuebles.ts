@@ -8,6 +8,7 @@ import {
   NuevaHabitacion,
   type Inmueble,
   type ListaInmuebles,
+  type Panel,
   type RespuestaError,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
@@ -16,6 +17,7 @@ import { borrarInmueble } from "../archivo.ts";
 import type { Auth } from "../auth.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
 import { vigilarCobros } from "../cobros.ts";
+import { resumenDelPanel } from "../panel.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import {
   borrarHabitacionSuya,
@@ -54,6 +56,10 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
   // Todas exigen sesión; el usuario sale de la sesión, nunca de la petición.
   app.use("/inmuebles", async (c, next) => sesion(c, next));
   app.use("/inmuebles/*", async (c, next) => sesion(c, next));
+  app.use("/panel", async (c, next) => sesion(c, next));
+
+  // Panel principal (spec 009): solo lectura, de todos los inmuebles del usuario.
+  app.get("/panel", async (c) => c.json<Panel>(await resumenDelPanel(bd, c.get("usuarioId"), hoy())));
   async function sesion(c: Context<Entorno>, next: () => Promise<void>) {
     const s = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!s) return c.json<RespuestaError>({ error: "sin-sesion" }, 401);

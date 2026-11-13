@@ -75,4 +75,5 @@ export {
   TipoDocumento,
 } from './documentos.ts';
 export { generarOpenApi } from './openapi.ts';
+export { ConceptoPendiente, Panel, rutasPanel } from './panel.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';
