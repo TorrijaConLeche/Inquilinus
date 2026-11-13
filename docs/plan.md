@@ -71,7 +71,7 @@ Depende de: fase 2. **Hecho cuando** tienes tus pisos reales dados de alta con s
 - [x] **3.4 · Claude** — Asistente de alta del inmueble · `feat/007-asistente`
 - [x] **3.5 · Claude** — Detalle del inmueble y formularios de edición · `feat/007-detalle`
 - [x] **3.6 · Claude** — Documentos (contrato y justificante de fianza) y fianza · `feat/007-documentos`
-- [ ] **3.7 · Claude** — Archivar, borrar y anonimizar · `feat/007-archivar-borrar`
+- [x] **3.7 · Claude** — Archivar, borrar y anonimizar · `feat/007-archivar-borrar`
 
 ## Fase 4 · Cobros y panel (specs 005 y 009)
 

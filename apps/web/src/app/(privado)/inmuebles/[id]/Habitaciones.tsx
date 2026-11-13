@@ -176,8 +176,8 @@ export function Habitaciones({
                 >
                   {t("renombrar")}
                 </button>
-                {/* R11: con estancias se archiva; sin ellas, se borra. */}
-                {h.conEstancias ? (
+                {/* R11: con estancias se archiva; sin ellas, se borra. La última activa, ninguna de las dos (R11b). */}
+                {activas.length === 1 ? null : h.conEstancias ? (
                   <button type="button" className={formulario.botonEnlace} disabled={enviando} onClick={() => archivar(h.id, true)}>
                     {t("archivar")}
                   </button>

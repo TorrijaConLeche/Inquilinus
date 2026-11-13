@@ -227,7 +227,8 @@
     },
     "verArchivados": "{n, plural, one {Show the archived property} other {Show the # archived properties}}",
     "ocultarArchivados": "Hide archived",
-    "archivados": "Archived"
+    "archivados": "Archived",
+    "vacioConArchivados": "You have no active properties"
   },
   "Asistente": {
     "titulo": "New property",

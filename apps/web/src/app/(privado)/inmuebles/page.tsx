@@ -58,7 +58,7 @@ export default async function Inmuebles({
 
       {inmuebles.length === 0 ? (
         <section className={estilos.seccion}>
-          <h2>{t("vacioTitulo")}</h2>
+          <h2>{archivados.length > 0 ? t("vacioConArchivados") : t("vacioTitulo")}</h2>
           <p className={estilos.suave}>{t("vacioTexto")}</p>
           <div>
             <Link href="/inmuebles/nuevo" className={formulario.boton}>

@@ -227,7 +227,8 @@
     },
     "verArchivados": "{n, plural, one {Ver el inmueble archivado} other {Ver los # inmuebles archivados}}",
     "ocultarArchivados": "Ocultar los archivados",
-    "archivados": "Archivados"
+    "archivados": "Archivados",
+    "vacioConArchivados": "No tienes inmuebles activos"
   },
   "Asistente": {
     "titulo": "Nuevo inmueble",
