@@ -1,6 +1,6 @@
 # 001 · Reparto de suministros
 
-Estado: implementada · Paquete: `packages/domain`
+Estado: aprobada · Paquetes: `packages/domain` (cálculo), `apps/api` y `apps/web` (reparto guardado)
 
 ## Objetivo
 
@@ -21,6 +21,15 @@ Dada una factura de suministro confirmada y las ocupaciones del inmueble, calcul
 - **R8** — Si dos ocupaciones de la misma habitación se solapan más allá del día frontera de R4, el sistema deberá rechazar el cálculo con un error de validación.
 - **R9** — Si la fecha de fin es anterior a la de inicio o el importe es negativo, el sistema deberá rechazar el cálculo.
 
+**Reparto guardado** (tarea 5.4 del plan)
+
+- **R10** — Al confirmar una factura (spec 003) se reparte en ese momento con las estancias del inmueble y queda guardada como **foto fija**, con su detalle por tramos; la factura pasa a `repartida`. Lo "sin ocupar" lo asume la propietaria.
+- **R11** — Cada parte (una por inquilino) está pendiente o pagada, con fecha no posterior a hoy; se marca y se desmarca (spec 009, R9 y R10).
+- **R12** — Una parte pertenece al mes, en hora de Madrid, en que se repartió la factura por primera vez (spec 009, R8). Recalcular no cambia su mes. Las liquidaciones (spec 011) llegan con la tarea 5.5.
+- **R13** — Si cambian las estancias del inmueble y el reparto calculado de una factura sale distinto, su reparto queda **desactualizado**. Recalcular es una acción explícita de la usuaria: pone las partes del cálculo actual y cada inquilino conserva su estado de pago; si alguna parte está pagada, se pide confirmación.
+- **R14** — Una factura repartida se puede **deshacer**: vuelve a "por revisar" con sus datos y se borra su reparto. Si alguna parte está pagada, se avisa de que esos pagos se pierden y se pide confirmación.
+- **R15** — Las partes de un inquilino anonimizado se conservan con los mismos importes (spec 007, R12).
+
 ## Casos de prueba
 
 Periodo del 1 al 30 de septiembre (30 días) salvo que se indique otra cosa.
@@ -36,6 +45,12 @@ Periodo del 1 al 30 de septiembre (30 días) salvo que se indique otra cosa.
 | C7 | Ocupación fuera del periodo (R7) | 60 €. A salió en agosto; B todo el mes | B 60 € |
 | C8 | Solape inválido (R8) | Hab. 1: A del 1 al 20, B desde el 10 | Error de validación |
 | C9 | Periodo que cruza meses | Del 15 de agosto al 14 de octubre (61 días), 61 €. A todo el periodo | A 61 € |
+| C10 | Confirmar reparte (R10) | Luz de septiembre, 90 €. A y B todo el mes; C entra el 21 | Factura `repartida`; partes A 40 €, B 40 €, C 10 €, pendientes |
+| C11 | Pagar una parte (R11) | Se marca la parte de C el 2026-10-05 y se desmarca | Pagada el 2026-10-05; después, pendiente |
+| C12 | Reparto desactualizado (R13) | Tras C10, la entrada de C se corrige al 2026-09-11 | Desactualizado; al recalcular, A 35 €, B 35 €, C 20 € |
+| C13 | Recalcular con pagos (R13) | Como C12, con la parte de A pagada | Sin confirmar, error; confirmando, A sigue pagada con 35 € |
+| C14 | Deshacer (R14) | Factura de C10 con la parte de A pagada | Sin confirmar, error; confirmando, vuelve a "por revisar" sin reparto |
+| C15 | Mes de la parte (R12) | Factura de septiembre repartida el 2026-10-03 | Sus partes son de octubre |
 
 ## Fuera de alcance
 
@@ -51,3 +66,5 @@ Periodo del 1 al 30 de septiembre (30 días) salvo que se indique otra cosa.
 - [x] Cálculo por días (R1–R5, R7)
 - [x] Redondeo por mayor resto (R6)
 - [x] Tests C1–C9 en Vitest
+- [ ] Reparto guardado al confirmar, pagos de cada parte, desactualizado, recalcular y deshacer (tarea 5.4)
+- [ ] Tests C10–C15
