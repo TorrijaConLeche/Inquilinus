@@ -64,8 +64,8 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 - [x] Función de dominio: qué cobros faltan para un inmueble, una fecha y su día de cobro
 - [x] Día de cobro en las opciones del inmueble
 - [x] Generación manual (R5, R5b)
-- [ ] Proceso diario (cron de Vercel)
+- [x] Proceso diario (cron de Vercel)
 - [ ] Marcado de desactualizados al cambiar ocupaciones o precios
 - [x] Marcar y desmarcar pagado
 - [x] Editar, mover, quitar, restaurar y añadir cobros a mano
-- [ ] Tests C1–C18 (en la API: C3, C5, C6, C9, C11, C12, C15–C18; C1, C2, C4, C10 y C14 con el proceso diario, tarea 4.2; C7 y C13 completos con los desactualizados, tarea 4.3)
+- [ ] Tests C1–C20 (hechos todos salvo C7 y la parte de desactualizado de C13, que llegan con la tarea 4.3)

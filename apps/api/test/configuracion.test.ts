@@ -87,6 +87,12 @@ describe("dependenciasDesdeEntorno", () => {
     expect(lineas.join()).toContain("FALTA_APP_S3_BUCKET");
   });
 
+  it("CRON_SECRET activa los procesos del cron de Vercel", () => {
+    expect(dependenciasDesdeEntorno(completo, { rutaBase: "/api", urlPorDefecto: LOCAL }).secretoCron).toBeUndefined();
+    const d = dependenciasDesdeEntorno({ ...completo, CRON_SECRET: "x".repeat(32) }, { rutaBase: "/api", urlPorDefecto: LOCAL });
+    expect(d.secretoCron).toBe("x".repeat(32));
+  });
+
   it("con APP_S3_BUCKET monta el almacén de ficheros", () => {
     const d = dependenciasDesdeEntorno(
       { ...completo, APP_S3_BUCKET: "inquilinus-pruebas" },

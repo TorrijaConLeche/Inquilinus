@@ -19,6 +19,7 @@ import { registrarRutasCobros } from "./rutas/cobros.ts";
 import { registrarRutasDocumentos } from "./rutas/documentos.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
+import { registrarRutasProcesos } from "./rutas/procesos.ts";
 
 export interface Dependencias {
   /** Reloj (por defecto, la hora real). Los tests lo fijan para controlar el mes actual. */
@@ -41,6 +42,8 @@ export interface Dependencias {
   auth?: Auth;
   /** Por defecto, JSON por consola (los logs de Vercel). */
   registro?: Registro;
+  /** Secreto con el que llama el cron de Vercel (spec 005, R8b). Sin él, los procesos no corren. */
+  secretoCron?: string;
 }
 
 export interface Opciones {
@@ -102,6 +105,14 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
   app.get("/openapi.json", (c) => c.json(openapi));
 
   const { auth, bd } = dependencias;
+  if (bd) {
+    registrarRutasProcesos(app, {
+      bd,
+      secretoCron: dependencias.secretoCron,
+      ahora: dependencias.ahora ?? (() => new Date()),
+      registro,
+    });
+  }
   if (auth) {
     // En el log queda el patrón `/auth/*`, nunca la URL con tokens.
     app.on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw));

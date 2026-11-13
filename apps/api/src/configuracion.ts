@@ -51,6 +51,8 @@ export function dependenciasDesdeEntorno(
 
   const bd = crearBaseDatos(url);
   const dependencias: Dependencias = { registro, bd, comprobarBaseDatos: comprobadorBaseDatos(bd) };
+  // Cron de Vercel (spec 005, R8b): Vercel manda este secreto en cada llamada.
+  if (entorno["CRON_SECRET"]) dependencias.secretoCron = entorno["CRON_SECRET"];
 
   // Sin todas las variables, la API funciona pero sin cuentas (solo el nombre de lo que falta va al log).
   const faltan = VARIABLES_AUTH.filter((clave) => !entorno[clave]);

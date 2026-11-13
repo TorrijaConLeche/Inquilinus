@@ -33,6 +33,7 @@ pnpm --filter @inquilinus/api test
 | `PATCH { archivada }`, `DELETE …/habitaciones/:id` | Archivar o restaurar (con estancias) y borrar (sin estancias); nunca con alguien viviendo ni dejando el inmueble sin habitaciones activas (R11, R11b). |
 | `PATCH { archivado }`, `DELETE …/tipos-gasto/:id` | Archivar o restaurar; borrar solo sin facturas (R11). |
 | `DELETE …/inquilinos/:id` | Derecho de supresión, solo si ya no vive allí: con cobros o repartos lo anonimiza como «Inquilino N» y borra sus documentos, fianza, ficheros y enlace; sin ellos, lo borra del todo. Un anonimizado ya no se puede editar (R12). |
+| `GET /procesos/cobros-diarios` | Proceso diario del cron de Vercel (spec 005, R2, R8): en cada inmueble no archivado ni bloqueado cuyo día de cobro ya ha llegado, crea los cobros del mes en curso que falten (origen `auto`). Solo con `Authorization: Bearer <CRON_SECRET>`; sin la variable responde `503`. Devuelve y registra solo recuentos. |
 | `GET`, `POST /inmuebles/:id/cobros` | Cobros del inmueble por fecha de cobro (`?mes=YYYY-MM`; los quitados solo con `?quitados=true`). `POST { inquilinoId, mes, renta?, recargoVacios?, fechaCobro? }` añade uno a mano: sin renta, la calculada si vivió allí ese mes (spec 005, R10b). |
 | `POST /inmuebles/:id/cobros/generar` | `{ mes }`: crea los que falten de ese mes con el cálculo de la spec 002, sin duplicar ni recrear quitados y nunca de meses futuros (R4, R5, R5b). |
 | `PATCH /inmuebles/:id/cobros/:id` | Renta, recargo o fecha (queda editado si cambia algo), `quitado` para quitar o restaurar, y `pagadoEn` (no posterior a hoy) o `null` (R7, R10, R11). |
@@ -61,7 +62,7 @@ Los tests aplican las migraciones en PostgreSQL en memoria ([PGlite](https://pgl
 - De los errores nunca se guarda el mensaje. Solo el tipo, el código de dominio (`FECHA_INVALIDA`) o de PostgreSQL (`28P01`) y las líneas `at …` de la pila.
 - Cada respuesta lleva la cabecera `x-id-peticion` para encontrar su línea en los logs. En Vercel coincide con su id de petición.
 
-Eventos: `peticion`, `error_no_controlado` y `base_datos_no_responde`. En la API, `dependencias.registro` permite capturarlo en los tests.
+Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proceso diario, `cobros_diarios` (recuentos de inmuebles, creados y fallidos) y `cobro_diario_fallido` (solo el código). En la API, `dependencias.registro` permite capturarlo en los tests.
 
 ## Cuentas (spec 008)
 

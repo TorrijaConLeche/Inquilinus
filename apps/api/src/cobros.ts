@@ -5,10 +5,14 @@ import type { Cobro, EdicionCobro, NuevoCobro } from "@inquilinus/contracts";
 import {
   calcularAlquilerMes,
   cobroManual,
+  cobrosAGenerarHoy,
   cobrosQueFaltan,
+  diaDelMes,
+  ErrorValidacion,
   fechaEnMes,
   habitacionesDelMes,
   importesEditados,
+  mesDe,
   validarFecha,
   validarFechaPago,
   validarMesGenerable,
@@ -224,4 +228,49 @@ export async function editarCobro(
     .where(eq(t.cobroAlquiler.id, cobroId))
     .returning();
   return aCobro(fila!);
+}
+
+// --- Proceso diario (R2, R2b, R3, R8, R8b) -----------------------------------
+
+export interface ResumenProcesoDiario {
+  inmuebles: number;
+  creados: number;
+  /** Solo el código de cada fallo: nunca datos del inmueble ni de sus inquilinos. */
+  fallos: string[];
+}
+
+/**
+ * Crea, en cada inmueble activo cuyo día de cobro de este mes ya ha llegado,
+ * los cobros del mes en curso que falten (origen `auto`). Los archivados y
+ * bloqueados no generan (R2b). Un inmueble que falla no para a los demás.
+ */
+export async function generarCobrosDelDia(bd: ConexionBd, hoy: string): Promise<ResumenProcesoDiario> {
+  const mes = mesDe(hoy);
+  const inmuebles = await bd
+    .select({ id: t.inmueble.id, diaCobro: t.inmueble.diaCobro })
+    .from(t.inmueble)
+    .where(and(eq(t.inmueble.archivado, false), eq(t.inmueble.bloqueado, false)));
+  const resumen: ResumenProcesoDiario = { inmuebles: inmuebles.length, creados: 0, fallos: [] };
+
+  for (const inmueble of inmuebles) {
+    // R2 y R8: hasta que llega el día de cobro de este mes no hay nada que hacer.
+    if (diaDelMes(hoy) < inmueble.diaCobro) continue;
+    try {
+      const [entrada, existentes] = await Promise.all([
+        entradaDelMes(bd, inmueble.id, mes),
+        existentesDelMes(bd, inmueble.id, mes),
+      ]);
+      const nuevos = cobrosAGenerarHoy(hoy, { ...entrada, existentes });
+      if (nuevos.length === 0) continue;
+      const filas = await bd
+        .insert(t.cobroAlquiler)
+        .values(nuevos.map((c) => ({ ...c, origen: "auto" as const })))
+        .onConflictDoNothing()
+        .returning({ id: t.cobroAlquiler.id });
+      resumen.creados += filas.length;
+    } catch (error) {
+      resumen.fallos.push(error instanceof ErrorValidacion ? error.codigo : error instanceof Error ? error.name : "DESCONOCIDO");
+    }
+  }
+  return resumen;
 }
