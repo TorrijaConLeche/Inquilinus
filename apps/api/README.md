@@ -33,6 +33,8 @@ pnpm --filter @inquilinus/api test
 | `PATCH { archivada }`, `DELETE …/habitaciones/:id` | Archivar o restaurar (con estancias) y borrar (sin estancias); nunca con alguien viviendo ni dejando el inmueble sin habitaciones activas (R11, R11b). |
 | `PATCH { archivado }`, `DELETE …/tipos-gasto/:id` | Archivar o restaurar; borrar solo sin facturas (R11). |
 | `DELETE …/inquilinos/:id` | Derecho de supresión, solo si ya no vive allí: con cobros o repartos lo anonimiza como «Inquilino N» y borra sus documentos, fianza, ficheros y enlace; sin ellos, lo borra del todo. Un anonimizado ya no se puede editar (R12). |
+| `POST /inmuebles/:id/facturas/subidas`; `GET`, `POST /inmuebles/:id/facturas` | Facturas (spec 003): un permiso firmado por PDF (de 1 a 20), registrar el lote ya subido (cada PDF se comprueba por separado y se lee con IA si hay extractor; si no, queda para rellenar a mano) y listar (`?porRevisar=true`). |
+| `GET …/facturas/:id/pdf`, `DELETE …/facturas/:id` | Ver el PDF (URL firmada de 5 minutos) y descartar una factura sin confirmar con su PDF. |
 | `GET /panel` | Panel principal (spec 009): pendiente total, cobrado este mes, pendientes por inmueble e inquilino (atrasados primero), una tarjeta por inmueble y avisos de cobros desactualizados e inmuebles bloqueados. Sin archivados; los bloqueados no cuentan. |
 | `GET /procesos/cobros-diarios` | Proceso diario del cron de Vercel (spec 005, R2, R8): en cada inmueble no archivado ni bloqueado cuyo día de cobro ya ha llegado, crea los cobros del mes en curso que falten (origen `auto`). Solo con `Authorization: Bearer <CRON_SECRET>`; sin la variable responde `503`. Devuelve y registra solo recuentos. |
 | `GET`, `POST /inmuebles/:id/cobros` | Cobros del inmueble por fecha de cobro (`?mes=YYYY-MM`; los quitados solo con `?quitados=true`). `POST { inquilinoId, mes, renta?, recargoVacios?, fechaCobro? }` añade uno a mano: sin renta, la calculada si vivió allí ese mes (spec 005, R10b). |
@@ -81,6 +83,10 @@ Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proc
 - Seguridad (tarea 2.5): sesión de 30 días exactos sin renovación con «recordar» y cookie de navegador sin él (R8); `/revoke-sessions` cierra todas (R10); doble factor con app (TOTP, 10 códigos de recuperación) o con código por email de 6 cifras válido 5 minutos (R7; con la app activa, `/two-factor/send-otp` y `verify-otp` responden `403 METODO_NO_PERMITIDO`); y límite de intentos en `src/limitador.ts`: 5 fallos en 15 minutos por cuenta o por IP bloquean 15 minutos (R11), guardando solo huellas HMAC. El doble factor se pide al entrar con email; con Google se aplica el de la cuenta de Google.
 - Google no funciona en las previsualizaciones de Vercel: su dirección cambia en cada rama y Google solo acepta direcciones registradas. Se prueba en local y en producción.
 - `src/configuracion.ts` monta todo desde las variables de entorno (`.env.example`). Sin alguna de ellas, la API funciona pero sin cuentas.
+
+## Lectura de facturas (spec 003)
+
+`src/extractor.ts` define `ExtractorFacturas`: recibe solo el PDF y los nombres de los tipos de gasto del inmueble (R10) y devuelve lo que ha leído. `src/facturas.ts` lee las facturas de un lote en paralelo con un límite de 60 s y deja solo lo que se ha leído bien (`normalizarLectura` en el dominio). La implementación con Amazon Bedrock llega tras la tarea 5.1; hasta entonces no hay extractor en `dependenciasDesdeEntorno` y las facturas quedan en `subida`, para rellenarlas a mano (R8b). Los tests usan uno simulado.
 
 ## Ficheros (spec 007, R6b y R6c)
 

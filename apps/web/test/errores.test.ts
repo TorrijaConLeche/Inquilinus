@@ -67,6 +67,8 @@ describe("claveDeError", () => {
       "RENTA_OBLIGATORIA",
       "COBRO_EXISTENTE",
       "SIN_PRECIO",
+      "DEMASIADAS_FACTURAS",
+      "FACTURA_CONFIRMADA",
       "OTRO",
     ];
     for (const codigo of codigos) {

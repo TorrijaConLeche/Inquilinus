@@ -6,6 +6,7 @@ import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
 import { detalleDe, usuarioActual } from "../../../../servidor/api";
 import estilos from "../../privado.module.css";
+import propias from "./detalle.module.css";
 import { ArchivarInmueble } from "./ArchivarInmueble";
 import { DatosInmueble } from "./DatosInmueble";
 import { Habitaciones } from "./Habitaciones";
@@ -43,9 +44,14 @@ export default async function DetalleInmueble({
       </p>
       <div className={formulario.fila}>
         <h1 className={estilos.titulo}>{inmueble.nombre}</h1>
-        <Link href={`/inmuebles/${inmueble.id}/cobros`} className={formulario.boton}>
-          {t("verCobros")}
-        </Link>
+        <span className={propias.acciones}>
+          <Link href={`/inmuebles/${inmueble.id}/facturas`} className={formulario.botonSecundario}>
+            {t("verFacturas")}
+          </Link>
+          <Link href={`/inmuebles/${inmueble.id}/cobros`} className={formulario.boton}>
+            {t("verCobros")}
+          </Link>
+        </span>
       </div>
       {creado === "1" && <Aviso tipo="exito">{t("creado")}</Aviso>}
       {inmueble.archivado && <Aviso tipo="info">{t("archivadoAviso")}</Aviso>}

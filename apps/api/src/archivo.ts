@@ -63,7 +63,6 @@ export async function borrarInmueble(
   if (!confirmaBorradoInmueble(inmueble.nombre, nombreEscrito)) throw new ErrorPeticion("CONFIRMACION_INCORRECTA");
 
   const inquilinos = bd.select({ id: t.inquilino.id }).from(t.inquilino).where(eq(t.inquilino.inmuebleId, inmuebleId));
-  const tipos = bd.select({ id: t.tipoGasto.id }).from(t.tipoGasto).where(eq(t.tipoGasto.inmuebleId, inmuebleId));
   const [deDocumentos, deFacturas] = await Promise.all([
     bd
       .select({ id: t.fichero.id, clave: t.fichero.claveS3 })
@@ -74,19 +73,18 @@ export async function borrarInmueble(
       .select({ id: t.fichero.id, clave: t.fichero.claveS3 })
       .from(t.factura)
       .innerJoin(t.fichero, eq(t.fichero.id, t.factura.ficheroId))
-      .where(inArray(t.factura.tipoGastoId, tipos)),
+      .where(eq(t.factura.inmuebleId, inmuebleId)),
   ]);
   const ficheros = [...deDocumentos, ...deFacturas];
   await borrarDelBucket(almacen, ficheros.map((f) => f.clave));
 
   await ejecutarEnBloque(bd, (db) => {
-    const tiposDb = db.select({ id: t.tipoGasto.id }).from(t.tipoGasto).where(eq(t.tipoGasto.inmuebleId, inmuebleId));
-    const facturas = db.select({ id: t.factura.id }).from(t.factura).where(inArray(t.factura.tipoGastoId, tiposDb));
+    const facturas = db.select({ id: t.factura.id }).from(t.factura).where(eq(t.factura.inmuebleId, inmuebleId));
     const repartos = db.select({ id: t.reparto.id }).from(t.reparto).where(inArray(t.reparto.facturaId, facturas));
     return [
       // Las líneas de reparto y las facturas protegen a sus inquilinos y ficheros: van antes.
       db.delete(t.repartoLinea).where(inArray(t.repartoLinea.repartoId, repartos)),
-      db.delete(t.factura).where(inArray(t.factura.tipoGastoId, tiposDb)),
+      db.delete(t.factura).where(eq(t.factura.inmuebleId, inmuebleId)),
       ...(ficheros.length > 0 ? [db.delete(t.fichero).where(inArray(t.fichero.id, ficheros.map((f) => f.id)))] : []),
       // El resto cuelga del inmueble y se borra en cascada.
       db.delete(t.inmueble).where(eq(t.inmueble.id, inmuebleId)),

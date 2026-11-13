@@ -83,9 +83,9 @@ export async function exportarDatos(bd: Bd, usuarioId: string): Promise<Exportac
   await de(t.precioHabitacion, t.precioHabitacion.habitacionId, habitaciones);
   const inquilinos = ids(await de(t.inquilino, t.inquilino.inmuebleId, inmuebles));
   await de(t.ocupacion, t.ocupacion.inmuebleId, inmuebles);
-  const tiposGasto = ids(await de(t.tipoGasto, t.tipoGasto.inmuebleId, inmuebles));
+  await de(t.tipoGasto, t.tipoGasto.inmuebleId, inmuebles);
   await de(t.liquidacion, t.liquidacion.inmuebleId, inmuebles);
-  const facturas = ids(await de(t.factura, t.factura.tipoGastoId, tiposGasto));
+  const facturas = ids(await de(t.factura, t.factura.inmuebleId, inmuebles));
   const repartos = ids(await de(t.reparto, t.reparto.facturaId, facturas));
   await de(t.repartoLinea, t.repartoLinea.repartoId, repartos);
   await de(t.cobroAlquiler, t.cobroAlquiler.inquilinoId, inquilinos);
@@ -132,11 +132,10 @@ export async function borrarCuenta(bd: Bd, usuarioId: string, opciones: Opciones
   // (no se pueden borrar sueltos). Postgres no garantiza el orden de la cascada,
   // así que se borran antes, de abajo arriba.
   const inmuebles = bd.select({ id: t.inmueble.id }).from(t.inmueble).where(eq(t.inmueble.usuarioId, usuarioId));
-  const tiposGasto = bd.select({ id: t.tipoGasto.id }).from(t.tipoGasto).where(inArray(t.tipoGasto.inmuebleId, inmuebles));
-  const facturas = bd.select({ id: t.factura.id }).from(t.factura).where(inArray(t.factura.tipoGastoId, tiposGasto));
+  const facturas = bd.select({ id: t.factura.id }).from(t.factura).where(inArray(t.factura.inmuebleId, inmuebles));
   const repartos = bd.select({ id: t.reparto.id }).from(t.reparto).where(inArray(t.reparto.facturaId, facturas));
   await bd.delete(t.repartoLinea).where(inArray(t.repartoLinea.repartoId, repartos));
-  await bd.delete(t.factura).where(inArray(t.factura.tipoGastoId, tiposGasto));
+  await bd.delete(t.factura).where(inArray(t.factura.inmuebleId, inmuebles));
 
   // El resto cuelga del usuario y se borra en cascada.
   await bd.delete(t.usuario).where(eq(t.usuario.id, usuarioId));

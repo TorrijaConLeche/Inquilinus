@@ -3,8 +3,10 @@ import {
   ErrorValidacion,
   facturasSolapadas,
   importeDesdeTexto,
+  normalizarLectura,
   validarConfirmacion,
   validarFicheroFactura,
+  validarTamanoLote,
 } from '../src/index.ts';
 
 // Spec 003 · Lectura de facturas con IA (parte de dominio).
@@ -76,5 +78,36 @@ describe('Spec 003 · Lectura de facturas', () => {
     expect(() => validarConfirmacion({ tipoGastoId: 'luz', inicio: '2026-09-01', fin: '2026-09-30', importe: 0 })).toThrow(
       ErrorValidacion,
     );
+  });
+
+  const tipos = [
+    { id: 'luz', nombre: 'Luz' },
+    { id: 'gas', nombre: 'Gas' },
+  ];
+
+  it('C16 · más de 20 PDF en una subida se rechaza entera (R1)', () => {
+    expect(() => validarTamanoLote(21)).toThrow(expect.objectContaining({ codigo: 'DEMASIADAS_FACTURAS' }));
+    expect(() => validarTamanoLote(0)).toThrow(ErrorValidacion);
+    expect(validarTamanoLote(20)).toBe(20);
+  });
+
+  it('C13 · el tipo sugerido se busca entre los del inmueble, sin distinguir mayúsculas (R2, R3)', () => {
+    expect(normalizarLectura({ tipoGasto: 'luz' }, tipos).tipoGastoId).toBe('luz');
+  });
+
+  it('C14 · un tipo que no es del inmueble se queda vacío (R3)', () => {
+    expect(normalizarLectura({ tipoGasto: 'Agua' }, tipos).tipoGastoId).toBeNull();
+  });
+
+  it('C2 · lo que la IA no lee, o lee mal, se queda vacío: nunca se inventa (R4)', () => {
+    expect(normalizarLectura({ importe: 8745 }, tipos)).toEqual({ inicio: null, fin: null, importe: 8745, tipoGastoId: null });
+    expect(normalizarLectura({ inicio: '2026-02-30', fin: '2026-03-31', importe: -5 }, tipos)).toMatchObject({
+      inicio: null,
+      fin: '2026-03-31',
+      importe: null,
+    });
+    // Un periodo al revés no se puede usar: los dos extremos quedan vacíos.
+    expect(normalizarLectura({ inicio: '2026-09-30', fin: '2026-09-01' }, tipos)).toMatchObject({ inicio: null, fin: null });
+    expect(normalizarLectura({ importe: 87.45 }, tipos).importe).toBeNull();
   });
 });

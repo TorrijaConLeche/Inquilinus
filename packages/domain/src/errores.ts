@@ -18,7 +18,8 @@ export type CodigoError =
   | 'NOTAS_DEMASIADO_LARGAS'
   | 'MES_FUTURO'
   | 'PAGO_FUTURO'
-  | 'RENTA_OBLIGATORIA';
+  | 'RENTA_OBLIGATORIA'
+  | 'DEMASIADAS_FACTURAS';
 
 /** Error de datos de entrada. Los cálculos nunca devuelven un resultado parcial. */
 export class ErrorValidacion extends Error {

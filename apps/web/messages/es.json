@@ -128,7 +128,9 @@
     "pagoFuturo": "La fecha de pago no puede ser posterior a hoy.",
     "rentaObligatoria": "Este inquilino no vivió allí ese mes: indica la renta.",
     "cobroExistente": "Ya tiene cobro ese mes. Si lo quitaste, restáuralo desde «Cobros quitados».",
-    "sinPrecio": "Hay una habitación ocupada sin precio ese mes: ponle precio primero."
+    "sinPrecio": "Hay una habitación ocupada sin precio ese mes: ponle precio primero.",
+    "demasiadasFacturas": "Puedes subir hasta 20 facturas a la vez.",
+    "facturaConfirmada": "Esta factura ya está confirmada y no se puede descartar."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -436,7 +438,8 @@
     "borrarInmueble": "Borrar inmueble",
     "borrarInmuebleDefinitivo": "Borrar para siempre",
     "escribeNombre": "Para confirmar, escribe «{nombre}»",
-    "verCobros": "Cobros"
+    "verCobros": "Cobros",
+    "verFacturas": "Facturas"
   },
   "Cobros": {
     "titulo": "Cobros",
@@ -490,5 +493,29 @@
     "recalcularPagado": "Este cobro ya está cobrado. ¿Recalcularlo igualmente? Seguirá como cobrado.",
     "recalcularEditado": "Cambiaste este cobro a mano. ¿Recalcularlo y perder ese cambio?",
     "sinEstancia": "Este inquilino ya no vivió aquí ese mes, así que no le corresponde este cobro. ¿Quitarlo?"
+  },
+  "Facturas": {
+    "titulo": "Facturas",
+    "subirTitulo": "Subir facturas",
+    "subirExplicacion": "Elige uno o varios PDF (hasta 20, de 10 MB como máximo cada uno). Cada PDF es una factura. Después revisas sus datos y la confirmas para repartirla.",
+    "subirAyuda": "Solo PDF, hasta 20 a la vez.",
+    "subir": "Elegir PDF",
+    "subiendo": "Subiendo…",
+    "subidas": "{n, plural, one {Se ha subido # factura.} other {Se han subido # facturas.}}",
+    "rechazadas": "{n, plural, one {No se ha podido subir: {nombres}. Tiene que ser un PDF de hasta 10 MB.} other {No se han podido subir: {nombres}. Tienen que ser PDF de hasta 10 MB.}}",
+    "porRevisar": "Por revisar",
+    "nadaPorRevisar": "No hay facturas por revisar.",
+    "estados": {
+      "subida": "Por rellenar",
+      "propuesta": "Leída por la IA",
+      "error_extraccion": "No se pudo leer",
+      "confirmada": "Confirmada",
+      "repartida": "Repartida"
+    },
+    "periodo": "del {inicio} al {fin}",
+    "sinDatos": "Sin datos todavía: hay que rellenar el tipo de gasto, el periodo y el importe.",
+    "descartar": "Descartar",
+    "descartarConfirmacion": "¿Descartar esta factura? Se borrará con su PDF.",
+    "cancelar": "Cancelar"
   }
 }
