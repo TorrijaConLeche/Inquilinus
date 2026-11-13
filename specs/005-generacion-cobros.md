@@ -16,7 +16,9 @@ Crear cada mes, sin que la propietaria tenga que acordarse, el cobro de alquiler
 - **R5b** — En el cálculo de un mes entran las habitaciones que existían ese mes: las activas con precio ese mes (spec 007, R3 y R4) y las archivadas solo si alguien vivió en ellas ese mes. Así, una habitación archivada o creada después no genera recargo por vacíos. Si alguien vivió ese mes en una habitación sin precio ese mes, no se puede calcular y se avisa.
 - **R6** — Si cambian las ocupaciones o los precios de un mes que ya tiene cobros, esos cobros se marcan como **desactualizados**. La propietaria decide si recalcularlos. Si el cobro ya estaba pagado o había sido editado a mano (R10), al recalcularlo se pide confirmación; un cobro pagado sigue como pagado.
 - **R7** — Estados: pendiente o pagado (con fecha). Se puede marcar y desmarcar. La fecha de pago es por defecto hoy y no puede ser posterior a hoy.
-- **R8** — El proceso corre una vez al día y el día se evalúa en hora de Madrid. Si falla el día de cobro, la generación del mes se hace el primer día en que vuelva a correr.
+- **R2b** — Los inmuebles archivados (spec 007, R11c) y los bloqueados por el plan (spec 010, R10b) no generan cobros automáticos.
+- **R8** — El proceso corre una vez al día, **de madrugada** (entre las 2 y las 4, hora de Madrid), y el día se evalúa en hora de Madrid. Si falla el día de cobro, la generación del mes se hace el primer día en que vuelva a correr. Como solo genera el mes en curso, un inquilino dado de alta el último día del mes con entrada en ese mes no recibe solo el cobro de ese mes: se genera a mano (R5).
+- **R8b** — Solo lo puede lanzar Vercel, con su secreto (`CRON_SECRET`); sin él, el proceso no hace nada. Un inmueble que no se puede calcular (por ejemplo, una habitación ocupada sin precio) no para a los demás; en el registro solo queda cuántos fallaron y por qué código, sin datos personales.
 - **R9** — No hay recordatorios de impago en el MVP: los pendientes solo se ven en la app y en el enlace del inquilino.
 - **R10** — La propietaria puede, en cualquier momento y en cualquier cobro: cambiar la renta y el recargo; **moverlo** a cualquier otra fecha de cobro (el mes del cobro no cambia); y **quitarlo**, con confirmación. Un cobro cambiado o movido queda marcado como editado. También puede añadir a mano un cobro para un inquilino y un mes que no lo tengan.
 - **R10b** — Al añadir un cobro a mano: si el inquilino vivió allí ese mes, se propone el importe calculado (spec 002), que se puede cambiar; si no vivió (por ejemplo, una penalización o un mes de preaviso), hay que indicar la renta (el recargo es 0 si no se indica). La fecha de cobro es por defecto el día de cobro del inmueble ese mes. Queda con origen `manual`, y como editado si sus importes no son los calculados. A un inquilino anonimizado (spec 007, R12) no se le añaden cobros.
@@ -46,6 +48,8 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 | C16 | Cobro a mano sin estancia (R10b) | D no vivió en noviembre; se añade su cobro de noviembre sin renta, y después con 300 € | Error; después, cobro de 300 €, origen `manual` y editado |
 | C17 | Pago en el futuro (R7) | Hoy 2026-10-03; se marca pagado el 2026-10-04 | Error de validación |
 | C18 | Mes futuro (R5) | Hoy 2026-10-03; se generan a mano los de noviembre | Error de validación |
+| C19 | Archivados y bloqueados (R2b) | Un inmueble archivado y otro bloqueado, con inquilinos; proceso del 2026-10-01 | No se crea ningún cobro en ellos |
+| C20 | Sin el secreto (R8b) | Se llama al proceso sin el secreto de Vercel o con otro | 401; no se crea nada |
 
 ## Fuera de alcance
 
