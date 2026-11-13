@@ -171,7 +171,7 @@ describe("Spec 009 · Panel principal", () => {
       cobradoEsteMes: 0,
       pendientes: [],
       inmuebles: [],
-      avisos: { desactualizados: [], bloqueados: 0 },
+      avisos: { desactualizados: [], porRevisar: [], bloqueados: 0 },
     });
     expect((await pedir("/panel")).status).toBe(401);
   });

@@ -51,7 +51,7 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 ## Tareas
 
 - [x] Funciones de dominio: pendientes por inmueble e inquilino, totales del mes
-- [x] Panel principal (con alquileres; gastos y aviso de facturas en la fase 5)
+- [x] Panel principal, con alquileres, partes de gastos y aviso de facturas por revisar
 - [x] Pantalla de cobros del inmueble con selector de mes
 - [x] Marcar pagado, "Todo pagado" y deshacer
-- [ ] Tests C1–C8 (hechos con alquileres: C1, C2, C3, C5 y C7; con las partes de gastos, tarea 5.4: C4, C6 y la luz de B en C1 y C2; C8 con la tarea 5.3)
+- [x] Tests C1–C8 (C6, el mes del gasto, es el C15 de la spec 001)

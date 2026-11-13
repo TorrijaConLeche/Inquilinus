@@ -156,13 +156,15 @@
     "pendientes": "Pending by property",
     "sinPendientes": "All collected. Nothing pending.",
     "conceptoAlquiler": "rent for {mes}: {importe}",
-    "conceptoGasto": "expenses for {mes}: {importe}",
+    "conceptoGasto": "{gasto} for {mes}: {importe}",
     "tusInmuebles": "Your properties",
     "tarjetaPendiente": "{importe} pending",
     "alDia": "Up to date",
     "vacioTitulo": "Start with your first property",
     "vacioTexto": "Add a flat with its rooms and tenants, and you'll see here what you're owed and by whom.",
-    "anadirInmueble": "Add a property"
+    "anadirInmueble": "Add a property",
+    "gasto": "Expenses",
+    "avisoPorRevisar": "{n, plural, one {# bill to review in {inmueble}: confirm it to split it} other {# bills to review in {inmueble}: confirm them to split them}}"
   },
   "Ajustes": {
     "titulo": "Settings",
@@ -495,7 +497,9 @@
     "quitarConfirmacion": "Remove this payment? It won't be shown or counted, and you can restore it.",
     "recalcularPagado": "This payment is already collected. Recalculate it anyway? It will stay collected.",
     "recalcularEditado": "You changed this payment by hand. Recalculate it and lose that change?",
-    "sinEstancia": "This tenant didn't live here that month, so this payment doesn't apply. Remove it?"
+    "sinEstancia": "This tenant didn't live here that month, so this payment doesn't apply. Remove it?",
+    "gastoDe": "{tipo} ({inicio} – {fin})",
+    "repartidaEn": "Split in {mes}"
   },
   "Facturas": {
     "titulo": "Bills",
@@ -542,6 +546,15 @@
     "quedanConSolape": "{n, plural, one {# overlaps another: confirm it yourself if it isn't a duplicate.} other {# overlap others: confirm them yourself if they aren't duplicates.}}",
     "confirmadasTitulo": "Confirmed",
     "verPdf": "View PDF",
-    "repartoPronto": "Splitting each bill between the tenants is added in the next task."
+    "confirmadasExplicacion": "Each confirmed bill is split by days between whoever lived here. Mark each share when it's paid.",
+    "repartoDesactualizado": "Out of date",
+    "repartoDesactualizadoExplicacion": "The stays in its period changed: recalculate it so it adds up.",
+    "dias": "{n, plural, one {# day} other {# days}}",
+    "sinOcupar": "Unoccupied ({n, plural, one {# day} other {# days}}): {importe}, which you cover.",
+    "recalcular": "Recalculate",
+    "recalcularConPagos": "Some shares are already collected. Recalculate anyway? Each tenant keeps their payment.",
+    "deshacer": "Undo confirmation",
+    "deshacerSinPagos": "Undo the confirmation? Its split will be deleted and the bill will go back to “To review”.",
+    "deshacerConPagos": "Undo the confirmation? Its split will be deleted, including shares already collected (those payments are lost), and the bill will go back to “To review”."
   }
 }

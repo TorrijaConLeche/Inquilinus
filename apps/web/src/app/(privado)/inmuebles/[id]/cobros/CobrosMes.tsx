@@ -1,5 +1,5 @@
 "use client";
-import type { Cobro, CobrosDelMes, Inquilino, ResultadoPagoTodo } from "@inquilinus/contracts";
+import type { Cobro, CobrosDelMes, Inquilino, ParteGasto, ResultadoPagoTodo, TipoGasto } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -9,26 +9,29 @@ import formulario from "../../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../../lib/api-cliente";
 import { eurosACentimos, formatoEuros } from "../../../../../lib/dinero";
 import type { ClaveError } from "../../../../../lib/errores";
-import { formatoMes } from "../../../../../lib/fechas";
+import { formatoFecha, formatoMes } from "../../../../../lib/fechas";
 import { useAccion } from "../../../../../lib/use-accion";
 import privado from "../../../privado.module.css";
 import propias from "../detalle.module.css";
+import { FilaParte } from "../FilaParte";
 import estilos from "./cobros.module.css";
 import { FilaCobro } from "./FilaCobro";
 
-const suma = (cobros: readonly Cobro[]) => cobros.reduce((s, c) => s + c.importe, 0);
+const suma = (conceptos: readonly { importe: number }[]) => conceptos.reduce((s, c) => s + c.importe, 0);
 
 /** Cobros de un mes del inmueble (spec 009, R7–R13). */
 export function CobrosMes({
   inmuebleId,
   datos,
   inquilinos,
+  tiposGasto,
   mesActual,
   hoy,
 }: {
   inmuebleId: string;
   datos: CobrosDelMes;
   inquilinos: Inquilino[];
+  tiposGasto: TipoGasto[];
   mesActual: string;
   hoy: string;
 }) {
@@ -40,16 +43,27 @@ export function CobrosMes({
   const restauracion = useAccion();
   const [mensaje, setMensaje] = useState<string | null>(null);
   // R10: lo último que se marcó con «Todo pagado», para poder deshacerlo.
-  const [ultimoPagoTodo, setUltimoPagoTodo] = useState<{ inquilinoId: string; ids: string[] } | null>(null);
+  const [ultimoPagoTodo, setUltimoPagoTodo] = useState<{ inquilinoId: string; cobros: string[]; partes: string[] } | null>(null);
   const [errorPago, setErrorPago] = useState<ClaveError | null>(null);
 
   const nombre = (id: string) => inquilinos.find((q) => q.id === id)?.nombre ?? "—";
   const etiqueta = (c: Cobro) => t("alquilerDe", { mes: formatoMes(c.mes, idioma) });
+  // Spec 009, R8: «Luz (1 sept – 30 sept)».
+  const etiquetaGasto = (p: ParteGasto) =>
+    t("gastoDe", {
+      tipo: tiposGasto.find((tg) => tg.id === p.tipoGastoId)?.nombre ?? "—",
+      inicio: formatoFecha(p.periodoInicio, idioma),
+      fin: formatoFecha(p.periodoFin, idioma),
+    });
 
   // Por inquilino, en el orden de la ficha del inmueble.
   const grupos = inquilinos
-    .map((q) => ({ inquilino: q, cobros: datos.cobros.filter((c) => c.inquilinoId === q.id) }))
-    .filter((g) => g.cobros.length > 0);
+    .map((q) => ({
+      inquilino: q,
+      cobros: datos.cobros.filter((c) => c.inquilinoId === q.id),
+      gastos: datos.gastos.filter((g) => g.inquilinoId === q.id),
+    }))
+    .filter((g) => g.cobros.length > 0 || g.gastos.length > 0);
 
   const generar = async () => {
     setMensaje(null);
@@ -67,29 +81,55 @@ export function CobrosMes({
     setErrorPago(null);
     const resultado = await pedirApi<ResultadoPagoTodo>(`${base}/pagar-todo`, { cuerpo: { inquilinoId, mes: datos.mes } });
     if (!resultado.ok) return setErrorPago(resultado.error);
-    setUltimoPagoTodo({ inquilinoId, ids: resultado.datos.marcados.map((c) => c.id) });
+    setUltimoPagoTodo({
+      inquilinoId,
+      cobros: resultado.datos.marcados.map((c) => c.id),
+      partes: resultado.datos.partes.map((p) => p.id),
+    });
     router.refresh();
   };
 
   const deshacerPagoTodo = async () => {
     if (!ultimoPagoTodo) return;
-    await Promise.all(ultimoPagoTodo.ids.map((id) => pedirApi(`${base}/${id}`, { metodo: "PATCH", cuerpo: { pagadoEn: null } })));
+    await Promise.all([
+      ...ultimoPagoTodo.cobros.map((id) => pedirApi(`${base}/${id}`, { metodo: "PATCH", cuerpo: { pagadoEn: null } })),
+      ...ultimoPagoTodo.partes.map((id) =>
+        pedirApi(`/inmuebles/${inmuebleId}/partes/${id}`, { metodo: "PATCH", cuerpo: { pagadoEn: null } }),
+      ),
+    ]);
     setUltimoPagoTodo(null);
     router.refresh();
   };
 
-  const cobrado = suma(datos.cobros.filter((c) => c.pagadoEn));
-  const pendiente = suma(datos.cobros.filter((c) => !c.pagadoEn));
+  const delMes = [...datos.cobros, ...datos.gastos];
+  const cobrado = suma(delMes.filter((c) => c.pagadoEn));
+  const pendiente = suma(delMes.filter((c) => !c.pagadoEn));
+  const atrasados = suma([...datos.atrasados, ...datos.gastosAtrasados]);
+  // R11: vacíos del alquiler y días sin ocupar de las facturas del mes.
+  const asumes =
+    datos.asumePropietario === null && datos.asumePropietarioGastos === 0
+      ? null
+      : (datos.asumePropietario ?? 0) + datos.asumePropietarioGastos;
 
   return (
     <>
-      {datos.atrasados.length > 0 && (
+      {datos.atrasados.length + datos.gastosAtrasados.length > 0 && (
         <section className={`${privado.seccion} ${estilos.atrasados}`} aria-labelledby="titulo-atrasados">
           <h2 id="titulo-atrasados">{t("atrasados")}</h2>
-          <p className={propias.suave}>{t("atrasadosExplicacion", { total: formatoEuros(suma(datos.atrasados), idioma) })}</p>
+          <p className={propias.suave}>{t("atrasadosExplicacion", { total: formatoEuros(atrasados, idioma) })}</p>
           <ul className={estilos.cobros}>
             {datos.atrasados.map((c) => (
               <FilaCobro key={c.id} base={base} cobro={c} etiqueta={`${nombre(c.inquilinoId)} · ${etiqueta(c)}`} hoy={hoy} />
+            ))}
+            {datos.gastosAtrasados.map((p) => (
+              <FilaParte
+                key={p.id}
+                inmuebleId={inmuebleId}
+                parte={p}
+                etiqueta={`${nombre(p.inquilinoId)} · ${etiquetaGasto(p)}`}
+                detalle={t("repartidaEn", { mes: formatoMes(p.mes, idioma) })}
+                hoy={hoy}
+              />
             ))}
           </ul>
         </section>
@@ -101,9 +141,10 @@ export function CobrosMes({
         {errorPago && <Aviso tipo="error">{te(errorPago)}</Aviso>}
         {grupos.length === 0 && <p className={propias.suave}>{t("sinCobros")}</p>}
 
-        {grupos.map(({ inquilino, cobros }) => {
-          const pendientes = cobros.filter((c) => !c.pagadoEn);
-          const recienPagado = ultimoPagoTodo?.inquilinoId === inquilino.id && ultimoPagoTodo.ids.length > 0;
+        {grupos.map(({ inquilino, cobros, gastos }) => {
+          const pendientes = [...cobros, ...gastos].filter((c) => !c.pagadoEn);
+          const recienPagado =
+            ultimoPagoTodo?.inquilinoId === inquilino.id && ultimoPagoTodo.cobros.length + ultimoPagoTodo.partes.length > 0;
           return (
             <div key={inquilino.id} className={propias.elemento}>
               <div className={propias.fila}>
@@ -121,6 +162,9 @@ export function CobrosMes({
               <ul className={estilos.cobros}>
                 {cobros.map((c) => (
                   <FilaCobro key={c.id} base={base} cobro={c} etiqueta={etiqueta(c)} hoy={hoy} />
+                ))}
+                {gastos.map((p) => (
+                  <FilaParte key={p.id} inmuebleId={inmuebleId} parte={p} etiqueta={etiquetaGasto(p)} hoy={hoy} />
                 ))}
               </ul>
             </div>
@@ -147,9 +191,7 @@ export function CobrosMes({
           <dt>{t("pendienteMes")}</dt>
           <dd className={propias.importe}>{formatoEuros(pendiente, idioma)}</dd>
           <dt>{t("asumesTu")}</dt>
-          <dd className={propias.importe}>
-            {datos.asumePropietario === null ? "—" : formatoEuros(datos.asumePropietario, idioma)}
-          </dd>
+          <dd className={propias.importe}>{asumes === null ? "—" : formatoEuros(asumes, idioma)}</dd>
         </dl>
         <p className={propias.suave}>{t("asumesTuExplicacion")}</p>
       </section>

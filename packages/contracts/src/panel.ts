@@ -42,6 +42,8 @@ export const Panel = z
     /** R4 y R5b. */
     avisos: z.object({
       desactualizados: z.array(z.object({ inmuebleId: z.uuid(), nombre: z.string(), cobros: z.int() })),
+      /** Facturas subidas que faltan por confirmar, por inmueble. */
+      porRevisar: z.array(z.object({ inmuebleId: z.uuid(), nombre: z.string(), facturas: z.int() })),
       bloqueados: z.int(),
     }),
   })

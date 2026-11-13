@@ -1,14 +1,13 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { hoyEnMadrid } from "@inquilinus/api";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import formulario from "../../../../../componentes/formulario.module.css";
-import { formatoEuros } from "../../../../../lib/dinero";
-import { formatoFecha } from "../../../../../lib/fechas";
 import { facturasDe, usuarioActual } from "../../../../../servidor/api";
 import privado from "../../../privado.module.css";
 import propias from "../detalle.module.css";
 import { ConfirmarTodas } from "./ConfirmarTodas";
-import estilos from "./facturas.module.css";
+import { FacturaRepartida } from "./FacturaRepartida";
 import { FilaFactura } from "./FilaFactura";
 import { SubirFacturas } from "./SubirFacturas";
 
@@ -22,11 +21,10 @@ const POR_REVISAR = ["subida", "propuesta", "error_extraccion"];
 /** Facturas del inmueble (spec 003): subir PDF, revisar y confirmar, y las ya confirmadas. */
 export default async function FacturasInmueble({ params }: { params: Promise<{ id: string }> }) {
   const t = await getTranslations("Facturas");
-  const idioma = await getLocale();
   const usuario = await usuarioActual();
   const datos = usuario ? await facturasDe(usuario, (await params).id) : null;
   if (!datos) notFound();
-  const { inmueble, facturas, tiposGasto } = datos;
+  const { inmueble, facturas, tiposGasto, inquilinos } = datos;
   const porRevisar = facturas.filter((f) => POR_REVISAR.includes(f.estado));
   // Las confirmadas, de la más reciente a la más antigua por periodo.
   const confirmadas = facturas
@@ -69,27 +67,21 @@ export default async function FacturasInmueble({ params }: { params: Promise<{ i
       {confirmadas.length > 0 && (
         <section className={privado.seccion} aria-labelledby="titulo-confirmadas">
           <h2 id="titulo-confirmadas">{t("confirmadasTitulo")}</h2>
-          <ul className={propias.estancias}>
-            {confirmadas.map((f) => (
-              <li key={f.id} className={estilos.confirmada}>
-                <span>
-                  <strong>{nombreTipo(f.tipoGastoId)}</strong>{" "}
-                  <span className={propias.suave}>
-                    {f.periodoInicio && f.periodoFin
-                      ? t("periodo", { inicio: formatoFecha(f.periodoInicio, idioma), fin: formatoFecha(f.periodoFin, idioma) })
-                      : ""}
-                  </span>
-                </span>
-                <span className={propias.acciones}>
-                  <span className={estilos.importe}>{f.importeTotal === null ? "—" : formatoEuros(f.importeTotal, idioma)}</span>
-                  <a href={`/api/inmuebles/${inmueble.id}/facturas/${f.id}/pdf`} target="_blank" rel="noopener noreferrer" className={formulario.enlace}>
-                    {t("verPdf")}
-                  </a>
-                </span>
-              </li>
-            ))}
+          <p className={propias.suave}>{t("confirmadasExplicacion")}</p>
+          <ul className={propias.lista}>
+            {confirmadas.map((f) =>
+              f.reparto ? (
+                <FacturaRepartida
+                  key={f.id}
+                  inmuebleId={inmueble.id}
+                  factura={f}
+                  tipo={nombreTipo(f.tipoGastoId)}
+                  inquilinos={inquilinos}
+                  hoy={hoyEnMadrid()}
+                />
+              ) : null,
+            )}
           </ul>
-          <p className={propias.ayudaPequena}>{t("repartoPronto")}</p>
         </section>
       )}
     </>

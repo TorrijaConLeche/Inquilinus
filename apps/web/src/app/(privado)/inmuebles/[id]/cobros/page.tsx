@@ -30,7 +30,7 @@ export default async function CobrosInmueble({
   const usuario = await usuarioActual();
   const datos = usuario ? await cobrosDe(usuario, (await params).id, mes) : null;
   if (!datos) notFound();
-  const { inmueble, inquilinos, cobros } = datos;
+  const { inmueble, inquilinos, cobros, tiposGasto } = datos;
   const enlaceMes = (m: string) => `/inmuebles/${inmueble.id}/cobros${m === mesActual ? "" : `?mes=${m}`}`;
 
   return (
@@ -59,7 +59,14 @@ export default async function CobrosInmueble({
         )}
       </nav>
 
-      <CobrosMes inmuebleId={inmueble.id} datos={cobros} inquilinos={inquilinos} mesActual={mesActual} hoy={hoyEnMadrid()} />
+      <CobrosMes
+        inmuebleId={inmueble.id}
+        datos={cobros}
+        inquilinos={inquilinos}
+        tiposGasto={tiposGasto}
+        mesActual={mesActual}
+        hoy={hoyEnMadrid()}
+      />
     </>
   );
 }

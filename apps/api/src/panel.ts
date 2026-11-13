@@ -89,6 +89,20 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
   ];
   const resumen = resumenPanel(conceptos, hoy);
 
+  // R4: facturas por revisar (subidas, leídas o que no se pudieron leer).
+  const porRevisar =
+    activos.length === 0
+      ? []
+      : await bd
+          .select({ inmuebleId: t.factura.inmuebleId })
+          .from(t.factura)
+          .where(
+            and(
+              inArray(t.factura.inmuebleId, activos.map((i) => i.id)),
+              inArray(t.factura.estado, ["subida", "propuesta", "error_extraccion"]),
+            ),
+          );
+
   const desactualizados = new Map<string, number>();
   for (const f of filas) {
     if (f.desactualizado && f.quitadoEn === null) desactualizados.set(f.inmuebleId, (desactualizados.get(f.inmuebleId) ?? 0) + 1);
@@ -124,6 +138,9 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
       desactualizados: activos
         .filter((i) => desactualizados.has(i.id))
         .map((i) => ({ inmuebleId: i.id, nombre: i.nombre, cobros: desactualizados.get(i.id)! })),
+      porRevisar: activos
+        .map((i) => ({ inmuebleId: i.id, nombre: i.nombre, facturas: porRevisar.filter((f) => f.inmuebleId === i.id).length }))
+        .filter((a) => a.facturas > 0),
       bloqueados: inmuebles.length - activos.length,
     },
   };

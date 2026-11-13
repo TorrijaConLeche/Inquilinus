@@ -93,14 +93,15 @@ export async function cobrosDe(
   usuario: UsuarioSesion,
   inmuebleId: string,
   mes: string,
-): Promise<{ inmueble: Inmueble; inquilinos: Inquilino[]; cobros: CobrosDelMes } | null> {
+): Promise<{ inmueble: Inmueble; inquilinos: Inquilino[]; cobros: CobrosDelMes; tiposGasto: TipoGasto[] } | null> {
   const inmueble = await inmuebleDe(usuario, inmuebleId);
   if (!inmueble || !dependencias.bd) return null;
-  const [inquilinos, cobros] = await Promise.all([
+  const [inquilinos, cobros, tiposGasto] = await Promise.all([
     listarInquilinos(dependencias.bd, inmueble.id),
     cobrosDelMes(dependencias.bd, inmueble.id, mes, mesEnMadrid()),
+    listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
-  return { inmueble, inquilinos, cobros };
+  return { inmueble, inquilinos, cobros, tiposGasto };
 }
 
 /** Panel principal del usuario (spec 009, R1–R5b). */
@@ -113,12 +114,13 @@ export async function panelDe(usuario: UsuarioSesion): Promise<Panel | null> {
 export async function facturasDe(
   usuario: UsuarioSesion,
   inmuebleId: string,
-): Promise<{ inmueble: Inmueble; facturas: Factura[]; tiposGasto: TipoGasto[] } | null> {
+): Promise<{ inmueble: Inmueble; facturas: Factura[]; tiposGasto: TipoGasto[]; inquilinos: Inquilino[] } | null> {
   const inmueble = await inmuebleDe(usuario, inmuebleId);
   if (!inmueble || !dependencias.bd) return null;
-  const [facturas, tiposGasto] = await Promise.all([
+  const [facturas, tiposGasto, inquilinos] = await Promise.all([
     listarFacturas(dependencias.bd, inmueble.id, { porRevisar: false }),
     listarTiposGasto(dependencias.bd, inmueble.id),
+    listarInquilinos(dependencias.bd, inmueble.id),
   ]);
-  return { inmueble, facturas, tiposGasto };
+  return { inmueble, facturas, tiposGasto, inquilinos };
 }

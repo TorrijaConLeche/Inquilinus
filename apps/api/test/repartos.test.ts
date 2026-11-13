@@ -249,3 +249,14 @@ describe("Aislamiento del reparto", () => {
     expect((await e.reparto()).partes).toHaveLength(3);
   });
 });
+
+describe("Spec 009 · Aviso de facturas por revisar", () => {
+  it("C8 · con una factura subida sin confirmar, el panel avisa y lleva a sus facturas", async () => {
+    const e = await escenario();
+    const p = PermisosSubida.parse(await (await pedir(`${e.base}/facturas/subidas`, { cuerpo: { cantidad: 1 }, cookie: e.cookie })).json());
+    almacen.subir(p.permisos[0]!.campos, PDF);
+    await pedir(`${e.base}/facturas`, { cuerpo: { subidas: [{ subidaId: p.permisos[0]!.subidaId, nombre: "agua.pdf" }] }, cookie: e.cookie });
+    const panel = Panel.parse(await (await pedir("/panel", { cookie: e.cookie })).json());
+    expect(panel.avisos.porRevisar).toEqual([{ inmuebleId: e.id, nombre: "Piso Centro", facturas: 1 }]);
+  });
+});

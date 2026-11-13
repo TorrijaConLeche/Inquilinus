@@ -1,6 +1,6 @@
 # 001 · Reparto de suministros
 
-Estado: aprobada · Paquetes: `packages/domain` (cálculo), `apps/api` y `apps/web` (reparto guardado)
+Estado: implementada · Paquetes: `packages/domain` (cálculo), `apps/api` y `apps/web` (reparto guardado)
 
 ## Objetivo
 
@@ -66,5 +66,5 @@ Periodo del 1 al 30 de septiembre (30 días) salvo que se indique otra cosa.
 - [x] Cálculo por días (R1–R5, R7)
 - [x] Redondeo por mayor resto (R6)
 - [x] Tests C1–C9 en Vitest
-- [ ] Reparto guardado al confirmar, pagos de cada parte, desactualizado, recalcular y deshacer (tarea 5.4)
-- [ ] Tests C10–C15
+- [x] Reparto guardado al confirmar, pagos de cada parte, desactualizado, recalcular y deshacer (tarea 5.4)
+- [x] Tests C10–C15

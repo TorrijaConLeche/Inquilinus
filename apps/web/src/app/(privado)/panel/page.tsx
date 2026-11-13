@@ -42,7 +42,7 @@ export default async function PanelPrincipal() {
   }
 
   const { avisos } = panel;
-  const hayAvisos = avisos.desactualizados.length > 0 || avisos.bloqueados > 0;
+  const hayAvisos = avisos.desactualizados.length > 0 || avisos.porRevisar.length > 0 || avisos.bloqueados > 0;
 
   return (
     <>
@@ -65,6 +65,13 @@ export default async function PanelPrincipal() {
         <section className={`${estilos.seccion} ${propias.avisos}`} aria-labelledby="titulo-avisos">
           <h2 id="titulo-avisos">{t("avisos")}</h2>
           <ul className={propias.lista}>
+            {avisos.porRevisar.map((a) => (
+              <li key={`revisar-${a.inmuebleId}`}>
+                <Link href={`/inmuebles/${a.inmuebleId}/facturas`} className={formulario.enlace}>
+                  {t("avisoPorRevisar", { n: a.facturas, inmueble: a.nombre })}
+                </Link>
+              </li>
+            ))}
             {avisos.desactualizados.map((a) => (
               <li key={a.inmuebleId}>
                 <Link href={`/inmuebles/${a.inmuebleId}/cobros`} className={formulario.enlace}>
@@ -101,10 +108,13 @@ export default async function PanelPrincipal() {
                       <span className={propias.conceptos}>
                         {q.conceptos.map((c) => (
                           <span key={c.id} className={c.atrasado ? propias.atrasado : propias.concepto}>
-                            {t(c.tipo === "alquiler" ? "conceptoAlquiler" : "conceptoGasto", {
-                              mes: formatoMes(c.mes, idioma),
-                              importe: euros(c.importe),
-                            })}
+                            {c.tipo === "alquiler"
+                              ? t("conceptoAlquiler", { mes: formatoMes(c.mes, idioma), importe: euros(c.importe) })
+                              : t("conceptoGasto", {
+                                  gasto: c.nombreGasto ?? t("gasto"),
+                                  mes: formatoMes(c.mes, idioma),
+                                  importe: euros(c.importe),
+                                })}
                           </span>
                         ))}
                       </span>
