@@ -12,6 +12,7 @@ import {
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
+import { exigirEditable } from "../archivo.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
 import {
   borrarDocumento,
@@ -35,7 +36,10 @@ export function registrarRutasDocumentos(
     const valores = ids(c, "idInmueble", "idInquilino");
     if (!valores) return null;
     const [inmuebleId, inquilinoId] = valores as [string, string];
-    return (await inquilinoSuyo(bd, c.get("usuarioId"), inmuebleId, inquilinoId)) ? inquilinoId : null;
+    if (!(await inquilinoSuyo(bd, c.get("usuarioId"), inmuebleId, inquilinoId))) return null;
+    // R12: de un inquilino anonimizado ya no se guarda nada.
+    await exigirEditable(bd, inquilinoId);
+    return inquilinoId;
   };
 
   const tipoDe = (c: Context) => {

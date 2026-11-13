@@ -9,13 +9,17 @@ import {
   NuevaOcupacion,
   NuevoInquilino,
   NuevoTipoGasto,
+  type BorradoInquilino,
   type Inquilino,
   type ListaInquilinos,
   type ListaTiposGasto,
   type TipoGasto,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
+import type { Almacen } from "../almacen.ts";
+import { borrarInquilino, borrarTipoGasto } from "../archivo.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
+import { hoyEnMadrid } from "../fechas.ts";
 import { esSuyo } from "../inmuebles.ts";
 import {
   cambiarHabitacion,
@@ -31,7 +35,11 @@ import {
 } from "../inquilinos.ts";
 import { ids, leer, noEncontrado, type EntornoSesion } from "./comunes.ts";
 
-export function registrarRutasInquilinos(app: Hono<EntornoSesion>, { bd }: { bd: ConexionBd }) {
+export function registrarRutasInquilinos(
+  app: Hono<EntornoSesion>,
+  { bd, almacen, ahora }: { bd: ConexionBd; almacen: Almacen | undefined; ahora: () => Date },
+) {
+  const hoy = () => hoyEnMadrid(ahora());
   /**
    * Ids de la URL ya validados y con el inmueble comprobado como propio;
    * null si algo no existe o es de otra cuenta.
@@ -68,6 +76,14 @@ export function registrarRutasInquilinos(app: Hono<EntornoSesion>, { bd }: { bd:
     const { nombre } = await leer(c, EdicionInquilino);
     if (!(await renombrarInquilino(bd, v[0]!, v[1]!, nombre))) return noEncontrado(c);
     return responderInquilino(c, v[0]!, v[1]!);
+  });
+
+  /** R12: derecho de supresión. */
+  app.delete("/inmuebles/:idInmueble/inquilinos/:idInquilino", async (c) => {
+    const v = await delInmueble(c, "idInquilino");
+    if (!v) return noEncontrado(c);
+    const resultado = await borrarInquilino(bd, almacen, v[0]!, v[1]!, hoy());
+    return resultado ? c.json<BorradoInquilino>({ resultado }) : noEncontrado(c);
   });
 
   // --- Ocupaciones ----------------------------------------------------------
@@ -115,5 +131,12 @@ export function registrarRutasInquilinos(app: Hono<EntornoSesion>, { bd }: { bd:
     if (!v) return noEncontrado(c);
     const tipo = await editarTipoGasto(bd, v[0]!, v[1]!, await leer(c, EdicionTipoGasto));
     return tipo ? c.json<TipoGasto>(tipo) : noEncontrado(c);
+  });
+
+  app.delete("/inmuebles/:idInmueble/tipos-gasto/:idTipoGasto", async (c) => {
+    const v = await delInmueble(c, "idTipoGasto");
+    if (!v) return noEncontrado(c);
+    if (!(await borrarTipoGasto(bd, v[0]!, v[1]!))) return noEncontrado(c);
+    return c.body(null, 204);
   });
 }

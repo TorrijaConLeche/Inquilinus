@@ -16,6 +16,7 @@ export {
 } from './cuenta.ts';
 export {
   AltaInmueble,
+  BorradoInmueble,
   CambioPrecio,
   Centimos,
   EdicionHabitacion,
@@ -32,6 +33,7 @@ export {
   rutasInmuebles,
 } from './inmuebles.ts';
 export {
+  BorradoInquilino,
   CambioHabitacion,
   COLORES_GASTO,
   ColorGasto,
@@ -60,5 +62,4 @@ export {
   TipoDocumento,
 } from './documentos.ts';
 export { generarOpenApi } from './openapi.ts';
-
 export { RespuestaSalud, rutasSalud } from './salud.ts';

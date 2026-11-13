@@ -4,6 +4,7 @@
 import type {
   AltaInmueble,
   CambioPrecio,
+  EdicionHabitacion,
   EdicionInmueble,
   Habitacion,
   Inmueble,
@@ -18,20 +19,14 @@ import {
   validarNombre,
 } from "@inquilinus/domain";
 import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { archivarHabitacion, archivarInmueble, borrarHabitacion } from "./archivo.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 
-/** Error de la API con su código, para responder 400 sin pasar por el dominio. */
-export class ErrorPeticion extends Error {
-  readonly codigo: string;
+import { ErrorPeticion } from "./errores.ts";
 
-  constructor(codigo: string) {
-    super(codigo);
-    this.name = "ErrorPeticion";
-    this.codigo = codigo;
-  }
-}
+export { ErrorPeticion };
 
 // --- Lectura ----------------------------------------------------------------
 
@@ -81,15 +76,24 @@ export async function verInmueble(
     .select()
     .from(t.habitacion)
     .where(eq(t.habitacion.inmuebleId, inmuebleId))
-    .orderBy(asc(t.habitacion.creadoEn));
-  const precios =
-    habitaciones.length === 0
-      ? []
-      : await bd
-          .select()
-          .from(t.precioHabitacion)
-          .where(inArray(t.precioHabitacion.habitacionId, habitaciones.map((h) => h.id)))
-          .orderBy(asc(t.precioHabitacion.desdeMes));
+    // Las del alta se crean a la vez (mismo instante): se desempata por nombre.
+    .orderBy(asc(t.habitacion.creadoEn), asc(t.habitacion.nombre));
+  const idsHabitaciones = habitaciones.map((h) => h.id);
+  const [precios, conEstancias] =
+    idsHabitaciones.length === 0
+      ? [[], []]
+      : await Promise.all([
+          bd
+            .select()
+            .from(t.precioHabitacion)
+            .where(inArray(t.precioHabitacion.habitacionId, idsHabitaciones))
+            .orderBy(asc(t.precioHabitacion.desdeMes)),
+          bd
+            .selectDistinct({ id: t.ocupacion.habitacionId })
+            .from(t.ocupacion)
+            .where(inArray(t.ocupacion.habitacionId, idsHabitaciones)),
+        ]);
+  const habitadas = new Set(conEstancias.map((f) => f.id));
 
   return {
     id: inmueble.id,
@@ -108,6 +112,7 @@ export async function verInmueble(
         id: h.id,
         nombre: h.nombre,
         archivada: h.archivada,
+        conEstancias: habitadas.has(h.id),
         precioActual: precioDelMes(historialPrecios, mesActual),
         historialPrecios,
       };
@@ -201,14 +206,16 @@ async function habitacionSuya(
   return Boolean(fila);
 }
 
-/** R2: se puede editar todo menos la modalidad. Devuelve false si no es suyo. */
+/** R2: se puede editar todo menos la modalidad; R11c: archivar o restaurar. Devuelve false si no es suyo. */
 export async function editarInmueble(
   bd: ConexionBd,
   usuarioId: string,
   inmuebleId: string,
   edicion: EdicionInmueble,
+  hoy: string,
 ): Promise<boolean> {
   if (!(await esSuyo(bd, usuarioId, inmuebleId))) return false;
+  if (edicion.archivado !== undefined) await archivarInmueble(bd, inmuebleId, edicion.archivado, hoy);
   const cambios: Partial<typeof t.inmueble.$inferInsert> = {};
   if (edicion.nombre !== undefined) cambios.nombre = validarNombre(edicion.nombre, "del inmueble");
   if (edicion.direccion !== undefined) cambios.direccion = edicion.direccion?.trim() || null;
@@ -239,19 +246,35 @@ export async function crearHabitacion(
   return true;
 }
 
-export async function renombrarHabitacion(
+/** Renombrar, archivar o restaurar (R11, R11b). Devuelve false si no es suya. */
+export async function editarHabitacion(
   bd: ConexionBd,
   usuarioId: string,
   inmuebleId: string,
   habitacionId: string,
-  nombre: string,
+  edicion: EdicionHabitacion,
+  hoy: string,
 ): Promise<boolean> {
   if (!(await habitacionSuya(bd, usuarioId, inmuebleId, habitacionId))) return false;
-  await bd
-    .update(t.habitacion)
-    .set({ nombre: validarNombre(nombre, "de la habitación") })
-    .where(eq(t.habitacion.id, habitacionId));
+  if (edicion.nombre !== undefined) {
+    await bd
+      .update(t.habitacion)
+      .set({ nombre: validarNombre(edicion.nombre, "de la habitación") })
+      .where(eq(t.habitacion.id, habitacionId));
+  }
+  if (edicion.archivada !== undefined) await archivarHabitacion(bd, inmuebleId, habitacionId, edicion.archivada, hoy);
   return true;
+}
+
+/** R11: borrar una habitación sin estancias. Devuelve false si no es suya. */
+export async function borrarHabitacionSuya(
+  bd: ConexionBd,
+  usuarioId: string,
+  inmuebleId: string,
+  habitacionId: string,
+): Promise<boolean> {
+  if (!(await habitacionSuya(bd, usuarioId, inmuebleId, habitacionId))) return false;
+  return borrarHabitacion(bd, inmuebleId, habitacionId);
 }
 
 /**

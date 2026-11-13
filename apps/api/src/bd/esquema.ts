@@ -443,7 +443,6 @@ export const documento = pgTable(
   (t) => [unique().on(t.inquilinoId, t.tipo)],
 );
 
-
 /** Se guarda el hash del token, nunca el token. */
 export const enlaceInquilino = pgTable(
   "enlace_inquilino",

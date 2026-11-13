@@ -14,7 +14,8 @@ import {
   type TipoGasto,
 } from "@inquilinus/contracts";
 import { aDia, desdeDia, validarInquilino, validarNombre, validarOcupaciones } from "@inquilinus/domain";
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, asc, eq, inArray, ne } from "drizzle-orm";
+import { exigirEditable, inquilinosConHistorial } from "./archivo.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
@@ -29,11 +30,13 @@ function aInquilino(
   fila: typeof t.inquilino.$inferSelect,
   ocupaciones: FilaOcupacion[],
   { documentos, fianzas }: DocumentosYFianzas,
+  conHistorial: Set<string>,
 ): Inquilino {
   return {
     id: fila.id,
     nombre: fila.nombre,
     anonimizado: fila.anonimizado,
+    conHistorial: conHistorial.has(fila.id),
     ocupaciones: ocupaciones
       .filter((o) => o.inquilinoId === fila.id)
       .sort((a, b) => (a.entrada < b.entrada ? -1 : a.entrada > b.entrada ? 1 : 0))
@@ -48,11 +51,12 @@ export async function listarInquilinos(bd: ConexionBd, inmuebleId: string): Prom
     bd.select().from(t.inquilino).where(eq(t.inquilino.inmuebleId, inmuebleId)).orderBy(asc(t.inquilino.creadoEn)),
     bd.select().from(t.ocupacion).where(eq(t.ocupacion.inmuebleId, inmuebleId)),
   ]);
-  const extras = await documentosYFianzas(
-    bd,
-    inquilinos.map((q) => q.id),
-  );
-  return inquilinos.map((q) => aInquilino(q, ocupaciones, extras));
+  const idsInquilinos = inquilinos.map((q) => q.id);
+  const [extras, conHistorial] = await Promise.all([
+    documentosYFianzas(bd, idsInquilinos),
+    inquilinosConHistorial(bd, idsInquilinos),
+  ]);
+  return inquilinos.map((q) => aInquilino(q, ocupaciones, extras, conHistorial));
 }
 
 /** El inquilino con sus estancias, si es de ese inmueble. */
@@ -62,12 +66,12 @@ export async function verInquilino(bd: ConexionBd, inmuebleId: string, inquilino
     .from(t.inquilino)
     .where(and(eq(t.inquilino.id, inquilinoId), eq(t.inquilino.inmuebleId, inmuebleId)));
   if (!fila) return null;
-  const [ocupaciones, extras] = await Promise.all([
+  const [ocupaciones, extras, conHistorial] = await Promise.all([
     bd.select().from(t.ocupacion).where(eq(t.ocupacion.inquilinoId, inquilinoId)),
     documentosYFianzas(bd, [inquilinoId]),
+    inquilinosConHistorial(bd, [inquilinoId]),
   ]);
-  return aInquilino(fila, ocupaciones, extras);
-
+  return aInquilino(fila, ocupaciones, extras, conHistorial);
 }
 
 /**
@@ -127,6 +131,7 @@ export async function renombrarInquilino(
   nombre: string,
 ): Promise<boolean> {
   const { nombre: limpio } = validarInquilino({ nombre });
+  await exigirEditable(bd, inquilinoId);
   const cambiados = await bd
     .update(t.inquilino)
     .set({ nombre: limpio })
@@ -144,7 +149,9 @@ export async function crearOcupacion(
   inquilinoId: string,
   nueva: NuevaOcupacion,
 ): Promise<boolean> {
-  if (!(await verInquilino(bd, inmuebleId, inquilinoId))) return false;
+  const inquilino = await verInquilino(bd, inmuebleId, inquilinoId);
+  if (!inquilino) return false;
+  if (inquilino.anonimizado) throw new ErrorPeticion("INQUILINO_ANONIMIZADO");
   const estancia = {
     inmuebleId,
     inquilinoId,
@@ -169,6 +176,7 @@ export async function editarOcupacion(
     .from(t.ocupacion)
     .where(and(eq(t.ocupacion.id, ocupacionId), eq(t.ocupacion.inmuebleId, inmuebleId)));
   if (!actual) return null;
+  await exigirEditable(bd, actual.inquilinoId);
   const nueva = {
     habitacionId: actual.habitacionId,
     inquilinoId: actual.inquilinoId,
@@ -195,6 +203,7 @@ export async function cambiarHabitacion(
 ): Promise<boolean> {
   const inquilino = await verInquilino(bd, inmuebleId, inquilinoId);
   if (!inquilino) return false;
+  if (inquilino.anonimizado) throw new ErrorPeticion("INQUILINO_ANONIMIZADO");
   const abierta = inquilino.ocupaciones.find((o) => o.salida === null);
   if (!abierta) throw new ErrorPeticion("SIN_ESTANCIA_ABIERTA");
   if (abierta.habitacionId === cambio.habitacionId) throw new ErrorPeticion("MISMA_HABITACION");
@@ -213,8 +222,18 @@ export async function cambiarHabitacion(
 
 // --- Tipos de gasto ---------------------------------------------------------
 
-function aTipoGasto(fila: typeof t.tipoGasto.$inferSelect): TipoGasto {
-  return { id: fila.id, nombre: fila.nombre, color: fila.color as ColorGasto, archivado: fila.archivado };
+function aTipoGasto(fila: typeof t.tipoGasto.$inferSelect, conFacturas: boolean): TipoGasto {
+  return { id: fila.id, nombre: fila.nombre, color: fila.color as ColorGasto, archivado: fila.archivado, conFacturas };
+}
+
+/** R11: tipos de gasto con alguna factura (esos solo se pueden archivar). */
+async function tiposConFacturas(bd: ConexionBd, ids: string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const filas = await bd
+    .selectDistinct({ id: t.factura.tipoGastoId })
+    .from(t.factura)
+    .where(inArray(t.factura.tipoGastoId, ids));
+  return new Set(filas.map((f) => f.id));
 }
 
 export async function listarTiposGasto(bd: ConexionBd, inmuebleId: string): Promise<TipoGasto[]> {
@@ -223,7 +242,11 @@ export async function listarTiposGasto(bd: ConexionBd, inmuebleId: string): Prom
     .from(t.tipoGasto)
     .where(eq(t.tipoGasto.inmuebleId, inmuebleId))
     .orderBy(asc(t.tipoGasto.creadoEn));
-  return filas.map(aTipoGasto);
+  const conFacturas = await tiposConFacturas(
+    bd,
+    filas.map((f) => f.id),
+  );
+  return filas.map((f) => aTipoGasto(f, conFacturas.has(f.id)));
 }
 
 /** Spec 006, R7: sin color elegido, el primero de la paleta que no use otro tipo del inmueble. */
@@ -236,10 +259,10 @@ export async function crearTipoGasto(bd: ConexionBd, inmuebleId: string, nuevo: 
   const activos = (await listarTiposGasto(bd, inmuebleId)).filter((tg) => !tg.archivado);
   const color = nuevo.color ?? primerColorLibre(activos.map((tg) => tg.color));
   const [fila] = await bd.insert(t.tipoGasto).values({ inmuebleId, nombre, color }).returning();
-  return aTipoGasto(fila!);
+  return aTipoGasto(fila!, false);
 }
 
-/** R10: renombrar o cambiar de color. Devuelve null si no es de este inmueble. */
+/** R10: renombrar o cambiar de color; R11: archivar o restaurar. Devuelve null si no es de este inmueble. */
 export async function editarTipoGasto(
   bd: ConexionBd,
   inmuebleId: string,
@@ -249,10 +272,11 @@ export async function editarTipoGasto(
   const cambios: Partial<typeof t.tipoGasto.$inferInsert> = {};
   if (edicion.nombre !== undefined) cambios.nombre = validarNombre(edicion.nombre, "del tipo de gasto");
   if (edicion.color !== undefined) cambios.color = edicion.color;
+  if (edicion.archivado !== undefined) cambios.archivado = edicion.archivado;
   const filtro = and(eq(t.tipoGasto.id, tipoGastoId), eq(t.tipoGasto.inmuebleId, inmuebleId));
   const [fila] =
     Object.keys(cambios).length > 0
       ? await bd.update(t.tipoGasto).set(cambios).where(filtro).returning()
       : await bd.select().from(t.tipoGasto).where(filtro);
-  return fila ? aTipoGasto(fila) : null;
+  return fila ? aTipoGasto(fila, (await tiposConFacturas(bd, [fila.id])).has(fila.id)) : null;
 }

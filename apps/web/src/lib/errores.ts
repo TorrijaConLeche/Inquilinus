@@ -41,6 +41,14 @@ const POR_CODIGO: Record<string, ClaveError> = {
   DEVOLUCION_MAYOR_QUE_FIANZA: "devolucionMayor",
   DEVOLUCION_ANTES_DE_RECEPCION: "devolucionAntesDeRecepcion",
   NOTAS_DEMASIADO_LARGAS: "notasLargas",
+  // Archivar y borrar (spec 007, R11–R13).
+  ALGUIEN_VIVIENDO: "alguienViviendo",
+  ULTIMA_HABITACION: "ultimaHabitacion",
+  HABITACION_CON_ESTANCIAS: "habitacionConEstancias",
+  TIPO_GASTO_CON_FACTURAS: "tipoGastoConFacturas",
+  INQUILINO_VIVIENDO: "inquilinoViviendo",
+  INQUILINO_ANONIMIZADO: "inquilinoAnonimizado",
+  CONFIRMACION_INCORRECTA: "confirmacionIncorrecta",
 };
 
 export type ClaveError =
@@ -76,7 +84,13 @@ export type ClaveError =
   | "devolucionMayor"
   | "devolucionAntesDeRecepcion"
   | "notasLargas"
-
+  | "alguienViviendo"
+  | "ultimaHabitacion"
+  | "habitacionConEstancias"
+  | "tipoGastoConFacturas"
+  | "inquilinoViviendo"
+  | "inquilinoAnonimizado"
+  | "confirmacionIncorrecta"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

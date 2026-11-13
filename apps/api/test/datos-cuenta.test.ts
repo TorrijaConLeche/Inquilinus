@@ -16,7 +16,6 @@ import { crearLimitador } from "../src/limitador.ts";
 import { crearRegistro } from "../src/registro.ts";
 import { crearAlmacenMemoria } from "./almacen-memoria.ts";
 
-
 const URL_BASE = "http://localhost:3000";
 const SECRETO = "secreto-de-pruebas-con-mas-de-32-caracteres";
 const CONTRASENA = "una frase larga y segura";
@@ -62,7 +61,6 @@ async function montar(bucket: Bucket = "funciona") {
     };
     dependencias.almacen = almacen;
   }
-
   app = crearApp(dependencias, { rutaBase: "/api" });
 }
 

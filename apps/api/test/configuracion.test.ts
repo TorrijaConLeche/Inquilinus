@@ -94,5 +94,4 @@ describe("dependenciasDesdeEntorno", () => {
     );
     expect(d.almacen).toBeDefined();
   });
-
 });

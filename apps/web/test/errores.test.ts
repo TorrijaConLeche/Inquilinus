@@ -53,8 +53,14 @@ describe("claveDeError", () => {
       "DEVOLUCION_MAYOR_QUE_FIANZA",
       "DEVOLUCION_ANTES_DE_RECEPCION",
       "NOTAS_DEMASIADO_LARGAS",
+      "ALGUIEN_VIVIENDO",
+      "ULTIMA_HABITACION",
+      "HABITACION_CON_ESTANCIAS",
+      "TIPO_GASTO_CON_FACTURAS",
+      "INQUILINO_VIVIENDO",
+      "INQUILINO_ANONIMIZADO",
+      "CONFIRMACION_INCORRECTA",
       "OTRO",
-
     ];
     for (const codigo of codigos) {
       const clave = claveDeError(codigo);

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   accionAlEliminar,
   confirmaBorradoInmueble,
+  esInquilinoAntiguo,
+  estanciaVigente,
   ErrorValidacion,
   mesesAfectadosPorCambioDePrecio,
   nombreAnonimo,
@@ -83,6 +85,23 @@ describe('Spec 007 · Gestión', () => {
 
   it('C9 · nombre anonimizado (R12)', () => {
     expect(nombreAnonimo(1)).toBe('Inquilino 1');
+  });
+
+  it('C16 · estancia vigente: sin salida, con salida desde hoy o futura (R11b)', () => {
+    const hoy = '2026-11-15';
+    expect(estanciaVigente({ salida: null }, hoy)).toBe(true);
+    expect(estanciaVigente({ salida: '2026-11-15' }, hoy)).toBe(true);
+    expect(estanciaVigente({ salida: '2026-12-31' }, hoy)).toBe(true);
+    expect(estanciaVigente({ salida: '2026-11-14' }, hoy)).toBe(false);
+  });
+
+  it('C18 · inquilinos antiguos (R11d)', () => {
+    const hoy = '2026-11-15';
+    expect(esInquilinoAntiguo([{ salida: '2026-10-31' }], hoy)).toBe(true);
+    expect(esInquilinoAntiguo([{ salida: '2026-10-31' }, { salida: '2026-11-30' }], hoy)).toBe(false);
+    expect(esInquilinoAntiguo([{ salida: '2026-11-30' }], hoy)).toBe(false);
+    // Sin estancias todavía no es antiguo: aún no ha entrado.
+    expect(esInquilinoAntiguo([], hoy)).toBe(false);
   });
 
   it('C10 · confirmación al borrar un inmueble (R13)', () => {

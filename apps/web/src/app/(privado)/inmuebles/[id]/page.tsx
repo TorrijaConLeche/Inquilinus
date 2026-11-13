@@ -6,6 +6,7 @@ import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
 import { detalleDe, usuarioActual } from "../../../../servidor/api";
 import estilos from "../../privado.module.css";
+import { ArchivarInmueble } from "./ArchivarInmueble";
 import { DatosInmueble } from "./DatosInmueble";
 import { Habitaciones } from "./Habitaciones";
 import { Inquilinos } from "./Inquilinos";
@@ -42,10 +43,12 @@ export default async function DetalleInmueble({
       </p>
       <h1 className={estilos.titulo}>{inmueble.nombre}</h1>
       {creado === "1" && <Aviso tipo="exito">{t("creado")}</Aviso>}
+      {inmueble.archivado && <Aviso tipo="info">{t("archivadoAviso")}</Aviso>}
       <DatosInmueble inmueble={inmueble} />
       <Habitaciones inmuebleId={inmueble.id} habitaciones={inmueble.habitaciones} mesActual={mesEnMadrid()} />
       <Inquilinos inmuebleId={inmueble.id} inquilinos={inquilinos} habitaciones={inmueble.habitaciones} hoy={hoyEnMadrid()} />
       <TiposGasto inmuebleId={inmueble.id} tiposGasto={tiposGasto} />
+      <ArchivarInmueble id={inmueble.id} nombre={inmueble.nombre} archivado={inmueble.archivado} />
     </>
   );
 }

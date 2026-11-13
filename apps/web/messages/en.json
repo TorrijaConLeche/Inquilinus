@@ -114,7 +114,14 @@
     "devolucionIncompleta": "For the refund, enter both the date and the amount returned.",
     "devolucionMayor": "You can't return more than the deposit.",
     "devolucionAntesDeRecepcion": "The refund can't be earlier than the date you received the deposit.",
-    "notasLargas": "Notes can be at most 300 characters."
+    "notasLargas": "Notes can be at most 300 characters.",
+    "alguienViviendo": "It can't be archived while someone lives there or is due to move in. Record their move-out first.",
+    "ultimaHabitacion": "The property needs at least one active room.",
+    "habitacionConEstancias": "This room has had tenants: archive it instead of deleting it.",
+    "tipoGastoConFacturas": "This expense has bills: archive it instead of deleting it.",
+    "inquilinoViviendo": "You can only delete someone who no longer lives there. Record their move-out first.",
+    "inquilinoAnonimizado": "This tenant was deleted and their data can no longer be changed.",
+    "confirmacionIncorrecta": "The name doesn't match. Type it exactly as it is."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -217,7 +224,11 @@
     "modalidad": {
       "habitaciones": "By rooms",
       "entero": "Whole flat"
-    }
+    },
+    "verArchivados": "{n, plural, one {Show the archived property} other {Show the # archived properties}}",
+    "ocultarArchivados": "Hide archived",
+    "archivados": "Archived",
+    "vacioConArchivados": "You have no active properties"
   },
   "Asistente": {
     "titulo": "New property",
@@ -383,6 +394,26 @@
     "importeDevuelto": "Amount returned (€)",
     "fechaDevolucion": "Refund date",
     "notasFianza": "Notes on deductions",
-    "notasAyuda": "For example, “repainting the room”. Don't include personal data."
+    "notasAyuda": "For example, “repainting the room”. Don't include personal data.",
+    "archivar": "Archive",
+    "restaurar": "Restore",
+    "habitacionesArchivadas": "{n, plural, one {# archived room} other {# archived rooms}}",
+    "gastosArchivados": "{n, plural, one {# archived expense} other {# archived expenses}}",
+    "antiguos": "{n, plural, one {# former tenant} other {# former tenants}}",
+    "sinInquilinosActuales": "Nobody lives here right now.",
+    "anonimizado": "Deleted",
+    "confirmarBorrarInquilino": "Delete {nombre}? Their stays, documents and deposit will be deleted too. This can't be undone.",
+    "confirmarAnonimizar": "Delete {nombre}? They have payments or splits, so there they'll be shown as “Inquilino N” with the same amounts. Their name, documents and deposit will be deleted. This can't be undone.",
+    "siAnonimizar": "Yes, delete their data",
+    "archivadoAviso": "This property is archived: it's hidden from your list and doesn't generate payments. You can restore it below.",
+    "archivarYBorrar": "Archive or delete",
+    "archivarExplicacion": "If you no longer rent it out, archive it: it's hidden from your list and keeps all its history. You can restore it whenever you like.",
+    "restaurarExplicacion": "It shows up in your list again with everything it had.",
+    "archivarInmueble": "Archive property",
+    "restaurarInmueble": "Restore property",
+    "borrarInmuebleExplicacion": "Deleting it removes everything in it: rooms, tenants, payments, bills and documents. This can't be undone.",
+    "borrarInmueble": "Delete property",
+    "borrarInmuebleDefinitivo": "Delete forever",
+    "escribeNombre": "To confirm, type “{nombre}”"
   }
 }

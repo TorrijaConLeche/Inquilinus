@@ -18,4 +18,3 @@ pnpm test
 `pnpm dev` arranca la web (con la API en `/api`) contra la base de datos y el bucket de **previsualizaciones**, así que lo que crees en local no toca los datos reales. Necesita `apps/api/.env` (ver `apps/api/.env.example`) con `DATABASE_URL_PREVIEW` y, para los documentos, `APP_S3_BUCKET` con el bucket `…-preview`; se niega a arrancar si alguno apunta a producción.
 
 Para entrar en local: con Google, o con email y contraseña usando un correo verificado en Amazon SES (mientras SES esté en modo de pruebas, solo esos reciben el email de verificación).
-

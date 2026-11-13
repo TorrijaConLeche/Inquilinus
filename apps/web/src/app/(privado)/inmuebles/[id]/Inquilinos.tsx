@@ -1,5 +1,6 @@
 "use client";
 import type { Habitacion, Inquilino, Ocupacion } from "@inquilinus/contracts";
+import { esInquilinoAntiguo, estanciaVigente } from "@inquilinus/domain";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { Aviso } from "../../../../componentes/Aviso";
@@ -13,12 +14,12 @@ import { DocumentosInquilino } from "./DocumentosInquilino";
 
 /** Qué formulario está abierto: uno cada vez en toda la sección. */
 type Abierto =
-  | { tipo: "renombrar" | "salida" | "cambio" | "estancia"; inquilinoId: string }
+  | { tipo: "renombrar" | "salida" | "cambio" | "estancia" | "borrar"; inquilinoId: string }
   | { tipo: "corregir"; inquilinoId: string; ocupacion: Ocupacion }
   | { tipo: "nuevo" }
   | null;
 
-/** Inquilinos y sus estancias (spec 007, R6–R9). */
+/** Inquilinos y sus estancias (spec 007, R6–R9); antiguos aparte (R11d) y borrado o anonimizado (R12). */
 export function Inquilinos({
   inmuebleId,
   inquilinos,
@@ -76,6 +77,8 @@ export function Inquilinos({
         return ejecutar(`${base}/inquilinos/${abierto.inquilinoId}/cambio-habitacion`, { cuerpo: { habitacionId, fecha: entrada } }, cerrar);
       case "estancia":
         return ejecutar(`${base}/inquilinos/${abierto.inquilinoId}/ocupaciones`, { cuerpo: { habitacionId, entrada } }, cerrar);
+      case "borrar":
+        return ejecutar(`${base}/inquilinos/${abierto.inquilinoId}`, { metodo: "DELETE" }, cerrar);
       case "corregir":
         return ejecutar(
           `${base}/ocupaciones/${abierto.ocupacion.id}`,
@@ -155,6 +158,19 @@ export function Inquilinos({
             {botones(t("anadirEstancia"))}
           </>
         )}
+        {abierto.tipo === "borrar" && (
+          <>
+            <p>{q.conHistorial ? t("confirmarAnonimizar", { nombre: q.nombre }) : t("confirmarBorrarInquilino", { nombre: q.nombre })}</p>
+            <div className={propias.botones}>
+              <button type="button" className={formulario.botonSecundario} onClick={cerrar}>
+                {t("cancelar")}
+              </button>
+              <button type="submit" className={formulario.botonPeligro} disabled={enviando}>
+                {q.conHistorial ? t("siAnonimizar") : t("siBorrar")}
+              </button>
+            </div>
+          </>
+        )}
         {abierto.tipo === "corregir" && (
           <>
             <p className={propias.suave}>{nombreHabitacion(abierto.ocupacion.habitacionId)}</p>
@@ -175,82 +191,107 @@ export function Inquilinos({
     );
   };
 
-  return (
-    <section className={estilos.seccion} aria-labelledby="titulo-inquilinos">
-      <h2 id="titulo-inquilinos">{t("inquilinos")}</h2>
-      {inquilinos.length === 0 && <p className={propias.suave}>{t("sinInquilinos")}</p>}
-      <ul className={propias.lista}>
-        {inquilinos.map((q) => {
-          const abierta = q.ocupaciones.find((o) => o.salida === null);
-          return (
-            <li key={q.id} className={propias.elemento}>
-              <span className={propias.nombre}>{q.nombre}</span>
-              {q.ocupaciones.length === 0 ? (
-                <p className={propias.suave}>{t("sinEstancias")}</p>
-              ) : (
-                <ul className={propias.estancias}>
-                  {q.ocupaciones.map((o) => (
-                    <li key={o.id} className={propias.fila}>
-                      <span className={propias.suave}>
-                        {nombreHabitacion(o.habitacionId)} ·{" "}
-                        {o.salida === null
-                          ? t("desdeFecha", { fecha: formatoFecha(o.entrada, idioma) })
-                          : t("entreFechas", { entrada: formatoFecha(o.entrada, idioma), salida: formatoFecha(o.salida, idioma) })}
-                      </span>
-                      <button
-                        type="button"
-                        className={formulario.botonEnlace}
-                        onClick={() =>
-                          abrir({ tipo: "corregir", inquilinoId: q.id, ocupacion: o }, { entrada: o.entrada, salida: o.salida })
-                        }
-                      >
-                        {t("corregirFechas")}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+  /** R11d: antiguo = tuvo estancias y todas terminaron antes de hoy. Los anonimizados siempre lo son. */
+  const antiguos = inquilinos.filter((q) => q.anonimizado || esInquilinoAntiguo(q.ocupaciones, hoy));
+  const actuales = inquilinos.filter((q) => !antiguos.includes(q));
 
-              {formularioDe(q) ?? (
-                <div className={propias.acciones}>
-                  {abierta ? (
-                    <>
-                      <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "salida", inquilinoId: q.id })}>
-                        {t("registrarSalida")}
-                      </button>
-                      <button
-                        type="button"
-                        className={formulario.botonEnlace}
-                        onClick={() =>
-                          abrir(
-                            { tipo: "cambio", inquilinoId: q.id },
-                            { habitacionId: habitaciones.find((h) => h.id !== abierta.habitacionId && !h.archivada)?.id ?? "" },
-                          )
-                        }
-                      >
-                        {t("cambiarHabitacion")}
-                      </button>
-                    </>
-                  ) : (
-                    <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "estancia", inquilinoId: q.id })}>
-                      {t("anadirEstancia")}
-                    </button>
-                  )}
+  const elemento = (q: Inquilino) => {
+    const abierta = q.ocupaciones.find((o) => o.salida === null);
+    // R12: solo se borra a quien no vive allí ni va a vivir.
+    const borrable = !q.ocupaciones.some((o) => estanciaVigente(o, hoy));
+    return (
+      <li key={q.id} className={propias.elemento}>
+        <div className={propias.fila}>
+          <span className={propias.nombre}>{q.nombre}</span>
+          {q.anonimizado && <span className={propias.etiquetaEstado}>{t("anonimizado")}</span>}
+        </div>
+        {q.ocupaciones.length === 0 ? (
+          <p className={propias.suave}>{t("sinEstancias")}</p>
+        ) : (
+          <ul className={propias.estancias}>
+            {q.ocupaciones.map((o) => (
+              <li key={o.id} className={propias.fila}>
+                <span className={propias.suave}>
+                  {nombreHabitacion(o.habitacionId)} ·{" "}
+                  {o.salida === null
+                    ? t("desdeFecha", { fecha: formatoFecha(o.entrada, idioma) })
+                    : t("entreFechas", { entrada: formatoFecha(o.entrada, idioma), salida: formatoFecha(o.salida, idioma) })}
+                </span>
+                {!q.anonimizado && (
                   <button
                     type="button"
                     className={formulario.botonEnlace}
-                    onClick={() => abrir({ tipo: "renombrar", inquilinoId: q.id }, { nombre: q.nombre })}
+                    onClick={() =>
+                      abrir({ tipo: "corregir", inquilinoId: q.id, ocupacion: o }, { entrada: o.entrada, salida: o.salida })
+                    }
                   >
-                    {t("renombrar")}
+                    {t("corregirFechas")}
                   </button>
-                </div>
-              )}
-              <DocumentosInquilino inmuebleId={inmuebleId} inquilino={q} />
-            </li>
-          );
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
 
-        })}
-      </ul>
+        {/* R12: un inquilino anonimizado ya no se puede editar. */}
+        {!q.anonimizado &&
+          (formularioDe(q) ?? (
+            <div className={propias.acciones}>
+              {abierta ? (
+                <>
+                  <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "salida", inquilinoId: q.id })}>
+                    {t("registrarSalida")}
+                  </button>
+                  <button
+                    type="button"
+                    className={formulario.botonEnlace}
+                    onClick={() =>
+                      abrir(
+                        { tipo: "cambio", inquilinoId: q.id },
+                        { habitacionId: habitaciones.find((h) => h.id !== abierta.habitacionId && !h.archivada)?.id ?? "" },
+                      )
+                    }
+                  >
+                    {t("cambiarHabitacion")}
+                  </button>
+                </>
+              ) : (
+                <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "estancia", inquilinoId: q.id })}>
+                  {t("anadirEstancia")}
+                </button>
+              )}
+              <button
+                type="button"
+                className={formulario.botonEnlace}
+                onClick={() => abrir({ tipo: "renombrar", inquilinoId: q.id }, { nombre: q.nombre })}
+              >
+                {t("renombrar")}
+              </button>
+              {borrable && (
+                <button type="button" className={formulario.botonEnlace} onClick={() => abrir({ tipo: "borrar", inquilinoId: q.id })}>
+                  {t("borrar")}
+                </button>
+              )}
+            </div>
+          ))}
+        {!q.anonimizado && <DocumentosInquilino inmuebleId={inmuebleId} inquilino={q} />}
+      </li>
+    );
+  };
+
+  return (
+    <section className={estilos.seccion} aria-labelledby="titulo-inquilinos">
+      <h2 id="titulo-inquilinos">{t("inquilinos")}</h2>
+      {actuales.length === 0 && (
+        <p className={propias.suave}>{antiguos.length === 0 ? t("sinInquilinos") : t("sinInquilinosActuales")}</p>
+      )}
+      <ul className={propias.lista}>{actuales.map(elemento)}</ul>
+      {antiguos.length > 0 && (
+        <details className={propias.archivadas}>
+          <summary>{t("antiguos", { n: antiguos.length })}</summary>
+          <ul className={propias.lista}>{antiguos.map(elemento)}</ul>
+        </details>
+      )}
 
       {abierto?.tipo === "nuevo" ? (
         <form className={propias.enLinea} onSubmit={enviar} noValidate>
