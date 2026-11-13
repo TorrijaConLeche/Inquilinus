@@ -15,6 +15,7 @@ import { borrarCuenta, exportarDatos } from "./cuenta.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
 import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
+import { registrarRutasCobros } from "./rutas/cobros.ts";
 import { registrarRutasDocumentos } from "./rutas/documentos.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
@@ -133,6 +134,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasInmuebles(app, { auth, bd, almacen: dependencias.almacen, ahora });
     registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
+    registrarRutasCobros(app, { bd, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);

@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   calcularAlquilerMes,
+  cobroManual,
   cobrosAGenerarHoy,
   cobrosQueFaltan,
   ErrorValidacion,
+  habitacionesDelMes,
   inquilinosConCobroDesactualizado,
   recalcularPideConfirmacion,
+  validarFechaPago,
+  validarMesGenerable,
   type EntradaCobros,
   type Ocupacion,
 } from '../src/index.ts';
@@ -107,5 +111,65 @@ describe('Spec 005 · Generación de cobros', () => {
       { inquilinoId: 'B', mes: '2026-10' },
     ];
     expect(cobrosAGenerarHoy('2026-10-12', base({ existentes }))).toEqual([]);
+  });
+
+  it('C15 · una habitación archivada vacía no suma recargo en un piso entero (R5b)', () => {
+    const habitaciones = [
+      { id: 'H1', archivada: false, historialPrecios: [{ desdeMes: '2026-01', precioMensual: 50000 }] },
+      { id: 'H2', archivada: false, historialPrecios: [{ desdeMes: '2026-01', precioMensual: 40000 }] },
+      { id: 'H3', archivada: true, historialPrecios: [{ desdeMes: '2026-01', precioMensual: 30000 }] },
+    ];
+    const ocupaciones = [A, B, { habitacionId: 'H3', inquilinoId: 'C', entrada: '2026-01-01', salida: '2026-07-31' }];
+    const octubre = habitacionesDelMes('2026-10', habitaciones, ocupaciones);
+    expect(octubre.map((h) => h.id)).toEqual(['H1', 'H2']);
+    const calculo = calcularAlquilerMes({
+      mes: '2026-10',
+      modalidad: 'entero',
+      mesesParciales: 'prorrateo',
+      habitaciones: octubre,
+      ocupaciones: [A, B],
+    });
+    expect(calculo.lineas.map((l) => [l.inquilinoId, l.importe])).toEqual([
+      ['A', 50000],
+      ['B', 40000],
+    ]);
+    // En julio, cuando C vivía en H3, la archivada sí entra.
+    expect(habitacionesDelMes('2026-07', habitaciones, ocupaciones).map((h) => h.id)).toEqual(['H1', 'H2', 'H3']);
+  });
+
+  it('una habitación creada después no entra en meses anteriores; ocupada sin precio es un error (R5b)', () => {
+    const habitaciones = [
+      { id: 'H1', archivada: false, historialPrecios: [{ desdeMes: '2026-01', precioMensual: 50000 }] },
+      { id: 'H4', archivada: false, historialPrecios: [{ desdeMes: '2026-11', precioMensual: 35000 }] },
+    ];
+    expect(habitacionesDelMes('2026-10', habitaciones, [A]).map((h) => h.id)).toEqual(['H1']);
+    expect(habitacionesDelMes('2026-11', habitaciones, [A]).map((h) => [h.id, h.precioMensual])).toEqual([
+      ['H1', 50000],
+      ['H4', 35000],
+    ]);
+    const enH4 = { habitacionId: 'H4', inquilinoId: 'D', entrada: '2026-10-20' };
+    expect(() => habitacionesDelMes('2026-10', habitaciones, [A, enH4])).toThrow(expect.objectContaining({ codigo: 'SIN_PRECIO' }));
+  });
+
+  it('C16 · cobro a mano sin estancia: la renta es obligatoria (R10b)', () => {
+    expect(() => cobroManual(null, {})).toThrow(expect.objectContaining({ codigo: 'RENTA_OBLIGATORIA' }));
+    expect(cobroManual(null, { renta: 30000 })).toEqual({ renta: 30000, recargoVacios: 0, importe: 30000, editado: true });
+  });
+
+  it('cobro a mano con estancia: propone lo calculado y queda editado si se cambia (R10b)', () => {
+    const calculado = { renta: 50000, recargoVacios: 1000 };
+    expect(cobroManual(calculado, {})).toEqual({ renta: 50000, recargoVacios: 1000, importe: 51000, editado: false });
+    expect(cobroManual(calculado, { renta: 45000 })).toMatchObject({ importe: 46000, editado: true });
+    expect(() => cobroManual(calculado, { renta: -1 })).toThrow(expect.objectContaining({ codigo: 'IMPORTE_INVALIDO' }));
+  });
+
+  it('C17 · la fecha de pago no puede ser posterior a hoy (R7)', () => {
+    expect(() => validarFechaPago('2026-10-04', '2026-10-03')).toThrow(expect.objectContaining({ codigo: 'PAGO_FUTURO' }));
+    expect(validarFechaPago('2026-10-03', '2026-10-03')).toBe('2026-10-03');
+  });
+
+  it('C18 · no se generan meses futuros (R5)', () => {
+    expect(() => validarMesGenerable('2026-11', '2026-10')).toThrow(expect.objectContaining({ codigo: 'MES_FUTURO' }));
+    expect(validarMesGenerable('2026-09', '2026-10')).toBe('2026-09');
   });
 });

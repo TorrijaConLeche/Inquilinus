@@ -1,5 +1,6 @@
 import { createDocument } from 'zod-openapi';
 import { RespuestaError } from './comunes.ts';
+import { rutasCobros } from './cobros.ts';
 import { rutasCuenta } from './cuenta.ts';
 import { rutasDocumentos } from './documentos.ts';
 import { rutasInmuebles } from './inmuebles.ts';
@@ -23,6 +24,7 @@ export function generarOpenApi() {
       ...rutasInmuebles,
       ...rutasInquilinos,
       ...rutasDocumentos,
+      ...rutasCobros,
     },
   });
 }

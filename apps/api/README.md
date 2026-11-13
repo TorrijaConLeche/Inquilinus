@@ -33,6 +33,9 @@ pnpm --filter @inquilinus/api test
 | `PATCH { archivada }`, `DELETE …/habitaciones/:id` | Archivar o restaurar (con estancias) y borrar (sin estancias); nunca con alguien viviendo ni dejando el inmueble sin habitaciones activas (R11, R11b). |
 | `PATCH { archivado }`, `DELETE …/tipos-gasto/:id` | Archivar o restaurar; borrar solo sin facturas (R11). |
 | `DELETE …/inquilinos/:id` | Derecho de supresión, solo si ya no vive allí: con cobros o repartos lo anonimiza como «Inquilino N» y borra sus documentos, fianza, ficheros y enlace; sin ellos, lo borra del todo. Un anonimizado ya no se puede editar (R12). |
+| `GET`, `POST /inmuebles/:id/cobros` | Cobros del inmueble por fecha de cobro (`?mes=YYYY-MM`; los quitados solo con `?quitados=true`). `POST { inquilinoId, mes, renta?, recargoVacios?, fechaCobro? }` añade uno a mano: sin renta, la calculada si vivió allí ese mes (spec 005, R10b). |
+| `POST /inmuebles/:id/cobros/generar` | `{ mes }`: crea los que falten de ese mes con el cálculo de la spec 002, sin duplicar ni recrear quitados y nunca de meses futuros (R4, R5, R5b). |
+| `PATCH /inmuebles/:id/cobros/:id` | Renta, recargo o fecha (queda editado si cambia algo), `quitado` para quitar o restaurar, y `pagadoEn` (no posterior a hoy) o `null` (R7, R10, R11). |
 | `PUT`, `DELETE …/inquilinos/:id/fianza` | Una fianza por inquilino: importe, recepción y devolución (fecha e importe juntos, nunca mayor que la fianza) y notas cortas (R6d). |
 
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).

@@ -15,7 +15,10 @@ export type CodigoError =
   | 'DEVOLUCION_INCOMPLETA'
   | 'DEVOLUCION_MAYOR_QUE_FIANZA'
   | 'DEVOLUCION_ANTES_DE_RECEPCION'
-  | 'NOTAS_DEMASIADO_LARGAS';
+  | 'NOTAS_DEMASIADO_LARGAS'
+  | 'MES_FUTURO'
+  | 'PAGO_FUTURO'
+  | 'RENTA_OBLIGATORIA';
 
 /** Error de datos de entrada. Los cálculos nunca devuelven un resultado parcial. */
 export class ErrorValidacion extends Error {
