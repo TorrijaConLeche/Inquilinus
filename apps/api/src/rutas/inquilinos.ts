@@ -19,6 +19,7 @@ import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
 import { borrarInquilino, borrarTipoGasto } from "../archivo.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
+import { vigilarCobros } from "../cobros.ts";
 import { hoyEnMadrid } from "../fechas.ts";
 import { esSuyo } from "../inmuebles.ts";
 import {
@@ -66,7 +67,9 @@ export function registrarRutasInquilinos(
   app.post("/inmuebles/:idInmueble/inquilinos", async (c) => {
     const v = await delInmueble(c);
     if (!v) return noEncontrado(c);
-    const id = await crearInquilino(bd, v[0]!, await leer(c, NuevoInquilino));
+    const nuevo = await leer(c, NuevoInquilino);
+    // Spec 005, R6: una estancia nueva puede cambiar el cálculo de meses con cobros.
+    const id = await vigilarCobros(bd, v[0]!, () => crearInquilino(bd, v[0]!, nuevo));
     return responderInquilino(c, v[0]!, id, 201);
   });
 
@@ -82,7 +85,7 @@ export function registrarRutasInquilinos(
   app.delete("/inmuebles/:idInmueble/inquilinos/:idInquilino", async (c) => {
     const v = await delInmueble(c, "idInquilino");
     if (!v) return noEncontrado(c);
-    const resultado = await borrarInquilino(bd, almacen, v[0]!, v[1]!, hoy());
+    const resultado = await vigilarCobros(bd, v[0]!, () => borrarInquilino(bd, almacen, v[0]!, v[1]!, hoy()));
     return resultado ? c.json<BorradoInquilino>({ resultado }) : noEncontrado(c);
   });
 
@@ -92,7 +95,7 @@ export function registrarRutasInquilinos(
     const v = await delInmueble(c, "idInquilino");
     if (!v) return noEncontrado(c);
     const nueva = await leer(c, NuevaOcupacion);
-    if (!(await crearOcupacion(bd, v[0]!, v[1]!, nueva))) return noEncontrado(c);
+    if (!(await vigilarCobros(bd, v[0]!, () => crearOcupacion(bd, v[0]!, v[1]!, nueva)))) return noEncontrado(c);
     return responderInquilino(c, v[0]!, v[1]!, 201);
   });
 
@@ -100,14 +103,15 @@ export function registrarRutasInquilinos(
     const v = await delInmueble(c, "idInquilino");
     if (!v) return noEncontrado(c);
     const cambio = await leer(c, CambioHabitacion);
-    if (!(await cambiarHabitacion(bd, v[0]!, v[1]!, cambio))) return noEncontrado(c);
+    if (!(await vigilarCobros(bd, v[0]!, () => cambiarHabitacion(bd, v[0]!, v[1]!, cambio)))) return noEncontrado(c);
     return responderInquilino(c, v[0]!, v[1]!);
   });
 
   app.patch("/inmuebles/:idInmueble/ocupaciones/:idOcupacion", async (c) => {
     const v = await delInmueble(c, "idOcupacion");
     if (!v) return noEncontrado(c);
-    const inquilinoId = await editarOcupacion(bd, v[0]!, v[1]!, await leer(c, EdicionOcupacion));
+    const edicion = await leer(c, EdicionOcupacion);
+    const inquilinoId = await vigilarCobros(bd, v[0]!, () => editarOcupacion(bd, v[0]!, v[1]!, edicion));
     if (!inquilinoId) return noEncontrado(c);
     return responderInquilino(c, v[0]!, inquilinoId);
   });

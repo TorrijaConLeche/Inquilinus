@@ -1,6 +1,6 @@
 # 005 · Generación de cobros de alquiler
 
-Estado: aprobada · Paquetes: `packages/domain` (qué cobros tocan), `apps/api` (proceso diario y endpoints)
+Estado: implementada · Paquetes: `packages/domain` (qué cobros tocan), `apps/api` (proceso diario y endpoints)
 
 ## Objetivo
 
@@ -14,7 +14,8 @@ Crear cada mes, sin que la propietaria tenga que acordarse, el cobro de alquiler
 - **R4** — Nunca se duplica un cobro: si ya existe el de ese inquilino y mes, no se toca.
 - **R5** — La propietaria puede generar a mano los cobros de un mes concreto de un inmueble, también de meses pasados (no de meses futuros). Usa el mismo cálculo, respeta R4 y solo crea los que falten.
 - **R5b** — En el cálculo de un mes entran las habitaciones que existían ese mes: las activas con precio ese mes (spec 007, R3 y R4) y las archivadas solo si alguien vivió en ellas ese mes. Así, una habitación archivada o creada después no genera recargo por vacíos. Si alguien vivió ese mes en una habitación sin precio ese mes, no se puede calcular y se avisa.
-- **R6** — Si cambian las ocupaciones o los precios de un mes que ya tiene cobros, esos cobros se marcan como **desactualizados**. La propietaria decide si recalcularlos. Si el cobro ya estaba pagado o había sido editado a mano (R10), al recalcularlo se pide confirmación; un cobro pagado sigue como pagado.
+- **R6** — Si cambia cualquier cosa del inmueble que altere el cálculo de un mes que ya tiene cobros (estancias, precios, meses a medias, habitaciones añadidas, archivadas o borradas), los cobros cuyo cálculo cambia se marcan como **desactualizados**. Se compara el cálculo de antes con el de después, no con lo guardado: un cobro editado a mano solo se marca si cambia su cálculo. Los quitados no se marcan. La propietaria decide si recalcularlos. Si el cobro ya estaba pagado o había sido editado a mano (R10), al recalcularlo se pide confirmación; un cobro pagado sigue como pagado.
+- **R6b** — **Recalcular** pone en el cobro la renta, el recargo y el importe del cálculo actual, y deja de estar desactualizado y editado. Si se había movido a otra fecha (R10), la fecha se conserva y sigue como editado. Si el inquilino ya no vivió allí ese mes, no se recalcula: se avisa y se ofrece quitarlo (R11).
 - **R7** — Estados: pendiente o pagado (con fecha). Se puede marcar y desmarcar. La fecha de pago es por defecto hoy y no puede ser posterior a hoy.
 - **R2b** — Los inmuebles archivados (spec 007, R11c) y los bloqueados por el plan (spec 010, R10b) no generan cobros automáticos.
 - **R8** — El proceso corre una vez al día, **de madrugada** (entre las 2 y las 4, hora de Madrid), y el día se evalúa en hora de Madrid. Si falla el día de cobro, la generación del mes se hace el primer día en que vuelva a correr. Como solo genera el mes en curso, un inquilino dado de alta el último día del mes con entrada en ese mes no recibe solo el cobro de ese mes: se genera a mano (R5).
@@ -50,6 +51,9 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 | C18 | Mes futuro (R5) | Hoy 2026-10-03; se generan a mano los de noviembre | Error de validación |
 | C19 | Archivados y bloqueados (R2b) | Un inmueble archivado y otro bloqueado, con inquilinos; proceso del 2026-10-01 | No se crea ningún cobro en ellos |
 | C20 | Sin el secreto (R8b) | Se llama al proceso sin el secreto de Vercel o con otro | 401; no se crea nada |
+| C21 | Otros cambios que alteran el importe (R6) | Cobros de octubre de A y B; el inmueble pasa de prorrateo a mes completo y B había entrado el 2026-10-11 | Solo el de B queda desactualizado |
+| C22 | Recalcular sin estancia (R6b) | Cobro de octubre de B; se corrige su entrada al 2026-11-01 | Desactualizado; recalcular da error y propone quitarlo |
+| C23 | Recalcular un cobro movido (R6, R6b) | Cobro de A movido al 2026-10-10 y desactualizado | Sin confirmar, error; confirmando, importe nuevo, fecha 2026-10-10 y sigue como editado |
 
 ## Fuera de alcance
 
@@ -65,7 +69,7 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 - [x] Día de cobro en las opciones del inmueble
 - [x] Generación manual (R5, R5b)
 - [x] Proceso diario (cron de Vercel)
-- [ ] Marcado de desactualizados al cambiar ocupaciones o precios
+- [x] Marcado de desactualizados al cambiar el cálculo (R6) y recalcular (R6b)
 - [x] Marcar y desmarcar pagado
 - [x] Editar, mover, quitar, restaurar y añadir cobros a mano
-- [ ] Tests C1–C20 (hechos todos salvo C7 y la parte de desactualizado de C13, que llegan con la tarea 4.3)
+- [x] Tests C1–C23

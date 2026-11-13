@@ -6,13 +6,14 @@ import {
   GeneracionCobros,
   Mes,
   NuevoCobro,
+  Recalculo,
   type Cobro,
   type ListaCobros,
   type ResultadoGeneracion,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
 import type { ConexionBd } from "../bd/cliente.ts";
-import { crearCobro, editarCobro, generarCobros, listarCobros } from "../cobros.ts";
+import { crearCobro, editarCobro, generarCobros, listarCobros, recalcularCobro } from "../cobros.ts";
 import { ErrorPeticion } from "../errores.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import { esSuyo } from "../inmuebles.ts";
@@ -54,6 +55,14 @@ export function registrarRutasCobros(app: Hono<EntornoSesion>, { bd, ahora }: { 
     const v = await delInmueble(c, "idCobro");
     if (!v) return noEncontrado(c);
     const cobro = await editarCobro(bd, v[0]!, v[1]!, await leer(c, EdicionCobro), hoyEnMadrid(ahora()));
+    return cobro ? c.json<Cobro>(cobro) : noEncontrado(c);
+  });
+
+  app.post("/inmuebles/:idInmueble/cobros/:idCobro/recalcular", async (c) => {
+    const v = await delInmueble(c, "idCobro");
+    if (!v) return noEncontrado(c);
+    const { confirmar } = await leer(c, Recalculo);
+    const cobro = await recalcularCobro(bd, v[0]!, v[1]!, confirmar === true);
     return cobro ? c.json<Cobro>(cobro) : noEncontrado(c);
   });
 }

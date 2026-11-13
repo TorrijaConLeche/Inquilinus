@@ -36,8 +36,11 @@ pnpm --filter @inquilinus/api test
 | `GET /procesos/cobros-diarios` | Proceso diario del cron de Vercel (spec 005, R2, R8): en cada inmueble no archivado ni bloqueado cuyo día de cobro ya ha llegado, crea los cobros del mes en curso que falten (origen `auto`). Solo con `Authorization: Bearer <CRON_SECRET>`; sin la variable responde `503`. Devuelve y registra solo recuentos. |
 | `GET`, `POST /inmuebles/:id/cobros` | Cobros del inmueble por fecha de cobro (`?mes=YYYY-MM`; los quitados solo con `?quitados=true`). `POST { inquilinoId, mes, renta?, recargoVacios?, fechaCobro? }` añade uno a mano: sin renta, la calculada si vivió allí ese mes (spec 005, R10b). |
 | `POST /inmuebles/:id/cobros/generar` | `{ mes }`: crea los que falten de ese mes con el cálculo de la spec 002, sin duplicar ni recrear quitados y nunca de meses futuros (R4, R5, R5b). |
+| `POST /inmuebles/:id/cobros/:id/recalcular` | `{ confirmar? }`: pone los importes del cálculo actual (R6b). Si está pagado o editado hace falta `confirmar: true` (`CONFIRMACION_NECESARIA`); conserva una fecha movida; si el inquilino ya no vivió ese mes, `SIN_ESTANCIA_EN_EL_MES`. |
 | `PATCH /inmuebles/:id/cobros/:id` | Renta, recargo o fecha (queda editado si cambia algo), `quitado` para quitar o restaurar, y `pagadoEn` (no posterior a hoy) o `null` (R7, R10, R11). |
 | `PUT`, `DELETE …/inquilinos/:id/fianza` | Una fianza por inquilino: importe, recepción y devolución (fecha e importe juntos, nunca mayor que la fianza) y notas cortas (R6d). |
+
+Cualquier cambio que pueda alterar el cálculo de meses con cobros (estancias, precios, meses a medias, habitaciones nuevas, archivadas o borradas, borrar un inquilino) pasa por `vigilarCobros` (`src/cobros.ts`): calcula esos meses antes y después y marca como desactualizados los cobros no quitados cuyo cálculo cambia (spec 005, R6).
 
 Todas las rutas de `/inmuebles` exigen sesión, filtran por la cuenta (lo ajeno responde 404) y, para escribir, la cabecera `Origin` de la propia app. Los errores de datos responden 400 con su código en `error` (`SIN_HABITACIONES`, `MODALIDAD_NO_EDITABLE`, `DATOS_INVALIDOS`…). Las escrituras de varias filas van en un bloque atómico (`src/bd/bloque.ts`).
 
