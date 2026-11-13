@@ -57,8 +57,8 @@ export function registrarRutasCobros(app: Hono<EntornoSesion>, { bd, ahora }: { 
   app.post("/inmuebles/:idInmueble/cobros/pagar-todo", async (c) => {
     const v = await delInmueble(c);
     if (!v) return noEncontrado(c);
-    const marcados = await pagarTodo(bd, v[0]!, await leer(c, PagoTodo), hoyEnMadrid(ahora()));
-    return marcados ? c.json<ResultadoPagoTodo>({ marcados }) : noEncontrado(c);
+    const resultado = await pagarTodo(bd, v[0]!, await leer(c, PagoTodo), hoyEnMadrid(ahora()));
+    return resultado ? c.json<ResultadoPagoTodo>(resultado) : noEncontrado(c);
   });
 
   app.post("/inmuebles/:idInmueble/cobros/generar", async (c) => {

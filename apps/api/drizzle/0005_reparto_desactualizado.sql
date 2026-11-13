@@ -1,0 +1,1 @@
+ALTER TABLE "reparto" ADD COLUMN "desactualizado" boolean DEFAULT false NOT NULL;

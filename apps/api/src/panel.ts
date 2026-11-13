@@ -6,6 +6,7 @@ import { resumenPanel, type Concepto } from "@inquilinus/domain";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
+import { partesDeGastos } from "./repartos.ts";
 
 export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: string): Promise<Panel> {
   const inmuebles = await bd
@@ -36,18 +37,71 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
           .where(inArray(t.inquilino.inmuebleId, activos.map((i) => i.id)));
   const nombreInquilino = new Map(filas.map((f) => [f.inquilinoId, f.nombreInquilino]));
 
-  // Hasta la fase 5 solo hay alquileres; las partes de gastos se suman con la tarea 5.4.
-  const conceptos: Concepto[] = filas.map((f) => ({
-    id: f.id,
-    inmuebleId: f.inmuebleId,
-    inquilinoId: f.inquilinoId,
-    tipo: "alquiler",
-    mes: f.mes,
-    importe: f.importe,
-    pagadoEn: f.pagadoEn,
-    quitado: f.quitadoEn !== null,
-  }));
+  // R2: alquileres y partes de gastos (con el mes en que se repartió la factura, R8).
+  const [partes, tipos] = await Promise.all([
+    partesDeGastos(
+      bd,
+      activos.map((i) => i.id),
+    ),
+    activos.length === 0
+      ? []
+      : bd
+          .select({ id: t.tipoGasto.id, nombre: t.tipoGasto.nombre })
+          .from(t.tipoGasto)
+          .where(inArray(t.tipoGasto.inmuebleId, activos.map((i) => i.id))),
+  ]);
+  const nombreGasto = new Map<string, string | null>(
+    partes.map((p) => [p.id, tipos.find((tg) => tg.id === p.tipoGastoId)?.nombre ?? null]),
+  );
+  // Quien solo tiene partes de gastos (sin cobros) también necesita su nombre.
+  const sinNombre = [...new Set(partes.map((p) => p.inquilinoId))].filter((id) => !nombreInquilino.has(id));
+  if (sinNombre.length > 0) {
+    const inquilinos = await bd
+      .select({ id: t.inquilino.id, nombre: t.inquilino.nombre })
+      .from(t.inquilino)
+      .where(inArray(t.inquilino.id, sinNombre));
+    for (const q of inquilinos) nombreInquilino.set(q.id, q.nombre);
+  }
+  const conceptos: Concepto[] = [
+    ...filas.map(
+      (f): Concepto => ({
+        id: f.id,
+        inmuebleId: f.inmuebleId,
+        inquilinoId: f.inquilinoId,
+        tipo: "alquiler",
+        mes: f.mes,
+        importe: f.importe,
+        pagadoEn: f.pagadoEn,
+        quitado: f.quitadoEn !== null,
+      }),
+    ),
+    ...partes.map(
+      (p): Concepto => ({
+        id: p.id,
+        inmuebleId: p.inmuebleId,
+        inquilinoId: p.inquilinoId,
+        tipo: "gasto",
+        mes: p.mes,
+        importe: p.importe,
+        pagadoEn: p.pagadoEn,
+      }),
+    ),
+  ];
   const resumen = resumenPanel(conceptos, hoy);
+
+  // R4: facturas por revisar (subidas, leídas o que no se pudieron leer).
+  const porRevisar =
+    activos.length === 0
+      ? []
+      : await bd
+          .select({ inmuebleId: t.factura.inmuebleId })
+          .from(t.factura)
+          .where(
+            and(
+              inArray(t.factura.inmuebleId, activos.map((i) => i.id)),
+              inArray(t.factura.estado, ["subida", "propuesta", "error_extraccion"]),
+            ),
+          );
 
   const desactualizados = new Map<string, number>();
   for (const f of filas) {
@@ -65,7 +119,14 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
         inquilinoId: q.inquilinoId,
         nombre: nombreInquilino.get(q.inquilinoId) ?? "",
         total: q.total,
-        conceptos: q.conceptos.map((c) => ({ id: c.id, tipo: c.tipo, mes: c.mes, importe: c.importe, atrasado: c.atrasado })),
+        conceptos: q.conceptos.map((c) => ({
+          id: c.id,
+          tipo: c.tipo,
+          nombreGasto: c.tipo === "gasto" ? (nombreGasto.get(c.id) ?? null) : null,
+          mes: c.mes,
+          importe: c.importe,
+          atrasado: c.atrasado,
+        })),
       })),
     })),
     inmuebles: activos.map((i) => ({
@@ -77,6 +138,9 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
       desactualizados: activos
         .filter((i) => desactualizados.has(i.id))
         .map((i) => ({ inmuebleId: i.id, nombre: i.nombre, cobros: desactualizados.get(i.id)! })),
+      porRevisar: activos
+        .map((i) => ({ inmuebleId: i.id, nombre: i.nombre, facturas: porRevisar.filter((f) => f.inmuebleId === i.id).length }))
+        .filter((a) => a.facturas > 0),
       bloqueados: inmuebles.length - activos.length,
     },
   };

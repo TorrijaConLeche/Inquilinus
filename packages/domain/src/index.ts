@@ -4,6 +4,7 @@ export { aDia, desdeDia } from './fechas.ts';
 export type { Ocupacion } from './presencia.ts';
 export {
   repartirSuministro,
+  repartosDistintos,
   type EntradaRepartoSuministro,
   type LineaRepartoSuministro,
   type ResultadoRepartoSuministro,

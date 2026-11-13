@@ -364,7 +364,8 @@ describe("Spec 003 · Revisión y confirmación (R5, R6, R9, R13, R14)", () => {
     const id = facturas[0]!.id;
     await pedir(`${e.base}/${id}`, { metodo: "PATCH", cuerpo: { importeTotal: 7_845 }, cookie: e.cookie });
     const r = await pedir(`${e.base}/${id}/confirmar`, { cuerpo: {}, cookie: e.cookie });
-    expect(Factura.parse(await r.json())).toMatchObject({ estado: "confirmada", importeTotal: 7_845, propuestaIa: { importe: 8_745 } });
+    // Confirmar reparte en el momento (spec 001, R10).
+    expect(Factura.parse(await r.json())).toMatchObject({ estado: "repartida", importeTotal: 7_845, propuestaIa: { importe: 8_745 } });
     expect(await e.porRevisar()).toEqual([]);
   });
 
@@ -393,7 +394,7 @@ describe("Spec 003 · Revisión y confirmación (R5, R6, R9, R13, R14)", () => {
     const aviso = await e.confirmar("luz-2.pdf");
     expect(aviso.status).toBe(409);
     const { solapadas } = RespuestaSolape.parse(await aviso.json());
-    expect(solapadas.map((s) => [s.nombreFichero, s.estado])).toEqual([["luz-1.pdf", "confirmada"]]);
+    expect(solapadas.map((s) => [s.nombreFichero, s.estado])).toEqual([["luz-1.pdf", "repartida"]]);
     expect((await e.confirmar("luz-2.pdf", true)).status).toBe(200);
   });
 

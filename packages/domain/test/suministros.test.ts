@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ErrorValidacion, repartirSuministro, type Ocupacion } from '../src/index.ts';
+import { ErrorValidacion, repartirSuministro, repartosDistintos, type Ocupacion } from '../src/index.ts';
 
 // Casos de la spec 001. Periodo del 1 al 30 de septiembre salvo que se indique otra cosa.
 const SEPT = { inicio: '2026-09-01', fin: '2026-09-30' };
@@ -118,5 +118,20 @@ describe('Spec 001 · Reparto de suministros', () => {
     });
     const suma = r.lineas.reduce((s, l) => s + l.importe, 0) + r.sinOcupar.importe;
     expect(suma).toBe(12345);
+  });
+
+  it('C12 · una entrada corregida cambia el reparto; el mismo cálculo no (R13)', () => {
+    const base = { inicio: '2026-09-01', fin: '2026-09-30', importe: 9000 };
+    const A = { habitacionId: 'H1', inquilinoId: 'A', entrada: '2026-01-01' };
+    const B = { habitacionId: 'H2', inquilinoId: 'B', entrada: '2026-01-01' };
+    const antes = repartirSuministro({ ...base, ocupaciones: [A, B, { habitacionId: 'H3', inquilinoId: 'C', entrada: '2026-09-21' }] });
+    const despues = repartirSuministro({ ...base, ocupaciones: [A, B, { habitacionId: 'H3', inquilinoId: 'C', entrada: '2026-09-11' }] });
+    expect(repartosDistintos(antes, despues)).toBe(true);
+    expect(despues.lineas.map((l) => [l.inquilinoId, l.importe])).toEqual([
+      ['A', 3500],
+      ['B', 3500],
+      ['C', 2000],
+    ]);
+    expect(repartosDistintos(antes, repartirSuministro({ ...base, ocupaciones: [B, A, { habitacionId: 'H3', inquilinoId: 'C', entrada: '2026-09-21' }] }))).toBe(false);
   });
 });

@@ -156,13 +156,15 @@
     "pendientes": "Pendiente por inmueble",
     "sinPendientes": "Todo cobrado. No hay nada pendiente.",
     "conceptoAlquiler": "alquiler de {mes}: {importe}",
-    "conceptoGasto": "gastos de {mes}: {importe}",
+    "conceptoGasto": "{gasto} de {mes}: {importe}",
     "tusInmuebles": "Tus inmuebles",
     "tarjetaPendiente": "{importe} pendiente",
     "alDia": "Al día",
     "vacioTitulo": "Empieza por tu primer inmueble",
     "vacioTexto": "Da de alta un piso con sus habitaciones e inquilinos y aquí verás qué te deben y de quién.",
-    "anadirInmueble": "Añadir un inmueble"
+    "anadirInmueble": "Añadir un inmueble",
+    "gasto": "Gastos",
+    "avisoPorRevisar": "{n, plural, one {# factura por revisar en {inmueble}: confírmala para repartirla} other {# facturas por revisar en {inmueble}: confírmalas para repartirlas}}"
   },
   "Ajustes": {
     "titulo": "Ajustes",
@@ -495,7 +497,9 @@
     "quitarConfirmacion": "¿Quitar este cobro? No se verá ni contará, y podrás restaurarlo.",
     "recalcularPagado": "Este cobro ya está cobrado. ¿Recalcularlo igualmente? Seguirá como cobrado.",
     "recalcularEditado": "Cambiaste este cobro a mano. ¿Recalcularlo y perder ese cambio?",
-    "sinEstancia": "Este inquilino ya no vivió aquí ese mes, así que no le corresponde este cobro. ¿Quitarlo?"
+    "sinEstancia": "Este inquilino ya no vivió aquí ese mes, así que no le corresponde este cobro. ¿Quitarlo?",
+    "gastoDe": "{tipo} ({inicio} – {fin})",
+    "repartidaEn": "Repartida en {mes}"
   },
   "Facturas": {
     "titulo": "Facturas",
@@ -542,6 +546,15 @@
     "quedanConSolape": "{n, plural, one {# se solapa con otra: confírmala tú si no está repetida.} other {# se solapan con otras: confírmalas tú si no están repetidas.}}",
     "confirmadasTitulo": "Confirmadas",
     "verPdf": "Ver PDF",
-    "repartoPronto": "El reparto de cada factura entre los inquilinos se añade en la próxima tarea."
+    "confirmadasExplicacion": "Cada factura confirmada se reparte por días entre quienes vivían aquí. Marca cada parte cuando te la paguen.",
+    "repartoDesactualizado": "Desactualizado",
+    "repartoDesactualizadoExplicacion": "Cambiaron las estancias de su periodo: recalcúlalo para que cuadre.",
+    "dias": "{n, plural, one {# día} other {# días}}",
+    "sinOcupar": "Sin ocupar ({n, plural, one {# día} other {# días}}): {importe}, lo asumes tú.",
+    "recalcular": "Recalcular",
+    "recalcularConPagos": "Alguna parte ya está cobrada. ¿Recalcular igualmente? Cada inquilino conserva su cobro.",
+    "deshacer": "Deshacer confirmación",
+    "deshacerSinPagos": "¿Deshacer la confirmación? Se borrará su reparto y la factura volverá a «Por revisar».",
+    "deshacerConPagos": "¿Deshacer la confirmación? Se borrará su reparto, también las partes que ya están cobradas (esos cobros se pierden), y la factura volverá a «Por revisar»."
   }
 }
