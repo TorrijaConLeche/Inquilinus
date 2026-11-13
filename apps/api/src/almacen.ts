@@ -35,6 +35,7 @@ export const PREFIJO_PENDIENTES = "pendientes/";
 
 export const clavePendiente = (usuarioId: string, subidaId: string) => `${PREFIJO_PENDIENTES}${usuarioId}/${subidaId}.pdf`;
 export const claveDocumento = (usuarioId: string, ficheroId: string) => `documentos/${usuarioId}/${ficheroId}.pdf`;
+export const claveFactura = (usuarioId: string, ficheroId: string) => `facturas/${usuarioId}/${ficheroId}.pdf`;
 
 /**
  * Cabecera para ver el PDF en el navegador con su nombre original. El nombre

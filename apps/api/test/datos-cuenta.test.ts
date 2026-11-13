@@ -111,7 +111,7 @@ async function sembrar(usuarioId: string, etiqueta: string) {
   const tipo = await uno(bd.insert(t.tipoGasto).values({ inmuebleId: inmueble.id, nombre: "Luz", color: "amarillo" }).returning());
   const liquidacion = await uno(bd.insert(t.liquidacion).values({ inmuebleId: inmueble.id, numero: 1, nombre: "Enero", mes: "2026-01" }).returning());
   const factura = await uno(
-    bd.insert(t.factura).values({ tipoGastoId: tipo.id, ficheroId: fichero.id, lote: crypto.randomUUID(), liquidacionId: liquidacion.id }).returning(),
+    bd.insert(t.factura).values({ inmuebleId: inmueble.id, tipoGastoId: tipo.id, ficheroId: fichero.id, lote: crypto.randomUUID(), liquidacionId: liquidacion.id }).returning(),
   );
   const reparto = await uno(bd.insert(t.reparto).values({ facturaId: factura.id, detalle: {} }).returning());
   await bd.insert(t.repartoLinea).values({ repartoId: reparto.id, inquilinoId: inquilino.id, dias: 31, importe: 1_000 });

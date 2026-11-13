@@ -74,6 +74,16 @@ export {
   TIPOS_DOCUMENTO,
   TipoDocumento,
 } from './documentos.ts';
+export {
+  EstadoFactura,
+  Factura,
+  ListaFacturas,
+  NuevasFacturas,
+  PermisosSubida,
+  PeticionSubidasFacturas,
+  ResultadoSubidaFacturas,
+  rutasFacturas,
+} from './facturas.ts';
 export { generarOpenApi } from './openapi.ts';
 export { ConceptoPendiente, Panel, rutasPanel } from './panel.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';

@@ -316,9 +316,11 @@ export const factura = pgTable(
   "factura",
   {
     id: id(),
-    tipoGastoId: uuid()
+    inmuebleId: uuid()
       .notNull()
-      .references(() => tipoGasto.id, { onDelete: "cascade" }),
+      .references(() => inmueble.id, { onDelete: "cascade" }),
+    /** Vacío hasta que la usuaria lo elige (spec 003, R3). */
+    tipoGastoId: uuid().references(() => tipoGasto.id, { onDelete: "cascade" }),
     ficheroId: uuid()
       .notNull()
       .references(() => fichero.id),
@@ -334,6 +336,7 @@ export const factura = pgTable(
     ...marcas,
   },
   (t) => [
+    index().on(t.inmuebleId),
     index().on(t.tipoGastoId),
     index().on(t.lote),
     check(

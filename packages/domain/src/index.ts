@@ -26,8 +26,13 @@ export {
   validarConfirmacion,
   facturasSolapadas,
   type BorradorFactura,
+  MAXIMO_FACTURAS_POR_LOTE,
+  validarTamanoLote,
+  normalizarLectura,
   type FacturaConfirmada,
   type FacturaExistente,
+  type LecturaFactura,
+  type PropuestaFactura,
 } from './facturas.ts';
 export { MESES_VIGENCIA_TRAS_SALIDA, caducidadEnlace, enlaceDisponible } from './enlace.ts';
 export {

@@ -233,7 +233,7 @@ async function tiposConFacturas(bd: ConexionBd, ids: string[]): Promise<Set<stri
     .selectDistinct({ id: t.factura.tipoGastoId })
     .from(t.factura)
     .where(inArray(t.factura.tipoGastoId, ids));
-  return new Set(filas.map((f) => f.id));
+  return new Set(filas.map((f) => f.id).filter((id): id is string => id !== null));
 }
 
 export async function listarTiposGasto(bd: ConexionBd, inmuebleId: string): Promise<TipoGasto[]> {

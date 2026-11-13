@@ -10,6 +10,7 @@ import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
 import type { Almacen } from "./almacen.ts";
 import type { Auth } from "./auth.ts";
+import type { ExtractorFacturas } from "./extractor.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import { borrarCuenta, exportarDatos } from "./cuenta.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
@@ -17,6 +18,7 @@ import type { Limitador } from "./limitador.ts";
 import { crearRegistro, describirError, type Registro } from "./registro.ts";
 import { registrarRutasCobros } from "./rutas/cobros.ts";
 import { registrarRutasDocumentos } from "./rutas/documentos.ts";
+import { registrarRutasFacturas } from "./rutas/facturas.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 import { registrarRutasProcesos } from "./rutas/procesos.ts";
@@ -44,6 +46,8 @@ export interface Dependencias {
   registro?: Registro;
   /** Secreto con el que llama el cron de Vercel (spec 005, R8b). Sin él, los procesos no corren. */
   secretoCron?: string;
+  /** Lectura de facturas con IA (spec 003). Sin él, se rellenan a mano (R8b). */
+  extractor?: ExtractorFacturas;
 }
 
 export interface Opciones {
@@ -146,6 +150,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasCobros(app, { bd, ahora });
+    registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);

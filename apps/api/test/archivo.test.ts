@@ -122,7 +122,7 @@ async function conHistorial(cookie: string, inmuebleId: string, inquilinoId: str
     .returning();
   const [factura] = await bd
     .insert(t.factura)
-    .values({ tipoGastoId: tipo.id, ficheroId: fichero!.id, lote: crypto.randomUUID() })
+    .values({ inmuebleId, tipoGastoId: tipo.id, ficheroId: fichero!.id, lote: crypto.randomUUID() })
     .returning();
   const [reparto] = await bd.insert(t.reparto).values({ facturaId: factura!.id, detalle: {} }).returning();
   await bd.insert(t.repartoLinea).values({ repartoId: reparto!.id, inquilinoId, dias: 30, importe: 2_500 });

@@ -105,3 +105,63 @@ export function facturasSolapadas(
     .filter((f) => aDia(f.inicio) <= fin && ini <= aDia(f.fin))
     .map((f) => f.id);
 }
+
+/** Spec 003, R1: hasta 20 PDF por subida. */
+export const MAXIMO_FACTURAS_POR_LOTE = 20;
+
+/** Spec 003, R1: entre 1 y 20 PDF por subida; si son más, se rechaza la subida entera (C16). */
+export function validarTamanoLote(cantidad: number): number {
+  if (!Number.isSafeInteger(cantidad) || cantidad < 1 || cantidad > MAXIMO_FACTURAS_POR_LOTE) {
+    throw new ErrorValidacion('DEMASIADAS_FACTURAS', `Se pueden subir de 1 a ${MAXIMO_FACTURAS_POR_LOTE} facturas a la vez`);
+  }
+  return cantidad;
+}
+
+/** Lo que devuelve el extractor (spec 003, R2): cualquier campo puede faltar. */
+export interface LecturaFactura {
+  inicio?: string | null;
+  fin?: string | null;
+  /** Céntimos. */
+  importe?: number | null;
+  /** Nombre del tipo de gasto sugerido, de entre los del inmueble. */
+  tipoGasto?: string | null;
+}
+
+export interface PropuestaFactura {
+  inicio: Fecha | null;
+  fin: Fecha | null;
+  importe: number | null;
+  /** Id del tipo de gasto del inmueble que encaja con la sugerencia, o null. */
+  tipoGastoId: string | null;
+}
+
+/**
+ * Spec 003, R2–R4: deja solo lo que la IA ha leído bien. Una fecha que no existe,
+ * un periodo al revés, un importe que no es un entero positivo o un tipo que no es
+ * del inmueble se quedan vacíos: nunca se inventa un valor.
+ */
+export function normalizarLectura(
+  lectura: LecturaFactura,
+  tiposGasto: readonly { id: string; nombre: string }[],
+): PropuestaFactura {
+  const fecha = (valor: string | null | undefined): Fecha | null => {
+    if (!valor) return null;
+    try {
+      aDia(valor);
+      return valor;
+    } catch {
+      return null;
+    }
+  };
+  let inicio = fecha(lectura.inicio);
+  let fin = fecha(lectura.fin);
+  if (inicio && fin && aDia(fin) < aDia(inicio)) {
+    inicio = null;
+    fin = null;
+  }
+  const importe =
+    typeof lectura.importe === 'number' && Number.isSafeInteger(lectura.importe) && lectura.importe > 0 ? lectura.importe : null;
+  const sugerido = (lectura.tipoGasto ?? '').trim().toLocaleLowerCase('es');
+  const tipo = sugerido ? tiposGasto.find((t) => t.nombre.trim().toLocaleLowerCase('es') === sugerido) : undefined;
+  return { inicio, fin, importe, tipoGastoId: tipo?.id ?? null };
+}

@@ -128,7 +128,9 @@
     "pagoFuturo": "The payment date can't be later than today.",
     "rentaObligatoria": "This tenant didn't live there that month: enter the rent.",
     "cobroExistente": "They already have a payment that month. If you removed it, restore it from “Removed payments”.",
-    "sinPrecio": "A room was occupied without a price that month: give it a price first."
+    "sinPrecio": "A room was occupied without a price that month: give it a price first.",
+    "demasiadasFacturas": "You can upload up to 20 bills at once.",
+    "facturaConfirmada": "This bill is already confirmed and can't be discarded."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -436,7 +438,8 @@
     "borrarInmueble": "Delete property",
     "borrarInmuebleDefinitivo": "Delete forever",
     "escribeNombre": "To confirm, type “{nombre}”",
-    "verCobros": "Payments"
+    "verCobros": "Payments",
+    "verFacturas": "Bills"
   },
   "Cobros": {
     "titulo": "Payments",
@@ -490,5 +493,29 @@
     "recalcularPagado": "This payment is already collected. Recalculate it anyway? It will stay collected.",
     "recalcularEditado": "You changed this payment by hand. Recalculate it and lose that change?",
     "sinEstancia": "This tenant didn't live here that month, so this payment doesn't apply. Remove it?"
+  },
+  "Facturas": {
+    "titulo": "Bills",
+    "subirTitulo": "Upload bills",
+    "subirExplicacion": "Choose one or more PDFs (up to 20, 10 MB each at most). Each PDF is one bill. Then you check its details and confirm it to split it.",
+    "subirAyuda": "PDF only, up to 20 at once.",
+    "subir": "Choose PDFs",
+    "subiendo": "Uploading…",
+    "subidas": "{n, plural, one {# bill uploaded.} other {# bills uploaded.}}",
+    "rechazadas": "{n, plural, one {Couldn't upload: {nombres}. It must be a PDF of up to 10 MB.} other {Couldn't upload: {nombres}. They must be PDFs of up to 10 MB.}}",
+    "porRevisar": "To review",
+    "nadaPorRevisar": "No bills to review.",
+    "estados": {
+      "subida": "To fill in",
+      "propuesta": "Read by the AI",
+      "error_extraccion": "Couldn't be read",
+      "confirmada": "Confirmed",
+      "repartida": "Split"
+    },
+    "periodo": "from {inicio} to {fin}",
+    "sinDatos": "No details yet: the expense type, period and amount need filling in.",
+    "descartar": "Discard",
+    "descartarConfirmacion": "Discard this bill? It will be deleted with its PDF.",
+    "cancelar": "Cancel"
   }
 }
