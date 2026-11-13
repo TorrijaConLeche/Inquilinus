@@ -105,6 +105,7 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [ ] **6.4 · Claude** — Enlaces: generar, revocar, regenerar, WhatsApp y permiso de descarga · `feat/004-enlaces`
 - [ ] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
 - [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
+- [ ] **6.6b · Claude** — Avisos de plazos de conservación vencidos (spec 007, R14), con los plazos que fije el asesor · `feat/007-plazos`
 - [ ] **6.7 · Tú** — Revisar la cláusula informativa y entregarla a tus inquilinos
 - [ ] **6.8 · Claude** — Etiqueta `v0.1.0`
 - [ ] **6.9 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.3)
