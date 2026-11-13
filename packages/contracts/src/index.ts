@@ -1,12 +1,15 @@
 export { RespuestaError } from './comunes.ts';
 export {
   Cobro,
+  CobrosDelMes,
   EdicionCobro,
   GeneracionCobros,
   ListaCobros,
   NuevoCobro,
+  PagoTodo,
   Recalculo,
   ResultadoGeneracion,
+  ResultadoPagoTodo,
   rutasCobros,
 } from './cobros.ts';
 export {

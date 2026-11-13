@@ -1,0 +1,105 @@
+/* Pantalla de cobros del inmueble (spec 009, R6–R13). */
+
+.selectorMes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mesElegido {
+  min-width: 10ch;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mesElegido::first-letter {
+  text-transform: uppercase;
+}
+
+.atrasados {
+  border-color: var(--acento);
+}
+
+.cobros {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cobro {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.cobro:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.lineaCobro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.concepto {
+  display: grid;
+  gap: 4px;
+}
+
+.concepto > span:first-child::first-letter {
+  text-transform: uppercase;
+}
+
+.marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.8125rem;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--borde-fuerte);
+}
+
+.pagado {
+  composes: etiqueta;
+  color: var(--primario-texto);
+  background: var(--primario-suave);
+  border-color: transparent;
+}
+
+.pendiente {
+  composes: etiqueta;
+  color: var(--texto-suave);
+}
+
+.desactualizado {
+  composes: etiqueta;
+  color: var(--texto);
+  background: color-mix(in srgb, var(--acento) 30%, transparent);
+  border-color: var(--acento);
+}
+
+.ladoDerecho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.accionesMes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}

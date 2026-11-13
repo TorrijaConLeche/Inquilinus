@@ -42,6 +42,12 @@ export type EdicionCobro = z.infer<typeof EdicionCobro>;
 export const Recalculo = z.strictObject({ confirmar: z.boolean().optional() }).meta({ id: 'Recalculo' });
 export type Recalculo = z.infer<typeof Recalculo>;
 
+/** Spec 009, R10: «Todo pagado» de un inquilino en un mes (por defecto, con fecha de hoy). */
+export const PagoTodo = z
+  .strictObject({ inquilinoId: z.uuid(), mes: Mes, fecha: Fecha.optional() })
+  .meta({ id: 'PagoTodo' });
+export type PagoTodo = z.infer<typeof PagoTodo>;
+
 // --- Respuestas -------------------------------------------------------------
 
 export const Cobro = z
@@ -68,6 +74,26 @@ export type ListaCobros = z.infer<typeof ListaCobros>;
 
 export const ResultadoGeneracion = z.object({ creados: z.array(Cobro) }).meta({ id: 'ResultadoGeneracion' });
 export type ResultadoGeneracion = z.infer<typeof ResultadoGeneracion>;
+
+/** Lo marcado por «Todo pagado», para poder deshacerlo (spec 009, R10). */
+export const ResultadoPagoTodo = z.object({ marcados: z.array(Cobro) }).meta({ id: 'ResultadoPagoTodo' });
+export type ResultadoPagoTodo = z.infer<typeof ResultadoPagoTodo>;
+
+/** Spec 009, R6–R12: todo lo de la pantalla de cobros de un mes del inmueble. */
+export const CobrosDelMes = z
+  .object({
+    mes: Mes,
+    /** Los del mes elegido, sin los quitados. */
+    cobros: z.array(Cobro),
+    /** Los quitados del mes elegido, para restaurarlos (R12). */
+    quitados: z.array(Cobro),
+    /** Pendientes de meses anteriores al mes en curso, sin el elegido (R7). */
+    atrasados: z.array(Cobro),
+    /** Renta de habitaciones vacías que asume la propietaria ese mes (R11); null si no se puede calcular. */
+    asumePropietario: Centimos.nullable(),
+  })
+  .meta({ id: 'CobrosDelMes' });
+export type CobrosDelMes = z.infer<typeof CobrosDelMes>;
 
 // --- Rutas ------------------------------------------------------------------
 
@@ -103,6 +129,25 @@ export const rutasCobros = {
       requestParams: { path: enInmueble },
       requestBody: cuerpo(NuevoCobro),
       responses: { '201': json(Cobro, 'Creado'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/cobros/mes/{mes}': {
+    get: {
+      operationId: 'cobrosDelMes',
+      summary: 'Pantalla de cobros de un mes: los del mes, quitados, atrasados y lo que asume la propietaria (spec 009)',
+      tags: ['Cobros'],
+      requestParams: { path: enInmueble.extend({ mes: Mes }) },
+      responses: { '200': json(CobrosDelMes, 'Mes'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/cobros/pagar-todo': {
+    post: {
+      operationId: 'pagarTodo',
+      summary: '«Todo pagado» de un inquilino en un mes; devuelve lo marcado para deshacerlo (spec 009, R10)',
+      tags: ['Cobros'],
+      requestParams: { path: enInmueble },
+      requestBody: cuerpo(PagoTodo),
+      responses: { '200': json(ResultadoPagoTodo, 'Marcados'), ...errores },
     },
   },
   '/inmuebles/{idInmueble}/cobros/generar': {

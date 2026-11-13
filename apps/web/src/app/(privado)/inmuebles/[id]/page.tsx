@@ -41,7 +41,12 @@ export default async function DetalleInmueble({
           ← {t("volver")}
         </Link>
       </p>
-      <h1 className={estilos.titulo}>{inmueble.nombre}</h1>
+      <div className={formulario.fila}>
+        <h1 className={estilos.titulo}>{inmueble.nombre}</h1>
+        <Link href={`/inmuebles/${inmueble.id}/cobros`} className={formulario.boton}>
+          {t("verCobros")}
+        </Link>
+      </div>
       {creado === "1" && <Aviso tipo="exito">{t("creado")}</Aviso>}
       {inmueble.archivado && <Aviso tipo="info">{t("archivadoAviso")}</Aviso>}
       <DatosInmueble inmueble={inmueble} />

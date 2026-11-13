@@ -1,6 +1,7 @@
 // Una sola instancia de la API para la ruta /api y para las páginas del servidor.
 import "server-only";
 import {
+  cobrosDelMes,
   crearApp,
   dependenciasDesdeEntorno,
   listarInmuebles,
@@ -11,7 +12,7 @@ import {
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { Inmueble, Inquilino, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, Inmueble, Inquilino, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -82,4 +83,19 @@ export async function detalleDe(
     listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
   return { inmueble, inquilinos, tiposGasto };
+}
+
+/** Pantalla de cobros de un mes del inmueble (spec 009, R6–R13), o null si no es suyo. */
+export async function cobrosDe(
+  usuario: UsuarioSesion,
+  inmuebleId: string,
+  mes: string,
+): Promise<{ inmueble: Inmueble; inquilinos: Inquilino[]; cobros: CobrosDelMes } | null> {
+  const inmueble = await inmuebleDe(usuario, inmuebleId);
+  if (!inmueble || !dependencias.bd) return null;
+  const [inquilinos, cobros] = await Promise.all([
+    listarInquilinos(dependencias.bd, inmueble.id),
+    cobrosDelMes(dependencias.bd, inmueble.id, mes, mesEnMadrid()),
+  ]);
+  return { inmueble, inquilinos, cobros };
 }

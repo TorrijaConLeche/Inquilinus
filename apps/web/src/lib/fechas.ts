@@ -19,3 +19,15 @@ export function formatoFecha(fecha: string, idioma: string): string {
     new Date(Date.UTC(anio!, mes! - 1, dia!)),
   );
 }
+
+/** `2026-12` y +1 → `2027-01`. Para moverse de mes en mes. */
+export function mesVecino(mes: string, desplazamiento: number): string {
+  const [anio, numero] = mes.split("-").map(Number);
+  const total = anio! * 12 + (numero! - 1) + desplazamiento;
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
+}
+
+/** ¿Tiene forma de mes válido (`YYYY-MM`, 01–12)? */
+export function esMes(texto: string | undefined): texto is string {
+  return typeof texto === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(texto);
+}

@@ -80,7 +80,7 @@ Depende de: fase 3. **Hecho cuando** gestionas un mes completo de cobros con la 
 - [x] **4.1 · Claude** — API de cobros: generar a mano, editar, mover, quitar, restaurar y marcar pagado · `feat/005-api-cobros`
 - [x] **4.2 · Claude** — Proceso diario de generación (cron de Vercel) · `feat/005-proceso-diario`
 - [x] **4.3 · Claude** — Marcar cobros desactualizados al cambiar ocupaciones o precios · `feat/005-desactualizados`
-- [ ] **4.4 · Claude** — Pantalla de cobros del inmueble · `feat/009-cobros-inmueble`
+- [x] **4.4 · Claude** — Pantalla de cobros del inmueble · `feat/009-cobros-inmueble`
 - [ ] **4.5 · Claude** — Panel principal · `feat/009-panel`
 
 ## Fase 5 · Facturas con IA y reparto (specs 003 y 001)

@@ -51,6 +51,6 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 
 - [x] Funciones de dominio: pendientes por inmueble e inquilino, totales del mes
 - [ ] Panel principal
-- [ ] Pantalla de cobros del inmueble con selector de mes
-- [ ] Marcar pagado, "Todo pagado" y deshacer
-- [ ] Tests C1–C8
+- [x] Pantalla de cobros del inmueble con selector de mes
+- [x] Marcar pagado, "Todo pagado" y deshacer
+- [ ] Tests C1–C8 (hechos C3 y C5 en la API; C4 y C6 con las partes de gastos, tarea 5.4; C1, C2, C7 y C8 con el panel, tarea 4.5)
