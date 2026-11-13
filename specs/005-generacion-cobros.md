@@ -12,12 +12,14 @@ Crear cada mes, sin que la propietaria tenga que acordarse, el cobro de alquiler
 - **R2** — Un proceso diario crea, en cada inmueble cuyo día de cobro de este mes ya ha llegado, el cobro del **mes en curso** de cada inquilino presente al menos un día ese mes que todavía no lo tenga. Usa el cálculo de la spec 002 con las ocupaciones y precios de ese momento. La fecha de cobro es siempre el día de cobro del inmueble en ese mes.
 - **R3** — Si un inquilino se registra después del día de cobro, su cobro de ese mes se crea igual que cualquier otro: lo genera el proceso de esa noche, con fecha de cobro el día de cobro del mes (por ejemplo, el 1 de octubre aunque entre el 11).
 - **R4** — Nunca se duplica un cobro: si ya existe el de ese inquilino y mes, no se toca.
-- **R5** — La propietaria puede generar a mano los cobros de un mes concreto de un inmueble, también de meses pasados. Usa el mismo cálculo, respeta R4 y solo crea los que falten.
+- **R5** — La propietaria puede generar a mano los cobros de un mes concreto de un inmueble, también de meses pasados (no de meses futuros). Usa el mismo cálculo, respeta R4 y solo crea los que falten.
+- **R5b** — En el cálculo de un mes entran las habitaciones que existían ese mes: las activas con precio ese mes (spec 007, R3 y R4) y las archivadas solo si alguien vivió en ellas ese mes. Así, una habitación archivada o creada después no genera recargo por vacíos. Si alguien vivió ese mes en una habitación sin precio ese mes, no se puede calcular y se avisa.
 - **R6** — Si cambian las ocupaciones o los precios de un mes que ya tiene cobros, esos cobros se marcan como **desactualizados**. La propietaria decide si recalcularlos. Si el cobro ya estaba pagado o había sido editado a mano (R10), al recalcularlo se pide confirmación; un cobro pagado sigue como pagado.
-- **R7** — Estados: pendiente o pagado (con fecha). Se puede marcar y desmarcar.
+- **R7** — Estados: pendiente o pagado (con fecha). Se puede marcar y desmarcar. La fecha de pago es por defecto hoy y no puede ser posterior a hoy.
 - **R8** — El proceso corre una vez al día y el día se evalúa en hora de Madrid. Si falla el día de cobro, la generación del mes se hace el primer día en que vuelva a correr.
 - **R9** — No hay recordatorios de impago en el MVP: los pendientes solo se ven en la app y en el enlace del inquilino.
-- **R10** — La propietaria puede, en cualquier momento y en cualquier cobro: cambiar la renta y el recargo; **moverlo** a otra fecha de cobro (el mes del cobro no cambia); y **quitarlo**, con confirmación. Un cobro cambiado o movido queda marcado como editado. También puede añadir a mano un cobro para un inquilino y un mes que no lo tengan.
+- **R10** — La propietaria puede, en cualquier momento y en cualquier cobro: cambiar la renta y el recargo; **moverlo** a cualquier otra fecha de cobro (el mes del cobro no cambia); y **quitarlo**, con confirmación. Un cobro cambiado o movido queda marcado como editado. También puede añadir a mano un cobro para un inquilino y un mes que no lo tengan.
+- **R10b** — Al añadir un cobro a mano: si el inquilino vivió allí ese mes, se propone el importe calculado (spec 002), que se puede cambiar; si no vivió (por ejemplo, una penalización o un mes de preaviso), hay que indicar la renta (el recargo es 0 si no se indica). La fecha de cobro es por defecto el día de cobro del inmueble ese mes. Queda con origen `manual`, y como editado si sus importes no son los calculados. A un inquilino anonimizado (spec 007, R12) no se le añaden cobros.
 - **R11** — Un cobro quitado se conserva como quitado (no se ve ni suma) y el proceso automático no lo vuelve a crear. La propietaria puede restaurarlo.
 
 ## Casos de prueba
@@ -40,6 +42,10 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 | C12 | Mover un cobro (R10) | Cobro de octubre de A del 2026-10-01 se mueve al 2026-10-10 | Fecha 2026-10-10, mes octubre, marcado como editado; la chincheta del timeline se mueve al día 10 |
 | C13 | Cambiar el importe (R10, R6) | Renta de octubre de A de 500 € a 450 €; después cambia su ocupación | 450 €, editado; luego desactualizado; recalcular pide confirmación |
 | C14 | Sin cambios, nada nuevo (R2, R4) | Tras generar octubre, el proceso corre el 2026-10-12 sin inquilinos nuevos | No crea nada |
+| C15 | Habitación archivada en un piso entero (R5b) | Piso entero con H1, H2 y H3 (archivada, nadie desde agosto); A en H1 y B en H2 todo octubre | A 500 €, B 400 €: H3 no suma recargo |
+| C16 | Cobro a mano sin estancia (R10b) | D no vivió en noviembre; se añade su cobro de noviembre sin renta, y después con 300 € | Error; después, cobro de 300 €, origen `manual` y editado |
+| C17 | Pago en el futuro (R7) | Hoy 2026-10-03; se marca pagado el 2026-10-04 | Error de validación |
+| C18 | Mes futuro (R5) | Hoy 2026-10-03; se generan a mano los de noviembre | Error de validación |
 
 ## Fuera de alcance
 
@@ -53,8 +59,9 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 
 - [x] Función de dominio: qué cobros faltan para un inmueble, una fecha y su día de cobro
 - [ ] Día de cobro en las opciones del inmueble
-- [ ] Proceso diario (cron de Vercel) y generación manual
+- [ ] Generación manual (R5, R5b)
+- [ ] Proceso diario (cron de Vercel)
 - [ ] Marcado de desactualizados al cambiar ocupaciones o precios
 - [ ] Marcar y desmarcar pagado
 - [ ] Editar, mover, quitar, restaurar y añadir cobros a mano
-- [ ] Tests C1–C14
+- [ ] Tests C1–C18
