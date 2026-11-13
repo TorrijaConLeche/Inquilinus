@@ -15,6 +15,7 @@ Saber de un vistazo qué hay pendiente de cobro, en qué casa y de quién, y mar
 - **R3** — Los pendientes de meses anteriores al actual aparecen destacados y primero.
 - **R4** — Avisos, si los hay: facturas propuestas por la IA pendientes de revisar, cobros desactualizados, plazos de conservación vencidos (spec 007, R14) e inmuebles bloqueados por el plan (spec 010, R10e). Los inmuebles bloqueados no cuentan en los totales.
 - **R5** — Una tarjeta por inmueble con su nombre y su pendiente. Al tocarla se abre el inmueble; al tocar un inquilino del bloque de pendientes se abre la pantalla de cobros de su inmueble.
+- **R5b** — Los inmuebles archivados no aparecen en el panel ni cuentan en nada (spec 007, R11c). El aviso de cobros desactualizados dice cuántos hay en cada inmueble y lleva a sus cobros. Hasta la fase 5 solo hay alquileres: el aviso de facturas por revisar llega con la tarea 5.3 y el de plazos de conservación con la 6.6b.
 
 **Cobros del inmueble** (pantalla dentro de cada inmueble)
 
@@ -50,7 +51,7 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 ## Tareas
 
 - [x] Funciones de dominio: pendientes por inmueble e inquilino, totales del mes
-- [ ] Panel principal
+- [x] Panel principal (con alquileres; gastos y aviso de facturas en la fase 5)
 - [x] Pantalla de cobros del inmueble con selector de mes
 - [x] Marcar pagado, "Todo pagado" y deshacer
-- [ ] Tests C1–C8 (hechos C3 y C5 en la API; C4 y C6 con las partes de gastos, tarea 5.4; C1, C2, C7 y C8 con el panel, tarea 4.5)
+- [ ] Tests C1–C8 (hechos con alquileres: C1, C2, C3, C5 y C7; con las partes de gastos, tarea 5.4: C4, C6 y la luz de B en C1 y C2; C8 con la tarea 5.3)

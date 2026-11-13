@@ -3,6 +3,7 @@ import { RespuestaError } from './comunes.ts';
 import { rutasCobros } from './cobros.ts';
 import { rutasCuenta } from './cuenta.ts';
 import { rutasDocumentos } from './documentos.ts';
+import { rutasPanel } from './panel.ts';
 import { rutasInmuebles } from './inmuebles.ts';
 import { rutasInquilinos } from './inquilinos.ts';
 import { rutasSalud } from './salud.ts';
@@ -25,6 +26,7 @@ export function generarOpenApi() {
       ...rutasInquilinos,
       ...rutasDocumentos,
       ...rutasCobros,
+      ...rutasPanel,
     },
   });
 }

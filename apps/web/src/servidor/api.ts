@@ -4,15 +4,17 @@ import {
   cobrosDelMes,
   crearApp,
   dependenciasDesdeEntorno,
+  hoyEnMadrid,
   listarInmuebles,
   listarInquilinos,
   listarTiposGasto,
   mesEnMadrid,
   metodoDobleFactor,
+  resumenDelPanel,
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, Inmueble, Inquilino, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, Inmueble, Inquilino, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -98,4 +100,10 @@ export async function cobrosDe(
     cobrosDelMes(dependencias.bd, inmueble.id, mes, mesEnMadrid()),
   ]);
   return { inmueble, inquilinos, cobros };
+}
+
+/** Panel principal del usuario (spec 009, R1–R5b). */
+export async function panelDe(usuario: UsuarioSesion): Promise<Panel | null> {
+  if (!dependencias.bd) return null;
+  return resumenDelPanel(dependencias.bd, usuario.id, hoyEnMadrid());
 }

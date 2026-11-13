@@ -1,0 +1,160 @@
+/* Panel principal (spec 009, R1–R5b). */
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.cifra {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.etiquetaCifra {
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.valor {
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.avisos {
+  border-color: var(--acento);
+}
+
+.lista {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bloque {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borde);
+}
+
+.bloque:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.nombreInmueble {
+  font-weight: 600;
+}
+
+.nombre {
+  font-weight: 600;
+}
+
+.importe {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.inquilino {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.enlaceInquilino {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radio-control);
+}
+
+.enlaceInquilino:hover {
+  background: var(--fondo);
+}
+
+.enlaceInquilino:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.conceptos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
+.concepto {
+  padding: 2px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 999px;
+  color: var(--texto-suave);
+}
+
+.concepto::first-letter,
+.atrasado::first-letter {
+  text-transform: uppercase;
+}
+
+/* R3: lo de meses anteriores, destacado. */
+.atrasado {
+  composes: concepto;
+  color: var(--texto);
+  background: color-mix(in srgb, var(--acento) 30%, transparent);
+  border-color: var(--acento);
+}
+
+.inmuebles {
+  display: grid;
+  gap: 12px;
+}
+
+.tituloInmuebles {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  color: inherit;
+  text-decoration: none;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.tarjeta:hover {
+  border-color: var(--borde-fuerte);
+}
+
+.tarjeta:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
