@@ -1,9 +1,15 @@
 // Rutas de facturas (spec 003). Cuelgan de /inmuebles/:idInmueble: la sesión
 // ya la exige el middleware de inmuebles; aquí se comprueba que el inmueble es suyo.
 import {
+  ConfirmacionFactura,
+  ConfirmacionTodas,
+  EdicionFactura,
   NuevasFacturas,
   PeticionSubidasFacturas,
+  type Factura,
   type ListaFacturas,
+  type RespuestaSolape,
+  type ResultadoConfirmacionTodas,
   type PermisosSubida,
   type RespuestaError,
   type ResultadoSubidaFacturas,
@@ -12,7 +18,17 @@ import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
 import type { ExtractorFacturas } from "../extractor.ts";
-import { crearFacturas, descartarFactura, listarFacturas, prepararSubidasFacturas, urlPdfFactura } from "../facturas.ts";
+import {
+  confirmarFactura,
+  confirmarTodas,
+  crearFacturas,
+  descartarFactura,
+  editarFactura,
+  ErrorSolape,
+  listarFacturas,
+  prepararSubidasFacturas,
+  urlPdfFactura,
+} from "../facturas.ts";
 import { esSuyo } from "../inmuebles.ts";
 import { ids, leer, noEncontrado, type EntornoSesion } from "./comunes.ts";
 
@@ -62,6 +78,36 @@ export function registrarRutasFacturas(
     if (!url) return noEncontrado(c);
     c.header("cache-control", "no-store");
     return c.redirect(url, 302);
+  });
+
+  app.patch("/inmuebles/:idInmueble/facturas/:idFactura", async (c) => {
+    const v = await delInmueble(c, "idFactura");
+    if (!v) return noEncontrado(c);
+    const factura = await editarFactura(bd, v[0]!, v[1]!, await leer(c, EdicionFactura));
+    return factura ? c.json<Factura>(factura) : noEncontrado(c);
+  });
+
+  app.post("/inmuebles/:idInmueble/facturas/confirmar-todas", async (c) => {
+    const v = await delInmueble(c);
+    if (!v) return noEncontrado(c);
+    const { lote } = await leer(c, ConfirmacionTodas);
+    return c.json<ResultadoConfirmacionTodas>(await confirmarTodas(bd, v[0]!, lote));
+  });
+
+  app.post("/inmuebles/:idInmueble/facturas/:idFactura/confirmar", async (c) => {
+    const v = await delInmueble(c, "idFactura");
+    if (!v) return noEncontrado(c);
+    const { continuarConSolapes } = await leer(c, ConfirmacionFactura);
+    try {
+      const factura = await confirmarFactura(bd, v[0]!, v[1]!, continuarConSolapes === true);
+      return factura ? c.json<Factura>(factura) : noEncontrado(c);
+    } catch (error) {
+      // R6: se avisa mostrando las facturas con las que se solapa; la usuaria decide.
+      if (error instanceof ErrorSolape) {
+        return c.json<RespuestaSolape>({ error: "SOLAPE_FACTURAS", solapadas: error.solapadas }, 409);
+      }
+      throw error;
+    }
   });
 
   app.delete("/inmuebles/:idInmueble/facturas/:idFactura", async (c) => {

@@ -81,9 +81,10 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Interfaz `ExtractorFacturas`, lectura en paralelo con límite de 60 s y normalización de lo leído
 - [ ] Implementación con Bedrock (prompt y salida estructurada), tras la tarea 5.1
 - [x] Endpoints de subida, lectura y descarte en `apps/api`
-- [ ] Endpoint de confirmación (tarea 5.3)
+- [x] Endpoints de edición, confirmación y «Confirmar todas»
 - [x] Subida múltiple y lista por revisar
-- [ ] Edición, confirmación y "Confirmar todas" (tarea 5.3)
-- [ ] Solapes dentro del lote y reparto de lecturas de IA en `packages/domain`
-- [ ] Tests C1–C21 (hechos C1–C4, C10, C12–C16, C20 y C21 con el extractor simulado; C5–C9, C11, C17 y C18 con la tarea 5.3; C19 con los planes, tarea 8.6)
+- [x] Edición, confirmación y "Confirmar todas" en la web, con tipo nuevo al momento
+- [x] Solapes dentro del lote (R14, R14b)
+- [ ] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
+- [ ] Tests C1–C21 (hechos todos salvo C19, que llega con los planes, tarea 8.6)
 - [ ] Evaluación con PDF reales

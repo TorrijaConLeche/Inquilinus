@@ -1,9 +1,18 @@
 // Facturas de suministros (spec 003): subida múltiple al bucket privado,
 // lectura con IA si está activada y lista por revisar. Las funciones reciben
 // un inmueble que ya se ha comprobado que es del usuario; todo se filtra por él.
-import type { Factura, PermisoSubida } from "@inquilinus/contracts";
-import { normalizarLectura, validarDocumento, validarTamanoLote, type PropuestaFactura } from "@inquilinus/domain";
-import { and, asc, eq, inArray } from "drizzle-orm";
+import type { EdicionFactura, Factura, PermisoSubida } from "@inquilinus/contracts";
+import {
+  aDia,
+  ErrorValidacion,
+  facturasSolapadas,
+  normalizarLectura,
+  validarConfirmacion,
+  validarDocumento,
+  validarTamanoLote,
+  type PropuestaFactura,
+} from "@inquilinus/domain";
+import { and, asc, eq, inArray, isNotNull, ne, or } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { claveFactura, clavePendiente, type Almacen } from "./almacen.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
@@ -218,4 +227,139 @@ export async function descartarFactura(bd: ConexionBd, almacen: Almacen, inmuebl
     db.delete(t.fichero).where(eq(t.fichero.id, factura.ficheroId)),
   ]);
   return true;
+}
+
+// --- Revisión y confirmación (R5, R6, R9, R13, R14, R14b) ---------------------
+
+/** R6 y R14: la factura se solapa con estas; la ruta responde 409 con ellas. */
+export class ErrorSolape extends Error {
+  readonly solapadas: Factura[];
+
+  constructor(solapadas: Factura[]) {
+    super("SOLAPE_FACTURAS");
+    this.name = "ErrorSolape";
+    this.solapadas = solapadas;
+  }
+}
+
+async function porRevisarDe(bd: ConexionBd, inmuebleId: string, facturaId: string) {
+  const [fila] = await consultaFacturas(bd).where(and(eq(t.factura.id, facturaId), eq(t.factura.inmuebleId, inmuebleId)));
+  if (!fila) return null;
+  if (!(POR_REVISAR as readonly string[]).includes(fila.estado)) throw new ErrorPeticion("FACTURA_CONFIRMADA");
+  return fila;
+}
+
+/** R5: rellenar o corregir antes de confirmar. Devuelve null si la factura no es de este inmueble. */
+export async function editarFactura(
+  bd: ConexionBd,
+  inmuebleId: string,
+  facturaId: string,
+  edicion: EdicionFactura,
+): Promise<Factura | null> {
+  const actual = await porRevisarDe(bd, inmuebleId, facturaId);
+  if (!actual) return null;
+  if (edicion.tipoGastoId) {
+    const [tipo] = await bd
+      .select({ id: t.tipoGasto.id })
+      .from(t.tipoGasto)
+      .where(and(eq(t.tipoGasto.id, edicion.tipoGastoId), eq(t.tipoGasto.inmuebleId, inmuebleId)));
+    if (!tipo) throw new ErrorPeticion("TIPO_GASTO_DESCONOCIDO");
+  }
+  const cambios = {
+    ...(edicion.tipoGastoId !== undefined && { tipoGastoId: edicion.tipoGastoId }),
+    ...(edicion.periodoInicio !== undefined && { periodoInicio: edicion.periodoInicio }),
+    ...(edicion.periodoFin !== undefined && { periodoFin: edicion.periodoFin }),
+    ...(edicion.importeTotal !== undefined && { importeTotal: edicion.importeTotal }),
+  };
+  const inicio = cambios.periodoInicio !== undefined ? cambios.periodoInicio : actual.periodoInicio;
+  const fin = cambios.periodoFin !== undefined ? cambios.periodoFin : actual.periodoFin;
+  // Fechas que existen (aDia lanza FECHA_INVALIDA) y, R9, un periodo que no vaya al revés.
+  const diaInicio = inicio ? aDia(inicio) : null;
+  const diaFin = fin ? aDia(fin) : null;
+  if (diaInicio !== null && diaFin !== null && diaFin < diaInicio) {
+    throw new ErrorValidacion("PERIODO_INVALIDO", "La fecha de fin es anterior a la de inicio");
+  }
+  if (Object.keys(cambios).length > 0) {
+    await bd.update(t.factura).set({ ...cambios, actualizadoEn: new Date() }).where(eq(t.factura.id, facturaId));
+  }
+  const [fila] = await consultaFacturas(bd).where(eq(t.factura.id, facturaId));
+  return aFactura(fila!);
+}
+
+/** R6, R14 y R14b: las confirmadas del inmueble y las del mismo lote con tipo y periodo que se solapan. */
+async function solapadasCon(
+  bd: ConexionBd,
+  inmuebleId: string,
+  factura: { id: string; lote: string; tipoGastoId: string; inicio: string; fin: string },
+): Promise<Factura[]> {
+  const candidatas = await consultaFacturas(bd).where(
+    and(
+      eq(t.factura.inmuebleId, inmuebleId),
+      eq(t.factura.tipoGastoId, factura.tipoGastoId),
+      ne(t.factura.id, factura.id),
+      isNotNull(t.factura.periodoInicio),
+      isNotNull(t.factura.periodoFin),
+      or(inArray(t.factura.estado, ["confirmada", "repartida"]), eq(t.factura.lote, factura.lote)),
+    ),
+  );
+  const ids = facturasSolapadas(
+    factura,
+    candidatas.map((c) => ({ id: c.id, tipoGastoId: c.tipoGastoId!, inicio: c.periodoInicio!, fin: c.periodoFin! })),
+  );
+  return candidatas.filter((c) => ids.includes(c.id)).map(aFactura);
+}
+
+/**
+ * R6, R9 y R14: confirma una factura completa. Si se solapa con otras del
+ * mismo tipo, lanza ErrorSolape salvo que la usuaria haya decidido continuar.
+ * Devuelve null si la factura no es de este inmueble.
+ */
+export async function confirmarFactura(
+  bd: ConexionBd,
+  inmuebleId: string,
+  facturaId: string,
+  continuarConSolapes: boolean,
+): Promise<Factura | null> {
+  const actual = await porRevisarDe(bd, inmuebleId, facturaId);
+  if (!actual) return null;
+  const valida = validarConfirmacion({
+    tipoGastoId: actual.tipoGastoId,
+    inicio: actual.periodoInicio,
+    fin: actual.periodoFin,
+    importe: actual.importeTotal,
+  });
+  const solapadas = await solapadasCon(bd, inmuebleId, { id: facturaId, lote: actual.lote, ...valida });
+  if (solapadas.length > 0 && !continuarConSolapes) throw new ErrorSolape(solapadas);
+  await bd.update(t.factura).set({ estado: "confirmada", actualizadoEn: new Date() }).where(eq(t.factura.id, facturaId));
+  const [fila] = await consultaFacturas(bd).where(eq(t.factura.id, facturaId));
+  return aFactura(fila!);
+}
+
+/**
+ * R13 y R14b: «Confirmar todas». Confirma, en orden de subida, las completas y
+ * sin solapes; las incompletas y las que se solapan siguen por revisar.
+ */
+export async function confirmarTodas(
+  bd: ConexionBd,
+  inmuebleId: string,
+  lote: string | undefined,
+): Promise<{ confirmadas: Factura[]; pendientes: { id: string; motivo: "incompleta" | "solape"; solapadas: string[] }[] }> {
+  const porRevisar = (await listarFacturas(bd, inmuebleId, { porRevisar: true })).filter((f) => !lote || f.lote === lote);
+  const confirmadas: Factura[] = [];
+  const pendientes: { id: string; motivo: "incompleta" | "solape"; solapadas: string[] }[] = [];
+  for (const factura of porRevisar) {
+    try {
+      const confirmada = await confirmarFactura(bd, inmuebleId, factura.id, false);
+      if (confirmada) confirmadas.push(confirmada);
+    } catch (error) {
+      if (error instanceof ErrorSolape) {
+        pendientes.push({ id: factura.id, motivo: "solape", solapadas: error.solapadas.map((s) => s.id) });
+      } else if (error instanceof ErrorValidacion) {
+        pendientes.push({ id: factura.id, motivo: "incompleta", solapadas: [] });
+      } else {
+        throw error;
+      }
+    }
+  }
+  return { confirmadas, pendientes };
 }

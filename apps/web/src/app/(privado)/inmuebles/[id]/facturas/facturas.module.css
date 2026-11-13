@@ -1,0 +1,51 @@
+/* Facturas del inmueble (spec 003). */
+
+.formulario {
+  display: grid;
+  gap: 12px;
+}
+
+.nuevoTipo {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nuevoTipo > :first-child {
+  flex: 1 1 200px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.solapadas {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9375rem;
+}
+
+.confirmada {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.confirmada:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.importe {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

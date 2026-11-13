@@ -1,6 +1,16 @@
-// Spec 003 · tarea 5.2: subida múltiple de facturas, lectura con IA (simulada) y lista por revisar.
+// Spec 003 · tareas 5.2 y 5.3: subida múltiple, lectura con IA (simulada), lista por revisar y confirmación.
 import { PGlite } from "@electric-sql/pglite";
-import { Inmueble, ListaFacturas, PermisosSubida, ResultadoSubidaFacturas, TipoGasto, VERSION_TERMINOS } from "@inquilinus/contracts";
+import {
+  Factura,
+  Inmueble,
+  ListaFacturas,
+  PermisosSubida,
+  RespuestaSolape,
+  ResultadoConfirmacionTodas,
+  ResultadoSubidaFacturas,
+  TipoGasto,
+  VERSION_TERMINOS,
+} from "@inquilinus/contracts";
 import type { LecturaFactura } from "@inquilinus/domain";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
@@ -314,5 +324,149 @@ describe("Aislamiento y seguridad", () => {
     expect((await pedir(e.base)).status).toBe(401);
     expect((await pedir(`${e.base}/subidas`, { cuerpo: { cantidad: 1 }, cookie: e.cookie, origen: "https://malvada.ejemplo" })).status).toBe(403);
     expect((await pedir(`${e.base}/subidas`, { cuerpo: { cantidad: 1 }, cookie: e.cookie, app: sinAlmacen })).status).toBe(503);
+  });
+});
+
+describe("Spec 003 · Revisión y confirmación (R5, R6, R9, R13, R14)", () => {
+  /** Sube a mano (sin IA) y rellena cada factura con lo indicado. */
+  const conFacturas = async (datos: { nombre: string; tipo?: "luz" | "gas"; inicio?: string; fin?: string; importe?: number }[]) => {
+    const e = await escenario();
+    const { facturas } = await e.subir(
+      datos.map((d) => ({ nombre: d.nombre, contenido: pdf(d.nombre) })),
+      sinIa,
+    );
+    const ids: Record<string, string> = {};
+    for (const d of datos) {
+      const f = porNombre(facturas, d.nombre);
+      ids[d.nombre] = f.id;
+      await pedir(`${e.base}/${f.id}`, {
+        metodo: "PATCH",
+        cuerpo: {
+          ...(d.tipo && { tipoGastoId: d.tipo === "luz" ? e.luz.id : e.gas.id }),
+          ...(d.inicio && { periodoInicio: d.inicio }),
+          ...(d.fin && { periodoFin: d.fin }),
+          ...(d.importe && { importeTotal: d.importe }),
+        },
+        cookie: e.cookie,
+      });
+    }
+    const confirmar = (nombre: string, continuarConSolapes?: boolean) =>
+      pedir(`${e.base}/${ids[nombre]}/confirmar`, {
+        cuerpo: continuarConSolapes === undefined ? {} : { continuarConSolapes },
+        cookie: e.cookie,
+      });
+    return { ...e, ids, confirmar };
+  };
+
+  it("C9 · la usuaria corrige lo propuesto: se confirma su valor y se guarda la propuesta original (R5, R7)", async () => {
+    const e = await escenario();
+    const { facturas } = await e.subir([{ nombre: "luz.pdf", contenido: pdf("luz-septiembre") }]);
+    const id = facturas[0]!.id;
+    await pedir(`${e.base}/${id}`, { metodo: "PATCH", cuerpo: { importeTotal: 7_845 }, cookie: e.cookie });
+    const r = await pedir(`${e.base}/${id}/confirmar`, { cuerpo: {}, cookie: e.cookie });
+    expect(Factura.parse(await r.json())).toMatchObject({ estado: "confirmada", importeTotal: 7_845, propuestaIa: { importe: 8_745 } });
+    expect(await e.porRevisar()).toEqual([]);
+  });
+
+  it("C2 · sin periodo no se confirma; C11 · un periodo al revés no se acepta (R4, R9)", async () => {
+    const e = await conFacturas([{ nombre: "luz.pdf", tipo: "luz", importe: 5_000 }]);
+    const sinPeriodo = await e.confirmar("luz.pdf");
+    expect(sinPeriodo.status).toBe(400);
+    expect(await sinPeriodo.json()).toEqual({ error: "CAMPO_OBLIGATORIO" });
+    const alReves = await pedir(`${e.base}/${e.ids["luz.pdf"]}`, {
+      metodo: "PATCH",
+      cuerpo: { periodoInicio: "2026-09-01", periodoFin: "2026-08-31" },
+      cookie: e.cookie,
+    });
+    expect(await alReves.json()).toEqual({ error: "PERIODO_INVALIDO" });
+    const inexistente = await pedir(`${e.base}/${e.ids["luz.pdf"]}`, { metodo: "PATCH", cuerpo: { periodoFin: "2026-02-30" }, cookie: e.cookie });
+    expect(await inexistente.json()).toEqual({ error: "FECHA_INVALIDA" });
+  });
+
+  it("C5 · un duplicado exacto avisa con la factura existente; si se continúa, se guarda", async () => {
+    const e = await conFacturas([
+      { nombre: "luz-1.pdf", tipo: "luz", inicio: "2026-09-01", fin: "2026-09-30", importe: 8_745 },
+      { nombre: "luz-2.pdf", tipo: "luz", inicio: "2026-09-01", fin: "2026-09-30", importe: 8_745 },
+    ]);
+    // Las dos son del mismo lote, así que ya la primera avisa (R14); se continúa.
+    expect((await e.confirmar("luz-1.pdf", true)).status).toBe(200);
+    const aviso = await e.confirmar("luz-2.pdf");
+    expect(aviso.status).toBe(409);
+    const { solapadas } = RespuestaSolape.parse(await aviso.json());
+    expect(solapadas.map((s) => [s.nombreFichero, s.estado])).toEqual([["luz-1.pdf", "confirmada"]]);
+    expect((await e.confirmar("luz-2.pdf", true)).status).toBe(200);
+  });
+
+  it("C6, C7 y C8 · solape parcial avisa; periodos contiguos u otro tipo, no", async () => {
+    const e = await conFacturas([
+      { nombre: "agosto.pdf", tipo: "luz", inicio: "2026-08-01", fin: "2026-09-15", importe: 9_000 },
+      { nombre: "parcial.pdf", tipo: "luz", inicio: "2026-09-10", fin: "2026-10-10", importe: 9_000 },
+      { nombre: "contigua.pdf", tipo: "luz", inicio: "2026-09-16", fin: "2026-10-15", importe: 9_000 },
+      { nombre: "gas.pdf", tipo: "gas", inicio: "2026-08-01", fin: "2026-09-15", importe: 9_000 },
+    ]);
+    // La parcial se solapa con la de agosto y con la contigua (las tres del mismo lote).
+    const parcial = RespuestaSolape.parse(await (await e.confirmar("parcial.pdf")).json());
+    expect(parcial.solapadas.map((s) => s.nombreFichero).sort()).toEqual(["agosto.pdf", "contigua.pdf"]);
+    await pedir(`${e.base}/${e.ids["parcial.pdf"]}`, { metodo: "DELETE", cookie: e.cookie });
+    // Sin la parcial: agosto y la contigua no se tocan (C7) y el gas es otro tipo (C8).
+    expect((await e.confirmar("agosto.pdf")).status).toBe(200);
+    expect((await e.confirmar("contigua.pdf")).status).toBe(200);
+    expect((await e.confirmar("gas.pdf")).status).toBe(200);
+  });
+
+  it("C18 · la misma factura dos veces en un lote avisa entre ambas (R14)", async () => {
+    const e = await conFacturas([
+      { nombre: "octubre-a.pdf", tipo: "luz", inicio: "2026-10-01", fin: "2026-10-31", importe: 9_120 },
+      { nombre: "octubre-b.pdf", tipo: "luz", inicio: "2026-10-01", fin: "2026-10-31", importe: 9_120 },
+    ]);
+    const aviso = RespuestaSolape.parse(await (await e.confirmar("octubre-a.pdf")).json());
+    expect(aviso.solapadas.map((s) => s.nombreFichero)).toEqual(["octubre-b.pdf"]);
+  });
+
+  it("C17 · «Confirmar todas» confirma las completas y deja las incompletas y las que se solapan (R13, R14b)", async () => {
+    const e = await conFacturas([
+      { nombre: "luz-sep.pdf", tipo: "luz", inicio: "2026-09-01", fin: "2026-09-30", importe: 8_745 },
+      { nombre: "gas.pdf", tipo: "gas", inicio: "2026-09-01", fin: "2026-11-30", importe: 15_000 },
+      { nombre: "sin-importe.pdf", tipo: "luz", inicio: "2026-10-01", fin: "2026-10-31" },
+    ]);
+    const r = ResultadoConfirmacionTodas.parse(await (await pedir(`${e.base}/confirmar-todas`, { cuerpo: {}, cookie: e.cookie })).json());
+    expect(r.confirmadas.map((f) => f.nombreFichero).sort()).toEqual(["gas.pdf", "luz-sep.pdf"]);
+    expect(r.pendientes).toEqual([{ id: e.ids["sin-importe.pdf"], motivo: "incompleta", solapadas: [] }]);
+    expect((await e.porRevisar()).map((f) => f.nombreFichero)).toEqual(["sin-importe.pdf"]);
+
+    const dobles = await conFacturas([
+      { nombre: "a.pdf", tipo: "luz", inicio: "2026-10-01", fin: "2026-10-31", importe: 9_120 },
+      { nombre: "b.pdf", tipo: "luz", inicio: "2026-10-01", fin: "2026-10-31", importe: 9_120 },
+    ]);
+    const conSolape = ResultadoConfirmacionTodas.parse(
+      await (await pedir(`${dobles.base}/confirmar-todas`, { cuerpo: {}, cookie: dobles.cookie })).json(),
+    );
+    expect(conSolape.confirmadas).toEqual([]);
+    expect(conSolape.pendientes.map((p) => p.motivo)).toEqual(["solape", "solape"]);
+  });
+
+  it("no se edita ni se confirma otra vez una factura ya confirmada, ni con un tipo de otro inmueble", async () => {
+    const e = await conFacturas([{ nombre: "luz.pdf", tipo: "luz", inicio: "2026-09-01", fin: "2026-09-30", importe: 5_000 }]);
+    const otro = await escenario();
+    const ajeno = await pedir(`${e.base}/${e.ids["luz.pdf"]}`, { metodo: "PATCH", cuerpo: { tipoGastoId: otro.luz.id }, cookie: e.cookie });
+    expect(await ajeno.json()).toEqual({ error: "TIPO_GASTO_DESCONOCIDO" });
+    await e.confirmar("luz.pdf");
+    const editar = await pedir(`${e.base}/${e.ids["luz.pdf"]}`, { metodo: "PATCH", cuerpo: { importeTotal: 1 }, cookie: e.cookie });
+    expect(await editar.json()).toEqual({ error: "FACTURA_CONFIRMADA" });
+    expect(await (await e.confirmar("luz.pdf")).json()).toEqual({ error: "FACTURA_CONFIRMADA" });
+  });
+
+  it("aislamiento: otra cuenta no edita ni confirma facturas ajenas", async () => {
+    const e = await conFacturas([{ nombre: "luz.pdf", tipo: "luz", inicio: "2026-09-01", fin: "2026-09-30", importe: 5_000 }]);
+    const ajena = await cuenta();
+    const intentos = [
+      pedir(`${e.base}/${e.ids["luz.pdf"]}`, { metodo: "PATCH", cuerpo: { importeTotal: 1 }, cookie: ajena }),
+      pedir(`${e.base}/${e.ids["luz.pdf"]}/confirmar`, { cuerpo: {}, cookie: ajena }),
+      pedir(`${e.base}/confirmar-todas`, { cuerpo: {}, cookie: ajena }),
+    ];
+    for (const r of await Promise.all(intentos)) expect(r.status).toBe(404);
+    const suyo = await escenario();
+    expect((await pedir(`${suyo.base}/${e.ids["luz.pdf"]}/confirmar`, { cuerpo: {}, cookie: suyo.cookie })).status).toBe(404);
+    expect((await e.porRevisar())[0]).toMatchObject({ estado: "subida", importeTotal: 5_000 });
   });
 });

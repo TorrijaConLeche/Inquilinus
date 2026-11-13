@@ -130,7 +130,10 @@
     "cobroExistente": "They already have a payment that month. If you removed it, restore it from “Removed payments”.",
     "sinPrecio": "A room was occupied without a price that month: give it a price first.",
     "demasiadasFacturas": "You can upload up to 20 bills at once.",
-    "facturaConfirmada": "This bill is already confirmed and can't be discarded."
+    "facturaConfirmada": "This bill is already confirmed and can't be discarded.",
+    "campoObligatorio": "Some details are missing: choose the expense type and fill in the period and amount.",
+    "periodoInvalido": "The end date can't be earlier than the start date.",
+    "tipoGastoDesconocido": "That expense type doesn't belong to this property."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -516,6 +519,29 @@
     "sinDatos": "No details yet: the expense type, period and amount need filling in.",
     "descartar": "Discard",
     "descartarConfirmacion": "Discard this bill? It will be deleted with its PDF.",
-    "cancelar": "Cancel"
+    "cancelar": "Cancel",
+    "revisarExplicacion": "Check each bill's details and confirm it. It isn't split until you confirm it.",
+    "propuestaIa": "The AI suggested: {tipo} · {periodo} · {importe}",
+    "tipoGasto": "Expense type",
+    "eligeTipo": "Choose a type…",
+    "nuevoTipo": "+ New expense type",
+    "nombreTipo": "Name of the new type",
+    "crearTipo": "Create",
+    "inicio": "Period start",
+    "fin": "Period end",
+    "importe": "Total amount (€)",
+    "guardar": "Save",
+    "guardada": "Saved.",
+    "confirmar": "Confirm",
+    "solape": "This bill overlaps another one of the same type. Are you sure it isn't a duplicate?",
+    "solapada": "{nombre}: {tipo}, {periodo}, {importe} ({estado})",
+    "confirmarIgualmente": "Confirm anyway",
+    "confirmarTodas": "Confirm all",
+    "confirmadas": "{n, plural, =0 {None were confirmed.} one {# bill confirmed.} other {# bills confirmed.}}",
+    "quedanIncompletas": "{n, plural, one {# is still to review because it's missing details.} other {# are still to review because they're missing details.}}",
+    "quedanConSolape": "{n, plural, one {# overlaps another: confirm it yourself if it isn't a duplicate.} other {# overlap others: confirm them yourself if they aren't duplicates.}}",
+    "confirmadasTitulo": "Confirmed",
+    "verPdf": "View PDF",
+    "repartoPronto": "Splitting each bill between the tenants is added in the next task."
   }
 }
