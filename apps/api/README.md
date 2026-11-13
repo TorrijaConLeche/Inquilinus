@@ -81,4 +81,3 @@ Configuración de cada bucket (en la consola de AWS; el usuario de la app no tie
 
 - **CORS**: `POST` desde la URL de la app (en el de previsualizaciones, también `http://localhost:3000` y `https://*.vercel.app`).
 - **Ciclo de vida**: regla `borrar-subidas-pendientes` que borra lo que hay en `pendientes/` al día siguiente (subidas que no se llegaron a confirmar).
-

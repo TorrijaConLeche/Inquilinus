@@ -248,7 +248,6 @@ export function Inquilinos({
               <DocumentosInquilino inmuebleId={inmuebleId} inquilino={q} />
             </li>
           );
-
         })}
       </ul>
 

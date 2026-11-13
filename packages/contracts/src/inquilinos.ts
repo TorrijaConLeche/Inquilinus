@@ -75,7 +75,6 @@ export const Inquilino = z
     documentos: z.array(Documento),
     fianza: Fianza.nullable(),
   })
-
   .meta({ id: 'Inquilino' });
 export type Inquilino = z.infer<typeof Inquilino>;
 

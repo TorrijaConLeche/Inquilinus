@@ -23,7 +23,6 @@ export function generarOpenApi() {
       ...rutasInmuebles,
       ...rutasInquilinos,
       ...rutasDocumentos,
-
     },
   });
 }

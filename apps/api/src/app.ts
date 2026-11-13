@@ -154,7 +154,6 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
       }
       await borrarCuenta(bd, sesion.user.id, {
         ...(dependencias.almacen && { borrarFicheros: dependencias.almacen.borrar }),
-
         ...(dependencias.limitador && { claveIntentos: dependencias.limitador.claves(email, null).cuenta }),
       });
       registro.info("cuenta_borrada", { idPeticion: c.get("idPeticion") });

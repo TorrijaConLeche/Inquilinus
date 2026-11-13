@@ -67,7 +67,6 @@ export async function verInquilino(bd: ConexionBd, inmuebleId: string, inquilino
     documentosYFianzas(bd, [inquilinoId]),
   ]);
   return aInquilino(fila, ocupaciones, extras);
-
 }
 
 /**

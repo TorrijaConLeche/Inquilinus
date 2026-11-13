@@ -76,7 +76,6 @@ export type ClaveError =
   | "devolucionMayor"
   | "devolucionAntesDeRecepcion"
   | "notasLargas"
-
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

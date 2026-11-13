@@ -58,7 +58,6 @@ export {
   type DatosFianza,
   type FianzaValida,
   type AltaInmueble,
-
   type InmuebleNuevo,
   type PrecioDesde,
 } from './gestion.ts';

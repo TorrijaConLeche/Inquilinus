@@ -60,5 +60,4 @@ export {
   TipoDocumento,
 } from './documentos.ts';
 export { generarOpenApi } from './openapi.ts';
-
 export { RespuestaSalud, rutasSalud } from './salud.ts';

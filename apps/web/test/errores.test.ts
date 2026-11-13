@@ -54,7 +54,6 @@ describe("claveDeError", () => {
       "DEVOLUCION_ANTES_DE_RECEPCION",
       "NOTAS_DEMASIADO_LARGAS",
       "OTRO",
-
     ];
     for (const codigo of codigos) {
       const clave = claveDeError(codigo);

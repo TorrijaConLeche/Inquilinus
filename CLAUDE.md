@@ -53,6 +53,5 @@ La app móvil (Expo) está fuera del MVP; todo lo reutilizable va en `packages/`
 pnpm install
 pnpm dev         # la app en local contra la base y el bucket de previsualizaciones
 pnpm test        # todos los tests (Turborepo)
-
 pnpm typecheck
 ```
