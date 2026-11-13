@@ -109,7 +109,7 @@ export async function panelDe(usuario: UsuarioSesion): Promise<Panel | null> {
   return resumenDelPanel(dependencias.bd, usuario.id, hoyEnMadrid());
 }
 
-/** Facturas por revisar del inmueble y sus tipos de gasto (spec 003), o null si no es suyo. */
+/** Facturas del inmueble (por revisar y confirmadas) y sus tipos de gasto (spec 003), o null si no es suyo. */
 export async function facturasDe(
   usuario: UsuarioSesion,
   inmuebleId: string,
@@ -117,7 +117,7 @@ export async function facturasDe(
   const inmueble = await inmuebleDe(usuario, inmuebleId);
   if (!inmueble || !dependencias.bd) return null;
   const [facturas, tiposGasto] = await Promise.all([
-    listarFacturas(dependencias.bd, inmueble.id, { porRevisar: true }),
+    listarFacturas(dependencias.bd, inmueble.id, { porRevisar: false }),
     listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
   return { inmueble, facturas, tiposGasto };

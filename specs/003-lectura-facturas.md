@@ -29,6 +29,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 - **R12** — Las facturas de un lote se leen en paralelo y de forma independiente: si una falla, las demás siguen (R8).
 - **R13** — Tras la subida, las facturas aparecen en una lista **por revisar**. Se pueden confirmar una a una o con **"Confirmar todas"**, que confirma las que están completas y deja en la lista las que tienen algún campo vacío. Al terminar, la app propone agrupar las confirmadas en una liquidación (spec 011).
 - **R14** — El aviso de solapes (R6) también compara las facturas del mismo lote entre sí.
+- **R14b** — Para el aviso de solapes cuentan las facturas ya confirmadas del inmueble y las del mismo lote que tengan tipo y periodo. Con **"Confirmar todas"**, las que se solapan con otra se quedan por revisar con su aviso (como las incompletas), y la usuaria las confirma una a una si quiere continuar.
 - **R15** — Si en un lote hay más facturas que lecturas de IA disponibles en el plan (spec 010, R2), se leen con IA las primeras en orden de subida y las demás quedan para rellenar a mano.
 - **R16** — Una factura que aún no está confirmada se puede **descartar**: se borra con su PDF. La subida va directa al bucket privado con permisos firmados, como los documentos (spec 007, R6c).
 
@@ -80,9 +81,10 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Interfaz `ExtractorFacturas`, lectura en paralelo con límite de 60 s y normalización de lo leído
 - [ ] Implementación con Bedrock (prompt y salida estructurada), tras la tarea 5.1
 - [x] Endpoints de subida, lectura y descarte en `apps/api`
-- [ ] Endpoint de confirmación (tarea 5.3)
+- [x] Endpoints de edición, confirmación y «Confirmar todas»
 - [x] Subida múltiple y lista por revisar
-- [ ] Edición, confirmación y "Confirmar todas" (tarea 5.3)
-- [ ] Solapes dentro del lote y reparto de lecturas de IA en `packages/domain`
-- [ ] Tests C1–C21 (hechos C1–C4, C10, C12–C16, C20 y C21 con el extractor simulado; C5–C9, C11, C17 y C18 con la tarea 5.3; C19 con los planes, tarea 8.6)
+- [x] Edición, confirmación y "Confirmar todas" en la web, con tipo nuevo al momento
+- [x] Solapes dentro del lote (R14, R14b)
+- [ ] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
+- [ ] Tests C1–C21 (hechos todos salvo C19, que llega con los planes, tarea 8.6)
 - [ ] Evaluación con PDF reales

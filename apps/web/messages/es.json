@@ -130,7 +130,10 @@
     "cobroExistente": "Ya tiene cobro ese mes. Si lo quitaste, restáuralo desde «Cobros quitados».",
     "sinPrecio": "Hay una habitación ocupada sin precio ese mes: ponle precio primero.",
     "demasiadasFacturas": "Puedes subir hasta 20 facturas a la vez.",
-    "facturaConfirmada": "Esta factura ya está confirmada y no se puede descartar."
+    "facturaConfirmada": "Esta factura ya está confirmada y no se puede descartar.",
+    "campoObligatorio": "Faltan datos: elige el tipo de gasto y rellena el periodo y el importe.",
+    "periodoInvalido": "La fecha de fin no puede ser anterior a la de inicio.",
+    "tipoGastoDesconocido": "Ese tipo de gasto no es de este inmueble."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -516,6 +519,29 @@
     "sinDatos": "Sin datos todavía: hay que rellenar el tipo de gasto, el periodo y el importe.",
     "descartar": "Descartar",
     "descartarConfirmacion": "¿Descartar esta factura? Se borrará con su PDF.",
-    "cancelar": "Cancelar"
+    "cancelar": "Cancelar",
+    "revisarExplicacion": "Revisa los datos de cada factura y confírmala. Hasta que la confirmes no se reparte.",
+    "propuestaIa": "La IA propuso: {tipo} · {periodo} · {importe}",
+    "tipoGasto": "Tipo de gasto",
+    "eligeTipo": "Elige un tipo…",
+    "nuevoTipo": "+ Nuevo tipo de gasto",
+    "nombreTipo": "Nombre del tipo nuevo",
+    "crearTipo": "Crear",
+    "inicio": "Inicio del periodo",
+    "fin": "Fin del periodo",
+    "importe": "Importe total (€)",
+    "guardar": "Guardar",
+    "guardada": "Guardada.",
+    "confirmar": "Confirmar",
+    "solape": "Esta factura se solapa con otra del mismo tipo. ¿Seguro que no está repetida?",
+    "solapada": "{nombre}: {tipo}, {periodo}, {importe} ({estado})",
+    "confirmarIgualmente": "Confirmar igualmente",
+    "confirmarTodas": "Confirmar todas",
+    "confirmadas": "{n, plural, =0 {No se ha confirmado ninguna.} one {Se ha confirmado # factura.} other {Se han confirmado # facturas.}}",
+    "quedanIncompletas": "{n, plural, one {# sigue por revisar porque le faltan datos.} other {# siguen por revisar porque les faltan datos.}}",
+    "quedanConSolape": "{n, plural, one {# se solapa con otra: confírmala tú si no está repetida.} other {# se solapan con otras: confírmalas tú si no están repetidas.}}",
+    "confirmadasTitulo": "Confirmadas",
+    "verPdf": "Ver PDF",
+    "repartoPronto": "El reparto de cada factura entre los inquilinos se añade en la próxima tarea."
   }
 }

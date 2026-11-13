@@ -60,6 +60,9 @@ const POR_CODIGO: Record<string, ClaveError> = {
   // Facturas (spec 003).
   DEMASIADAS_FACTURAS: "demasiadasFacturas",
   FACTURA_CONFIRMADA: "facturaConfirmada",
+  CAMPO_OBLIGATORIO: "campoObligatorio",
+  PERIODO_INVALIDO: "periodoInvalido",
+  TIPO_GASTO_DESCONOCIDO: "tipoGastoDesconocido",
 };
 
 export type ClaveError =
@@ -111,6 +114,9 @@ export type ClaveError =
   | "sinPrecio"
   | "demasiadasFacturas"
   | "facturaConfirmada"
+  | "campoObligatorio"
+  | "periodoInvalido"
+  | "tipoGastoDesconocido"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

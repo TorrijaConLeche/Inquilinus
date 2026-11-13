@@ -30,6 +30,27 @@ export const NuevasFacturas = z
   .meta({ id: 'NuevasFacturas' });
 export type NuevasFacturas = z.infer<typeof NuevasFacturas>;
 
+/** R5: la usuaria puede cambiar cualquier campo antes de confirmar; null lo vacía. */
+export const EdicionFactura = z
+  .strictObject({
+    tipoGastoId: z.uuid().nullable().optional(),
+    periodoInicio: Fecha.nullable().optional(),
+    periodoFin: Fecha.nullable().optional(),
+    importeTotal: Centimos.nullable().optional(),
+  })
+  .meta({ id: 'EdicionFactura' });
+export type EdicionFactura = z.infer<typeof EdicionFactura>;
+
+/** R6: con solapes, solo se confirma si la usuaria decide continuar. */
+export const ConfirmacionFactura = z
+  .strictObject({ continuarConSolapes: z.boolean().optional() })
+  .meta({ id: 'ConfirmacionFactura' });
+export type ConfirmacionFactura = z.infer<typeof ConfirmacionFactura>;
+
+/** R13: confirma las completas y sin solapes; con `lote`, solo las de ese lote. */
+export const ConfirmacionTodas = z.strictObject({ lote: z.uuid().optional() }).meta({ id: 'ConfirmacionTodas' });
+export type ConfirmacionTodas = z.infer<typeof ConfirmacionTodas>;
+
 // --- Respuestas -------------------------------------------------------------
 
 export const Factura = z
@@ -60,6 +81,23 @@ export type Factura = z.infer<typeof Factura>;
 
 export const ListaFacturas = z.object({ facturas: z.array(Factura) }).meta({ id: 'ListaFacturas' });
 export type ListaFacturas = z.infer<typeof ListaFacturas>;
+
+/** R6 y R14: la factura no se confirma porque se solapa con estas; la usuaria decide. */
+export const RespuestaSolape = z
+  .object({ error: z.literal('SOLAPE_FACTURAS'), solapadas: z.array(Factura) })
+  .meta({ id: 'RespuestaSolape' });
+export type RespuestaSolape = z.infer<typeof RespuestaSolape>;
+
+/** R13 y R14b: lo confirmado y lo que sigue por revisar, con el motivo. */
+export const ResultadoConfirmacionTodas = z
+  .object({
+    confirmadas: z.array(Factura),
+    pendientes: z.array(
+      z.object({ id: z.uuid(), motivo: z.enum(['incompleta', 'solape']), solapadas: z.array(z.uuid()) }),
+    ),
+  })
+  .meta({ id: 'ResultadoConfirmacionTodas' });
+export type ResultadoConfirmacionTodas = z.infer<typeof ResultadoConfirmacionTodas>;
 
 export const PermisosSubida = z.object({ permisos: z.array(PermisoSubida) }).meta({ id: 'PermisosSubida' });
 export type PermisosSubida = z.infer<typeof PermisosSubida>;
@@ -117,7 +155,39 @@ export const rutasFacturas = {
       responses: { '201': json(ResultadoSubidaFacturas, 'Lote'), ...errores },
     },
   },
+  '/inmuebles/{idInmueble}/facturas/confirmar-todas': {
+    post: {
+      operationId: 'confirmarTodas',
+      summary: '«Confirmar todas»: confirma las completas y sin solapes; las demás siguen por revisar (R13, R14b)',
+      tags: ['Facturas'],
+      requestParams: { path: enInmueble },
+      requestBody: cuerpo(ConfirmacionTodas),
+      responses: { '200': json(ResultadoConfirmacionTodas, 'Resultado'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/facturas/{idFactura}/confirmar': {
+    post: {
+      operationId: 'confirmarFactura',
+      summary: 'Confirma una factura completa (R9); si se solapa con otra, avisa salvo que se decida continuar (R6, R14)',
+      tags: ['Facturas'],
+      requestParams: { path: conFactura },
+      requestBody: cuerpo(ConfirmacionFactura),
+      responses: {
+        '200': json(Factura, 'Confirmada'),
+        '409': json(RespuestaSolape, 'Se solapa con otras facturas del mismo tipo'),
+        ...errores,
+      },
+    },
+  },
   '/inmuebles/{idInmueble}/facturas/{idFactura}': {
+    patch: {
+      operationId: 'editarFactura',
+      summary: 'Rellenar o corregir tipo, periodo e importe antes de confirmar (R5)',
+      tags: ['Facturas'],
+      requestParams: { path: conFactura },
+      requestBody: cuerpo(EdicionFactura),
+      responses: { '200': json(Factura, 'Editada'), ...errores },
+    },
     delete: {
       operationId: 'descartarFactura',
       summary: 'Descarta una factura sin confirmar, con su PDF (R16)',

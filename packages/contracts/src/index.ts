@@ -75,12 +75,17 @@ export {
   TipoDocumento,
 } from './documentos.ts';
 export {
+  ConfirmacionFactura,
+  ConfirmacionTodas,
+  EdicionFactura,
   EstadoFactura,
   Factura,
   ListaFacturas,
   NuevasFacturas,
   PermisosSubida,
   PeticionSubidasFacturas,
+  RespuestaSolape,
+  ResultadoConfirmacionTodas,
   ResultadoSubidaFacturas,
   rutasFacturas,
 } from './facturas.ts';
