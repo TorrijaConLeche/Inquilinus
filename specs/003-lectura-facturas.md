@@ -19,6 +19,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 - **R6** — Al confirmar, si ya existe otra factura del mismo tipo de gasto e inmueble cuyo periodo se solapa (al menos un día en común), el sistema avisará y mostrará esa factura. La usuaria decide si continúa o cancela.
 - **R7** — Se guardarán tanto los valores propuestos por la IA como los confirmados, para medir el acierto de la IA.
 - **R8** — Si la IA falla o tarda más de 60 s, la usuaria podrá rellenar los campos a mano. El PDF se conserva igualmente.
+- **R8b** — Mientras la lectura con IA no esté activada (tarea 5.1 del plan), las facturas quedan en estado `subida`, por revisar, para rellenarlas a mano. Lo mismo pasará con las que superen las lecturas del plan (R15), que se aplican con la tarea 8.6.
 - **R9** — Validaciones al confirmar: fin igual o posterior a inicio; importe entero en céntimos mayor que cero.
 - **R10** — A la IA solo se envía el PDF y la lista de nombres de tipos de gasto del inmueble, sin ningún otro dato del inmueble ni de los inquilinos. El PDF se guarda en el bucket privado (ver `docs/rgpd.md`).
 - **R11** — Toda factura confirmada se reparte entre los inquilinos según la spec 001. No hay gastos que solo se registren.
@@ -29,12 +30,13 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 - **R13** — Tras la subida, las facturas aparecen en una lista **por revisar**. Se pueden confirmar una a una o con **"Confirmar todas"**, que confirma las que están completas y deja en la lista las que tienen algún campo vacío. Al terminar, la app propone agrupar las confirmadas en una liquidación (spec 011).
 - **R14** — El aviso de solapes (R6) también compara las facturas del mismo lote entre sí.
 - **R15** — Si en un lote hay más facturas que lecturas de IA disponibles en el plan (spec 010, R2), se leen con IA las primeras en orden de subida y las demás quedan para rellenar a mano.
+- **R16** — Una factura que aún no está confirmada se puede **descartar**: se borra con su PDF. La subida va directa al bucket privado con permisos firmados, como los documentos (spec 007, R6c).
 
 Estados de la factura: `subida` → `propuesta` (o `error_extraccion`) → `confirmada` → `repartida`.
 
 ## Casos de prueba
 
-Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
+Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 
 | # | Caso | Datos | Resultado esperado |
 | --- | --- | --- | --- |
@@ -57,6 +59,8 @@ Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
 | C17 | Confirmar todas (R13) | Lote de 3; una sin importe | Se confirman 2; la tercera sigue por revisar |
 | C18 | Duplicado dentro del lote (R14) | La luz de octubre dos veces en el mismo lote | Aviso de solape entre ambas |
 | C19 | Límite de IA en un lote (R15) | Plan Starter sin lecturas usadas; lote de 5 | Se leen con IA las 2 primeras; las otras 3 quedan para rellenar a mano |
+| C20 | Sin IA activada (R8b) | No hay extractor; lote de 2 PDF | Dos facturas en estado `subida`, por revisar, con los campos vacíos |
+| C21 | Descartar (R16) | Factura por revisar descartada | Ya no existe ni ella ni su PDF |
 
 **Evaluación de la IA** (aparte de los tests): con 15-20 PDF reales de distintos tipos y compañías, la IA debe acertar periodo e importe en al menos el 90 % de los casos.
 
@@ -73,8 +77,8 @@ Con un extractor de IA simulado (interfaz `InvoiceExtractor`), salvo C10.
 
 - [x] Validación de fichero (R1) y de confirmación (R9) en `packages/domain`
 - [x] Detección de solapes de periodo (R6) en `packages/domain`
-- [ ] Interfaz `InvoiceExtractor` y su implementación con Bedrock (prompt y salida estructurada)
-- [ ] Endpoints de subida, propuesta y confirmación en `apps/api`
+- [ ] Interfaz `ExtractorFacturas` (tarea 5.2) y su implementación con Bedrock (prompt y salida estructurada, con la 5.1)
+- [ ] Endpoints de subida y propuesta (5.2) y de confirmación (5.3) en `apps/api`
 - [ ] Subida múltiple, lista por revisar y "Confirmar todas"
 - [ ] Solapes dentro del lote y reparto de lecturas de IA en `packages/domain`
 - [ ] Tests C1–C19
