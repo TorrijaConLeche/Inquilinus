@@ -7,3 +7,4 @@ export { crearRegistro, describirError, type Campos, type Registro } from "./reg
 export { mesEnMadrid, hoyEnMadrid } from "./fechas.ts";
 export { listarInmuebles, verInmueble } from "./inmuebles.ts";
 export { listarInquilinos, listarTiposGasto } from "./inquilinos.ts";
+export { cobrosDelMes } from "./cobros.ts";

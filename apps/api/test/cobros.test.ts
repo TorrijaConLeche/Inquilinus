@@ -1,6 +1,6 @@
 // Spec 005 · tarea 4.1: API de cobros (generar a mano, añadir, editar, mover, quitar, restaurar y pagar).
 import { PGlite } from "@electric-sql/pglite";
-import { Cobro, Inmueble, Inquilino, ListaCobros, ResultadoGeneracion, VERSION_TERMINOS } from "@inquilinus/contracts";
+import { Cobro, CobrosDelMes, Inmueble, Inquilino, ListaCobros, ResultadoGeneracion, ResultadoPagoTodo, VERSION_TERMINOS } from "@inquilinus/contracts";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
@@ -288,5 +288,62 @@ describe("Aislamiento: otra cuenta no ve ni toca los cobros ajenos", () => {
     const e = await escenario();
     expect((await pedir(e.base)).status).toBe(401);
     expect((await pedir(`${e.base}/generar`, { cuerpo: { mes: "2026-10" }, cookie: e.cookie, origen: "https://malvada.ejemplo" })).status).toBe(403);
+  });
+});
+
+describe("Spec 009 · Cobros de un mes del inmueble (R6–R12)", () => {
+  it("C3 · los del mes, los quitados aparte, los atrasados primero y lo que asume la propietaria", async () => {
+    const e = await escenario();
+    await generar(e.cookie, e.base, "2026-08");
+    await generar(e.cookie, e.base, "2026-09");
+    await generar(e.cookie, e.base, "2026-10");
+    const agosto = await listar(e.cookie, e.base, "?mes=2026-08");
+    // A pagó agosto; B no. En septiembre, A no ha pagado y B se quitó.
+    await pedir(`${e.base}/${agosto.find((c) => c.inquilinoId === e.a.id)!.id}`, { metodo: "PATCH", cuerpo: { pagadoEn: "2026-08-02" }, cookie: e.cookie });
+    const septiembre = await listar(e.cookie, e.base, "?mes=2026-09");
+    await pedir(`${e.base}/${septiembre.find((c) => c.inquilinoId === e.b.id)!.id}`, { metodo: "PATCH", cuerpo: { quitado: true }, cookie: e.cookie });
+
+    const r = await pedir(`${e.base}/mes/2026-10`, { cookie: e.cookie });
+    const mes = CobrosDelMes.parse(await r.json());
+    expect(mes.cobros).toHaveLength(2);
+    expect(mes.quitados).toEqual([]);
+    // Atrasados (antes de octubre, el mes en curso): agosto de B y septiembre de A, del más antiguo al más reciente.
+    expect(mes.atrasados.map((c) => [c.mes, c.inquilinoId === e.a.id ? "A" : "B"])).toEqual([
+      ["2026-08", "B"],
+      ["2026-09", "A"],
+    ]);
+    // H3 vacía todo el mes: la asume la propietaria.
+    expect(mes.asumePropietario).toBe(30_000);
+
+    const elegidoSeptiembre = CobrosDelMes.parse(await (await pedir(`${e.base}/mes/2026-09`, { cookie: e.cookie })).json());
+    expect(elegidoSeptiembre.quitados.map((c) => c.inquilinoId)).toEqual([e.b.id]);
+    // El de septiembre de A no se repite en atrasados al ver septiembre.
+    expect(elegidoSeptiembre.atrasados.map((c) => c.mes)).toEqual(["2026-08"]);
+  });
+
+  it("C5 · «Todo pagado» marca solo ese inquilino y ese mes, y devuelve lo marcado", async () => {
+    const e = await escenario();
+    await generar(e.cookie, e.base, "2026-09");
+    await generar(e.cookie, e.base, "2026-10");
+    const r = await pedir(`${e.base}/pagar-todo`, { cuerpo: { inquilinoId: e.a.id, mes: "2026-10" }, cookie: e.cookie });
+    const { marcados } = ResultadoPagoTodo.parse(await r.json());
+    expect(marcados.map((c) => [c.mes, c.pagadoEn])).toEqual([["2026-10", "2026-10-03"]]);
+    const septiembreA = (await listar(e.cookie, e.base, "?mes=2026-09")).find((c) => c.inquilinoId === e.a.id);
+    expect(septiembreA?.pagadoEn).toBeNull();
+    const octubreB = (await listar(e.cookie, e.base, "?mes=2026-10")).find((c) => c.inquilinoId === e.b.id);
+    expect(octubreB?.pagadoEn).toBeNull();
+    // Otra vez: ya no queda nada que marcar.
+    const otra = ResultadoPagoTodo.parse(await (await pedir(`${e.base}/pagar-todo`, { cuerpo: { inquilinoId: e.a.id, mes: "2026-10" }, cookie: e.cookie })).json());
+    expect(otra.marcados).toEqual([]);
+  });
+
+  it("aislamiento: otra cuenta no ve el mes ni paga por otro", async () => {
+    const e = await escenario();
+    const ajena = await cuenta();
+    expect((await pedir(`${e.base}/mes/2026-10`, { cookie: ajena })).status).toBe(404);
+    expect((await pedir(`${e.base}/pagar-todo`, { cuerpo: { inquilinoId: e.a.id, mes: "2026-10" }, cookie: ajena })).status).toBe(404);
+    const suyo = await escenario();
+    expect((await pedir(`${suyo.base}/pagar-todo`, { cuerpo: { inquilinoId: e.a.id, mes: "2026-10" }, cookie: suyo.cookie })).status).toBe(404);
+    expect((await pedir(`${e.base}/mes/2026-13`, { cookie: e.cookie })).status).toBe(400);
   });
 });

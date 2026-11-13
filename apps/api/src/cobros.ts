@@ -377,3 +377,66 @@ export async function recalcularCobro(
     .returning();
   return aCobro(fila!);
 }
+
+// --- Pantalla de cobros del inmueble (spec 009, R6–R12) -----------------------
+
+/**
+ * Todo lo de un mes: sus cobros, los quitados (para restaurarlos), los
+ * pendientes de meses anteriores al mes en curso (sin repetir el elegido) y
+ * lo que asume la propietaria por vacíos (null si el mes no se puede calcular).
+ */
+export async function cobrosDelMes(
+  bd: ConexionBd,
+  inmuebleId: string,
+  mes: string,
+  mesActual: string,
+): Promise<{ mes: string; cobros: Cobro[]; quitados: Cobro[]; atrasados: Cobro[]; asumePropietario: number | null }> {
+  const [todos, datos] = await Promise.all([listarCobros(bd, inmuebleId, { quitados: true }), datosDelInmueble(bd, inmuebleId)]);
+  let asumePropietario: number | null = null;
+  try {
+    asumePropietario = calcularAlquilerMes({ ...entradaParaMes(datos, mes), mes }).propietario;
+  } catch (error) {
+    if (!(error instanceof ErrorValidacion)) throw error;
+  }
+  return {
+    mes,
+    cobros: todos.filter((c) => c.mes === mes && !c.quitado),
+    quitados: todos.filter((c) => c.mes === mes && c.quitado),
+    atrasados: todos
+      .filter((c) => c.mes < mesActual && c.mes !== mes && !c.quitado && c.pagadoEn === null)
+      .sort((a, b) => (a.mes === b.mes ? 0 : a.mes < b.mes ? -1 : 1)),
+    asumePropietario,
+  };
+}
+
+/**
+ * Spec 009, R10: marca como pagados (por defecto hoy) los cobros pendientes
+ * del inquilino en ese mes. Devuelve los marcados, para poder deshacerlo.
+ * Devuelve null si el inquilino no es de este inmueble.
+ */
+export async function pagarTodo(
+  bd: ConexionBd,
+  inmuebleId: string,
+  pago: { inquilinoId: string; mes: string; fecha?: string | undefined },
+  hoy: string,
+): Promise<Cobro[] | null> {
+  const [inquilino] = await bd
+    .select({ id: t.inquilino.id })
+    .from(t.inquilino)
+    .where(and(eq(t.inquilino.id, pago.inquilinoId), eq(t.inquilino.inmuebleId, inmuebleId)));
+  if (!inquilino) return null;
+  const fecha = validarFechaPago(validarFecha(pago.fecha ?? hoy), hoy);
+  const filas = await bd
+    .update(t.cobroAlquiler)
+    .set({ pagadoEn: fecha, actualizadoEn: new Date() })
+    .where(
+      and(
+        eq(t.cobroAlquiler.inquilinoId, pago.inquilinoId),
+        eq(t.cobroAlquiler.mes, pago.mes),
+        isNull(t.cobroAlquiler.pagadoEn),
+        isNull(t.cobroAlquiler.quitadoEn),
+      ),
+    )
+    .returning();
+  return filas.map(aCobro);
+}

@@ -19,12 +19,13 @@ Saber de un vistazo qué hay pendiente de cobro, en qué casa y de quién, y mar
 **Cobros del inmueble** (pantalla dentro de cada inmueble)
 
 - **R6** — Selector de mes; por defecto, el mes en curso.
-- **R7** — Arriba, destacados, los pendientes de meses anteriores de ese inmueble, cada uno con su mes.
+- **R7** — Arriba, destacados, los pendientes de meses anteriores al mes en curso de ese inmueble, cada uno con su mes (los del mes elegido no se repiten aquí).
 - **R8** — Para el mes elegido, por cada inquilino: su cobro de alquiler y sus partes de gastos, cada uno pagado (con fecha) o pendiente. Una parte de gasto pertenece al mes en que se reparte la factura (no al de su periodo); si está en una liquidación, al mes en que se crea la liquidación (spec 011, R11).
 - **R9** — **Un toque** marca un concepto como pagado con la fecha de hoy. La fecha se puede cambiar y el marcado se puede deshacer.
 - **R10** — Botón **"Todo pagado"** por inquilino y mes: marca como pagados, con la fecha de hoy, su alquiler y todas sus partes de gastos pendientes de ese mes. Se puede deshacer.
 - **R11** — Al pie, los totales del mes del inmueble (cobrado y pendiente) y, aparte, lo que asume la propietaria por habitaciones vacías o días sin ocupar.
-- **R12** — Los cobros quitados (spec 005, R11) no aparecen ni cuentan en ningún total.
+- **R12** — Los cobros quitados (spec 005, R11) no aparecen ni cuentan en ningún total. En la pantalla de cobros del inmueble se listan aparte, plegados, para poder restaurarlos.
+- **R13** — En la pantalla de cobros del inmueble también se hace lo demás de la spec 005: generar los cobros que falten del mes (R5), añadir uno a mano (R10b), cambiar su importe, moverlo, quitarlo y recalcular los desactualizados (R6b). Hasta la fase 5 solo hay cobros de alquiler; las partes de gastos se añaden con la tarea 5.4.
 
 ## Casos de prueba
 
@@ -50,6 +51,6 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 
 - [x] Funciones de dominio: pendientes por inmueble e inquilino, totales del mes
 - [ ] Panel principal
-- [ ] Pantalla de cobros del inmueble con selector de mes
-- [ ] Marcar pagado, "Todo pagado" y deshacer
-- [ ] Tests C1–C8
+- [x] Pantalla de cobros del inmueble con selector de mes
+- [x] Marcar pagado, "Todo pagado" y deshacer
+- [ ] Tests C1–C8 (hechos C3 y C5 en la API; C4 y C6 con las partes de gastos, tarea 5.4; C1, C2, C7 y C8 con el panel, tarea 4.5)

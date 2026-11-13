@@ -60,6 +60,13 @@ describe("claveDeError", () => {
       "INQUILINO_VIVIENDO",
       "INQUILINO_ANONIMIZADO",
       "CONFIRMACION_INCORRECTA",
+      "CONFIRMACION_NECESARIA",
+      "SIN_ESTANCIA_EN_EL_MES",
+      "MES_FUTURO",
+      "PAGO_FUTURO",
+      "RENTA_OBLIGATORIA",
+      "COBRO_EXISTENTE",
+      "SIN_PRECIO",
       "OTRO",
     ];
     for (const codigo of codigos) {

@@ -6,14 +6,17 @@ import {
   GeneracionCobros,
   Mes,
   NuevoCobro,
+  PagoTodo,
   Recalculo,
   type Cobro,
+  type CobrosDelMes,
   type ListaCobros,
   type ResultadoGeneracion,
+  type ResultadoPagoTodo,
 } from "@inquilinus/contracts";
 import type { Context, Hono } from "hono";
 import type { ConexionBd } from "../bd/cliente.ts";
-import { crearCobro, editarCobro, generarCobros, listarCobros, recalcularCobro } from "../cobros.ts";
+import { cobrosDelMes, crearCobro, editarCobro, generarCobros, listarCobros, pagarTodo, recalcularCobro } from "../cobros.ts";
 import { ErrorPeticion } from "../errores.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import { esSuyo } from "../inmuebles.ts";
@@ -41,6 +44,21 @@ export function registrarRutasCobros(app: Hono<EntornoSesion>, { bd, ahora }: { 
     if (!v) return noEncontrado(c);
     const cobro = await crearCobro(bd, v[0]!, await leer(c, NuevoCobro));
     return cobro ? c.json<Cobro>(cobro, 201) : noEncontrado(c);
+  });
+
+  app.get("/inmuebles/:idInmueble/cobros/mes/:mes", async (c) => {
+    const v = await delInmueble(c);
+    if (!v) return noEncontrado(c);
+    const mes = Mes.safeParse(c.req.param("mes"));
+    if (!mes.success) throw new ErrorPeticion("DATOS_INVALIDOS");
+    return c.json<CobrosDelMes>(await cobrosDelMes(bd, v[0]!, mes.data, mesEnMadrid(ahora())));
+  });
+
+  app.post("/inmuebles/:idInmueble/cobros/pagar-todo", async (c) => {
+    const v = await delInmueble(c);
+    if (!v) return noEncontrado(c);
+    const marcados = await pagarTodo(bd, v[0]!, await leer(c, PagoTodo), hoyEnMadrid(ahora()));
+    return marcados ? c.json<ResultadoPagoTodo>({ marcados }) : noEncontrado(c);
   });
 
   app.post("/inmuebles/:idInmueble/cobros/generar", async (c) => {

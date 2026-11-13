@@ -49,6 +49,14 @@ const POR_CODIGO: Record<string, ClaveError> = {
   INQUILINO_VIVIENDO: "inquilinoViviendo",
   INQUILINO_ANONIMIZADO: "inquilinoAnonimizado",
   CONFIRMACION_INCORRECTA: "confirmacionIncorrecta",
+  // Cobros (spec 005).
+  CONFIRMACION_NECESARIA: "confirmacionNecesaria",
+  SIN_ESTANCIA_EN_EL_MES: "sinEstanciaEnElMes",
+  MES_FUTURO: "mesFuturo",
+  PAGO_FUTURO: "pagoFuturo",
+  RENTA_OBLIGATORIA: "rentaObligatoria",
+  COBRO_EXISTENTE: "cobroExistente",
+  SIN_PRECIO: "sinPrecio",
 };
 
 export type ClaveError =
@@ -91,6 +99,13 @@ export type ClaveError =
   | "inquilinoViviendo"
   | "inquilinoAnonimizado"
   | "confirmacionIncorrecta"
+  | "confirmacionNecesaria"
+  | "sinEstanciaEnElMes"
+  | "mesFuturo"
+  | "pagoFuturo"
+  | "rentaObligatoria"
+  | "cobroExistente"
+  | "sinPrecio"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */
