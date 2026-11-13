@@ -15,6 +15,7 @@ import type { Almacen } from "../almacen.ts";
 import { borrarInmueble } from "../archivo.ts";
 import type { Auth } from "../auth.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
+import { vigilarCobros } from "../cobros.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import {
   borrarHabitacionSuya,
@@ -24,6 +25,7 @@ import {
   editarHabitacion,
   editarInmueble,
   ErrorPeticion,
+  esSuyo,
   listarInmuebles,
   verInmueble,
 } from "../inmuebles.ts";
@@ -41,6 +43,13 @@ interface Opciones {
 export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen, ahora }: Opciones) {
   const mesActual = () => mesEnMadrid(ahora());
   const hoy = () => hoyEnMadrid(ahora());
+
+  /**
+   * Spec 005, R6: un cambio que puede alterar el cálculo de meses con cobros
+   * marca los que salen distintos. Primero se comprueba que el inmueble es suyo.
+   */
+  const vigilado = async (c: Context<Entorno>, inmuebleId: string, cambio: () => Promise<boolean>) =>
+    (await esSuyo(bd, c.get("usuarioId"), inmuebleId)) ? vigilarCobros(bd, inmuebleId, cambio) : false;
 
   // Todas exigen sesión; el usuario sale de la sesión, nunca de la petición.
   app.use("/inmuebles", async (c, next) => sesion(c, next));
@@ -82,7 +91,8 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
     const crudo = await c.req.raw.clone().json().catch(() => undefined);
     if (crudo && typeof crudo === "object" && "modalidad" in crudo) throw new ErrorPeticion("MODALIDAD_NO_EDITABLE");
     const edicion = await leer(c, EdicionInmueble);
-    if (!(await editarInmueble(bd, c.get("usuarioId"), valores[0]!, edicion, hoy()))) return noEncontrado(c);
+    const editado = await vigilado(c, valores[0]!, () => editarInmueble(bd, c.get("usuarioId"), valores[0]!, edicion, hoy()));
+    if (!editado) return noEncontrado(c);
     return detalle(c, valores[0]!);
   });
 
@@ -98,7 +108,8 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
     const valores = ids(c, "idInmueble");
     if (!valores) return noEncontrado(c);
     const nueva = await leer(c, NuevaHabitacion);
-    if (!(await crearHabitacion(bd, c.get("usuarioId"), valores[0]!, nueva, mesActual()))) return noEncontrado(c);
+    const creada = await vigilado(c, valores[0]!, () => crearHabitacion(bd, c.get("usuarioId"), valores[0]!, nueva, mesActual()));
+    if (!creada) return noEncontrado(c);
     return detalle(c, valores[0]!, 201);
   });
 
@@ -106,16 +117,18 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
     const valores = ids(c, "idInmueble", "idHabitacion");
     if (!valores) return noEncontrado(c);
     const edicion = await leer(c, EdicionHabitacion);
-    if (!(await editarHabitacion(bd, c.get("usuarioId"), valores[0]!, valores[1]!, edicion, hoy()))) {
-      return noEncontrado(c);
-    }
+    const editada = await vigilado(c, valores[0]!, () =>
+      editarHabitacion(bd, c.get("usuarioId"), valores[0]!, valores[1]!, edicion, hoy()),
+    );
+    if (!editada) return noEncontrado(c);
     return detalle(c, valores[0]!);
   });
 
   app.delete("/inmuebles/:idInmueble/habitaciones/:idHabitacion", async (c) => {
     const valores = ids(c, "idInmueble", "idHabitacion");
     if (!valores) return noEncontrado(c);
-    if (!(await borrarHabitacionSuya(bd, c.get("usuarioId"), valores[0]!, valores[1]!))) return noEncontrado(c);
+    const borrada = await vigilado(c, valores[0]!, () => borrarHabitacionSuya(bd, c.get("usuarioId"), valores[0]!, valores[1]!));
+    if (!borrada) return noEncontrado(c);
     return detalle(c, valores[0]!);
   });
 
@@ -123,7 +136,8 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
     const valores = ids(c, "idInmueble", "idHabitacion");
     if (!valores) return noEncontrado(c);
     const cambio = await leer(c, CambioPrecio);
-    if (!(await cambiarPrecio(bd, c.get("usuarioId"), valores[0]!, valores[1]!, cambio))) return noEncontrado(c);
+    const cambiado = await vigilado(c, valores[0]!, () => cambiarPrecio(bd, c.get("usuarioId"), valores[0]!, valores[1]!, cambio));
+    if (!cambiado) return noEncontrado(c);
     return detalle(c, valores[0]!);
   });
 }

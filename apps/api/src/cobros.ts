@@ -12,11 +12,14 @@ import {
   fechaEnMes,
   habitacionesDelMes,
   importesEditados,
+  inquilinosConCobroDesactualizado,
   mesDe,
+  recalcularPideConfirmacion,
   validarFecha,
   validarFechaPago,
   validarMesGenerable,
   type EntradaCobros,
+  type ResultadoAlquilerMes,
 } from "@inquilinus/domain";
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
@@ -66,12 +69,8 @@ export async function listarCobros(
   return filas.map(aCobro);
 }
 
-/**
- * Datos del inmueble para calcular un mes (spec 002), con las habitaciones que
- * existían ese mes (R5b). Las estancias de habitaciones que no entran no
- * tocan ese mes y se dejan fuera.
- */
-async function entradaDelMes(bd: ConexionBd, inmuebleId: string, mes: string): Promise<Omit<EntradaCobros, "existentes">> {
+/** Todo lo que hace falta para calcular cualquier mes del inmueble (spec 002), en una sola lectura. */
+async function datosDelInmueble(bd: ConexionBd, inmuebleId: string) {
   const [inmueble] = await bd
     .select({ modalidad: t.inmueble.modalidad, mesesParciales: t.inmueble.mesesParciales, diaCobro: t.inmueble.diaCobro })
     .from(t.inmueble)
@@ -95,22 +94,33 @@ async function entradaDelMes(bd: ConexionBd, inmuebleId: string, mes: string): P
           .select()
           .from(t.precioHabitacion)
           .where(inArray(t.precioHabitacion.habitacionId, habitaciones.map((h) => h.id)));
-  const delMes = habitacionesDelMes(
-    mes,
-    habitaciones.map((h) => ({
-      ...h,
-      historialPrecios: precios.filter((p) => p.habitacionId === h.id),
-    })),
+  return {
+    inmueble: inmueble!,
+    habitaciones: habitaciones.map((h) => ({ ...h, historialPrecios: precios.filter((p) => p.habitacionId === h.id) })),
     ocupaciones,
-  );
+  };
+}
+
+type DatosInmueble = Awaited<ReturnType<typeof datosDelInmueble>>;
+
+/**
+ * Entrada del cálculo de un mes con las habitaciones que existían ese mes
+ * (R5b). Las estancias de habitaciones que no entran no tocan ese mes y se dejan fuera.
+ */
+function entradaParaMes(datos: DatosInmueble, mes: string): Omit<EntradaCobros, "existentes"> {
+  const delMes = habitacionesDelMes(mes, datos.habitaciones, datos.ocupaciones);
   const ids = new Set(delMes.map((h) => h.id));
   return {
-    modalidad: inmueble!.modalidad,
-    mesesParciales: inmueble!.mesesParciales,
-    diaCobro: inmueble!.diaCobro,
+    modalidad: datos.inmueble.modalidad,
+    mesesParciales: datos.inmueble.mesesParciales,
+    diaCobro: datos.inmueble.diaCobro,
     habitaciones: delMes,
-    ocupaciones: ocupaciones.filter((o) => ids.has(o.habitacionId)),
+    ocupaciones: datos.ocupaciones.filter((o) => ids.has(o.habitacionId)),
   };
+}
+
+async function entradaDelMes(bd: ConexionBd, inmuebleId: string, mes: string): Promise<Omit<EntradaCobros, "existentes">> {
+  return entradaParaMes(await datosDelInmueble(bd, inmuebleId), mes);
 }
 
 /** Cobros que ya existen en un mes, incluidos los quitados (R4 y R11). */
@@ -273,4 +283,97 @@ export async function generarCobrosDelDia(bd: ConexionBd, hoy: string): Promise<
     }
   }
   return resumen;
+}
+
+// --- Desactualizados y recálculo (R6, R6b) ------------------------------------
+
+/** Cálculo de cada mes; null si ese mes no se puede calcular (por ejemplo, una habitación ocupada sin precio). */
+function calculosDeMeses(datos: DatosInmueble, meses: string[]): Map<string, ResultadoAlquilerMes | null> {
+  const calculos = new Map<string, ResultadoAlquilerMes | null>();
+  for (const mes of meses) {
+    try {
+      calculos.set(mes, calcularAlquilerMes({ ...entradaParaMes(datos, mes), mes }));
+    } catch (error) {
+      if (!(error instanceof ErrorValidacion)) throw error;
+      calculos.set(mes, null);
+    }
+  }
+  return calculos;
+}
+
+/**
+ * R6: hace un cambio en el inmueble y marca como desactualizados los cobros
+ * (no quitados) cuyo cálculo sale distinto después. Compara cálculo con
+ * cálculo, no con lo guardado, así que lo editado a mano solo se marca si
+ * cambia su cálculo. Si el cambio falla, no se marca nada.
+ */
+export async function vigilarCobros<T>(bd: ConexionBd, inmuebleId: string, cambio: () => Promise<T>): Promise<T> {
+  const cobros = await bd
+    .select({ mes: t.cobroAlquiler.mes, inquilinoId: t.cobroAlquiler.inquilinoId })
+    .from(t.cobroAlquiler)
+    .where(and(inArray(t.cobroAlquiler.inquilinoId, inquilinosDe(bd, inmuebleId)), isNull(t.cobroAlquiler.quitadoEn)));
+  if (cobros.length === 0) return cambio();
+
+  const meses = [...new Set(cobros.map((c) => c.mes))];
+  const antes = calculosDeMeses(await datosDelInmueble(bd, inmuebleId), meses);
+  const resultado = await cambio();
+  const despues = calculosDeMeses(await datosDelInmueble(bd, inmuebleId), meses);
+
+  for (const mes of meses) {
+    const a = antes.get(mes) ?? null;
+    const d = despues.get(mes) ?? null;
+    const conCobro = cobros.filter((c) => c.mes === mes).map((c) => c.inquilinoId);
+    // Si un lado no se puede calcular y el otro sí, todo el mes ha cambiado.
+    const cambiados = a && d ? inquilinosConCobroDesactualizado(a, d) : a === d ? [] : conCobro;
+    const marcar = cambiados.filter((id) => conCobro.includes(id));
+    if (marcar.length === 0) continue;
+    await bd
+      .update(t.cobroAlquiler)
+      .set({ desactualizado: true, actualizadoEn: new Date() })
+      .where(
+        and(eq(t.cobroAlquiler.mes, mes), inArray(t.cobroAlquiler.inquilinoId, marcar), isNull(t.cobroAlquiler.quitadoEn)),
+      );
+  }
+  return resultado;
+}
+
+/**
+ * R6 y R6b: pone los importes del cálculo actual. Con el cobro pagado o
+ * editado pide confirmación; conserva una fecha movida (y sigue editado); si
+ * el inquilino ya no vivió allí ese mes, no se recalcula. Devuelve null si el
+ * cobro no es de este inmueble.
+ */
+export async function recalcularCobro(
+  bd: ConexionBd,
+  inmuebleId: string,
+  cobroId: string,
+  confirmado: boolean,
+): Promise<Cobro | null> {
+  const [actual] = await bd
+    .select()
+    .from(t.cobroAlquiler)
+    .where(and(eq(t.cobroAlquiler.id, cobroId), inArray(t.cobroAlquiler.inquilinoId, inquilinosDe(bd, inmuebleId))));
+  if (!actual) return null;
+  if (recalcularPideConfirmacion(actual) && !confirmado) throw new ErrorPeticion("CONFIRMACION_NECESARIA");
+
+  const datos = await datosDelInmueble(bd, inmuebleId);
+  const linea = calcularAlquilerMes({ ...entradaParaMes(datos, actual.mes), mes: actual.mes }).lineas.find(
+    (l) => l.inquilinoId === actual.inquilinoId,
+  );
+  if (!linea) throw new ErrorPeticion("SIN_ESTANCIA_EN_EL_MES");
+
+  const movido = actual.fechaCobro !== fechaEnMes(actual.mes, datos.inmueble.diaCobro);
+  const [fila] = await bd
+    .update(t.cobroAlquiler)
+    .set({
+      renta: linea.renta,
+      recargoVacios: linea.recargoVacios,
+      importe: linea.importe,
+      desactualizado: false,
+      editado: movido,
+      actualizadoEn: new Date(),
+    })
+    .where(eq(t.cobroAlquiler.id, cobroId))
+    .returning();
+  return aCobro(fila!);
 }

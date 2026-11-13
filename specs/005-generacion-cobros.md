@@ -1,6 +1,6 @@
 # 005 · Generación de cobros de alquiler
 
-Estado: aprobada · Paquetes: `packages/domain` (qué cobros tocan), `apps/api` (proceso diario y endpoints)
+Estado: implementada · Paquetes: `packages/domain` (qué cobros tocan), `apps/api` (proceso diario y endpoints)
 
 ## Objetivo
 
@@ -69,7 +69,7 @@ Inmueble por habitaciones con prorrateo. A en H1 (500 €) y B en H2 (400 €) d
 - [x] Día de cobro en las opciones del inmueble
 - [x] Generación manual (R5, R5b)
 - [x] Proceso diario (cron de Vercel)
-- [ ] Marcado de desactualizados al cambiar el cálculo (R6) y recalcular (R6b)
+- [x] Marcado de desactualizados al cambiar el cálculo (R6) y recalcular (R6b)
 - [x] Marcar y desmarcar pagado
 - [x] Editar, mover, quitar, restaurar y añadir cobros a mano
-- [ ] Tests C1–C23 (hechos C1–C6, C8–C12, C14–C20; C7, C13 y C21–C23 con la tarea 4.3)
+- [x] Tests C1–C23

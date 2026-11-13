@@ -5,6 +5,7 @@ export {
   GeneracionCobros,
   ListaCobros,
   NuevoCobro,
+  Recalculo,
   ResultadoGeneracion,
   rutasCobros,
 } from './cobros.ts';

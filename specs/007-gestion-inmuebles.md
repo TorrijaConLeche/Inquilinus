@@ -88,4 +88,5 @@ Dar de alta y mantener inmuebles, habitaciones, tipos de gasto, inquilinos y sus
 - [x] Formularios de habitaciones, tipos de gasto, inquilinos y ocupaciones
 - [x] Documentos (contrato y justificante de la fianza) y fianza
 - [x] Archivar, borrar y anonimizar
-- [ ] Tests C1–C21 (hechos todos salvo C4, que llega con la tarea 4.3)
+- [x] Tests C1–C21
+- [ ] Avisos de plazos de conservación (R14), con la tarea 6.6b

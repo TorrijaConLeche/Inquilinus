@@ -38,6 +38,10 @@ export const EdicionCobro = z
   .meta({ id: 'EdicionCobro' });
 export type EdicionCobro = z.infer<typeof EdicionCobro>;
 
+/** R6 y R6b: un cobro pagado o editado solo se recalcula con `confirmar: true`. */
+export const Recalculo = z.strictObject({ confirmar: z.boolean().optional() }).meta({ id: 'Recalculo' });
+export type Recalculo = z.infer<typeof Recalculo>;
+
 // --- Respuestas -------------------------------------------------------------
 
 export const Cobro = z
@@ -119,6 +123,16 @@ export const rutasCobros = {
       requestParams: { path: conCobro },
       requestBody: cuerpo(EdicionCobro),
       responses: { '200': json(Cobro, 'Editado'), ...errores },
+    },
+  },
+  '/inmuebles/{idInmueble}/cobros/{idCobro}/recalcular': {
+    post: {
+      operationId: 'recalcularCobro',
+      summary: 'Pone los importes del cálculo actual; pagado o editado pide confirmar (R6, R6b)',
+      tags: ['Cobros'],
+      requestParams: { path: conCobro },
+      requestBody: cuerpo(Recalculo),
+      responses: { '200': json(Cobro, 'Recalculado'), ...errores },
     },
   },
 } satisfies ZodOpenApiPathsObject;
