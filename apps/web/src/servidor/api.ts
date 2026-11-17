@@ -3,6 +3,7 @@ import "server-only";
 import {
   cobrosDelMes,
   crearApp,
+  datosTimeline,
   dependenciasDesdeEntorno,
   hoyEnMadrid,
   listarFacturas,
@@ -16,7 +17,7 @@ import {
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, Factura, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, DatosTimeline, Factura, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -87,6 +88,13 @@ export async function detalleDe(
     listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
   return { inmueble, inquilinos, tiposGasto };
+}
+
+/** Lo que dibuja el timeline del inmueble (spec 006), o null si no es suyo. */
+export async function timelineDe(usuario: UsuarioSesion, inmuebleId: string): Promise<DatosTimeline | null> {
+  const inmueble = await inmuebleDe(usuario, inmuebleId);
+  if (!inmueble || !dependencias.bd) return null;
+  return datosTimeline(dependencias.bd, inmueble.id);
 }
 
 /** Pantalla de cobros de un mes del inmueble (spec 009, R6–R13), o null si no es suyo. */

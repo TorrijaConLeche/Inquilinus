@@ -605,5 +605,24 @@
     "renombrar": "Rename",
     "borrar": "Delete",
     "borrarAviso": "Its bills will become standalone and be collected separately. No payment is lost."
+  },
+  "Timeline": {
+    "titulo": "Timeline",
+    "zoom": "Zoom",
+    "zooms": {
+      "mes": "Month",
+      "trimestre": "Quarter",
+      "anio": "Year"
+    },
+    "desplazar": "Timeline: scroll sideways to see other dates",
+    "alquiler": "Rent",
+    "alquilerDel": "Rent due {fecha}:",
+    "todoPagado": "all paid",
+    "pagados": "{pagados}/{total} paid",
+    "periodo": "from {inicio} to {fin}",
+    "entra": "moves in {fecha}",
+    "sale": "moves out {fecha}",
+    "vacio": "Once you have tenants, rent or split bills, you'll see them here along a timeline.",
+    "pagadosCorto": "{pagados}/{total}"
   }
 }

@@ -20,6 +20,22 @@ export function formatoFecha(fecha: string, idioma: string): string {
   );
 }
 
+/** `2026-09-15` → «15 sept» / «15 Sept» (el timeline, sin año). */
+export function formatoDiaMes(fecha: string, idioma: string): string {
+  const [anio, mes, dia] = fecha.split("-").map(Number);
+  return new Intl.DateTimeFormat(localeDe(idioma), { day: "numeric", month: "short", timeZone: "UTC" }).format(
+    new Date(Date.UTC(anio!, mes! - 1, dia!)),
+  );
+}
+
+/** `2026-09-01` → «sept» / «Sept». */
+export function formatoMesCorto(fecha: string, idioma: string): string {
+  const [anio, mes] = fecha.split("-").map(Number);
+  return new Intl.DateTimeFormat(localeDe(idioma), { month: "short", timeZone: "UTC" }).format(
+    new Date(Date.UTC(anio!, mes! - 1, 1)),
+  );
+}
+
 /** `2026-12` y +1 → `2027-01`. Para moverse de mes en mes. */
 export function mesVecino(mes: string, desplazamiento: number): string {
   const [anio, numero] = mes.split("-").map(Number);

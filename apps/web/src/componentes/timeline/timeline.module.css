@@ -1,0 +1,349 @@
+/* Timeline del inmueble (spec 006). Todo se coloca en unidades de día:
+   --desde (día de inicio en el eje) y --largo (días) por elemento, y --dia
+   (píxeles por día) según el zoom: lo que cabe a la derecha de los nombres
+   entre los días que se ven de una vez (R6b). */
+
+.seccion {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.cabecera h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+/* R6: zoom. */
+.zoom {
+  display: inline-flex;
+}
+
+.zoom button {
+  padding: 6px 12px;
+  border: 1px solid var(--borde-fuerte);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.zoom button + button {
+  margin-left: -1px;
+}
+
+.zoom button:first-child {
+  border-radius: var(--radio-control) 0 0 var(--radio-control);
+}
+
+.zoom button:last-child {
+  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+}
+
+.zoom button[aria-pressed="true"] {
+  position: relative;
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  border-color: var(--primario);
+  font-weight: 600;
+}
+
+.zoom button:focus-visible {
+  position: relative;
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.marco {
+  --etiquetas: 120px;
+  --dia: max(1px, calc((100cqw - var(--etiquetas)) / var(--dias-visibles)));
+  container-type: inline-size;
+  min-width: 0;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .marco {
+    --etiquetas: 88px;
+  }
+}
+
+/* R6: se desliza en horizontal, también en el móvil. */
+.desplazable {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.desplazable:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: -2px;
+}
+
+.lienzo {
+  display: grid;
+  width: calc(var(--etiquetas) + var(--dias) * var(--dia));
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: var(--etiquetas) 1fr;
+}
+
+.fila + .fila {
+  border-top: 1px solid var(--borde);
+}
+
+/* R2: los nombres de fila se quedan fijos a la izquierda. */
+.etiqueta {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 6px 10px;
+  background: var(--superficie);
+  border-right: 1px solid var(--borde);
+  font-size: 0.875rem;
+}
+
+.nombreFila {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.pista {
+  position: relative;
+  height: 44px;
+}
+
+.elementos {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hoy {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc((var(--desde) + 0.5) * var(--dia));
+  border-left: 1px dashed var(--acento);
+}
+
+.estado {
+  font-weight: 400;
+}
+
+/* R3: chinchetas del alquiler, con su importe encima. */
+.filaAlquiler .pista {
+  height: 56px;
+}
+
+.chincheta {
+  position: absolute;
+  left: calc((var(--desde) + 0.5) * var(--dia));
+  bottom: 6px;
+  width: 0;
+  height: 18px;
+}
+
+.chincheta::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  bottom: 0;
+  width: 2px;
+  height: 18px;
+  background: var(--color);
+}
+
+.chincheta::after {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color);
+}
+
+.importeChincheta {
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  transform: translateX(-50%);
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--superficie);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* R4: barras de facturas; R4b: carriles si se solapan. */
+.filaGasto .pista {
+  height: calc(12px + var(--carriles, 1) * 28px);
+}
+
+.barra {
+  position: absolute;
+  top: calc(6px + var(--carril, 0) * 28px);
+  left: calc(var(--desde) * var(--dia));
+  width: calc(var(--largo) * var(--dia));
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  /* clip (no hidden): así el texto puede quedarse pegado al borde visible. */
+  overflow: clip;
+  background: var(--color-suave);
+  border: 1px solid var(--color);
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+/* Si la barra empieza antes de lo que se ve, su importe se queda junto a los nombres. */
+.textoBarra {
+  position: sticky;
+  left: calc(var(--etiquetas) + 6px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* R5: estancias, del centro del día de entrada al de salida. */
+/* La entrada, con su fecha encima; la salida, debajo, para que no se pisen. */
+.filaInquilino .pista {
+  height: 58px;
+}
+
+.estancia {
+  position: absolute;
+  top: 26px;
+  left: calc((var(--desde) + 0.5) * var(--dia));
+  width: calc((var(--largo) - 1) * var(--dia));
+  height: 2px;
+  background: var(--texto-suave);
+}
+
+.sinSalida {
+  width: calc((var(--largo) - 0.5) * var(--dia));
+}
+
+.entrada,
+.salida {
+  position: absolute;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.entrada {
+  left: -5px;
+  background: var(--entrada);
+}
+
+.salida {
+  right: -5px;
+  background: var(--salida);
+}
+
+.textoPunto {
+  position: absolute;
+  bottom: 12px;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.entrada .textoPunto {
+  left: 0;
+}
+
+.salida .textoPunto {
+  right: 0;
+  bottom: auto;
+  top: 12px;
+}
+
+/* R1: el eje de días. */
+.eje {
+  position: relative;
+  height: 44px;
+}
+
+.marca,
+.marcaLarga {
+  position: absolute;
+  top: 0;
+  left: calc((var(--desde) + 0.5) * var(--dia));
+  width: 1px;
+  height: 5px;
+  background: var(--borde-fuerte);
+}
+
+.marcaLarga {
+  height: 11px;
+  background: var(--texto-suave);
+}
+
+.textoMarca {
+  position: absolute;
+  top: 13px;
+  left: 0;
+  transform: translateX(-50%);
+  padding-left: 2px;
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+/* La primera etiqueta del eje no se centra: quedaría tapada por los nombres. */
+.primera .textoMarca {
+  transform: none;
+}
+
+/* R6b: con trimestre y año, importe y estado de las chinchetas en dos líneas. */
+.compacta .pista {
+  height: 64px;
+}
+
+.compacta .importeChincheta {
+  display: grid;
+  justify-items: center;
+  line-height: 1.2;
+}
+
+/* El año, debajo del mes (en enero o en la primera etiqueta). */
+.anioMarca {
+  display: block;
+}

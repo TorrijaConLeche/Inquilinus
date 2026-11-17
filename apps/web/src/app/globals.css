@@ -17,6 +17,9 @@
   --sobre-primario: var(--superficie);
   --error: #b3403a;
   --error-suave: #fbeceb;
+  /* Timeline (spec 006, R5): entrada y salida de cada estancia, siempre con su texto. */
+  --entrada: #2e8540;
+  --salida: var(--error);
   /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
   --gasto-ambar: #b7791f;
   --gasto-ambar-suave: #fbefd9;
@@ -56,6 +59,7 @@
     --texto-suave: #9daea8;
     --error: #f2a49c;
     --error-suave: #3a2422;
+    --entrada: #6fd18a;
     /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
     --gasto-ambar: #e3a94f;
     --gasto-ambar-suave: #3a2e19;
@@ -89,6 +93,7 @@
   --texto-suave: #9daea8;
   --error: #f2a49c;
   --error-suave: #3a2422;
+  --entrada: #6fd18a;
   /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
   --gasto-ambar: #e3a94f;
   --gasto-ambar-suave: #3a2e19;
