@@ -12,9 +12,14 @@ export { Fecha };
  * por defecto. Son nombres: el tono exacto, en claro y oscuro, lo define la
  * paleta de la web (tarea 6.1). El alquiler tiene su color propio, fuera de esta lista.
  */
-export const COLORES_GASTO = ['ambar', 'azul', 'violeta', 'rosa', 'turquesa', 'oliva', 'coral', 'pizarra'] as const;
+export const COLORES_GASTO = ['ambar', 'azul', 'violeta', 'rosa', 'turquesa', 'oliva', 'coral', 'granate'] as const;
 export const ColorGasto = z.enum(COLORES_GASTO).meta({ id: 'ColorGasto' });
 export type ColorGasto = z.infer<typeof ColorGasto>;
+
+/** Spec 006, R7: el primero de la paleta que no usa ningún otro; con todos usados, vuelve a empezar. */
+export function primerColorLibre(usados: readonly string[]): ColorGasto {
+  return COLORES_GASTO.find((c) => !usados.includes(c)) ?? COLORES_GASTO[usados.length % COLORES_GASTO.length]!;
+}
 
 const texto = z.string().max(200);
 

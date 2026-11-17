@@ -72,6 +72,6 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 - [ ] Componente de timeline compartido (propietaria e inquilino)
 - [ ] Ventanas de detalle de alquiler y de factura
 - [ ] Lista de movimientos
-- [ ] Paleta de colores de gasto (clara y oscura) y color del alquiler
-- [ ] Selector de color al crear un tipo de gasto y al editarlo
+- [x] Paleta de colores de gasto (clara y oscura) y color del alquiler
+- [x] Selector de color al crear un tipo de gasto y al editarlo
 - [ ] Tests C1–C12

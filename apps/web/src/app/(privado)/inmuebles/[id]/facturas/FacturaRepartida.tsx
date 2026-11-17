@@ -1,9 +1,10 @@
 "use client";
-import type { Factura, Inquilino } from "@inquilinus/contracts";
+import type { ColorGasto, Factura, Inquilino } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Aviso } from "../../../../../componentes/Aviso";
+import { NombreGasto } from "../../../../../componentes/ColorGasto";
 import formulario from "../../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../../lib/api-cliente";
 import { formatoEuros } from "../../../../../lib/dinero";
@@ -22,6 +23,7 @@ export function FacturaRepartida({
   inmuebleId,
   factura,
   tipo,
+  color,
   inquilinos,
   liquidacion,
   hoy,
@@ -29,6 +31,8 @@ export function FacturaRepartida({
   inmuebleId: string;
   factura: Factura;
   tipo: string;
+  /** Spec 006, R8: el color de su tipo de gasto. */
+  color: ColorGasto | null;
   inquilinos: Inquilino[];
   /** Spec 011: el nombre de su liquidación, o null si va suelta. */
   liquidacion: string | null;
@@ -64,7 +68,9 @@ export function FacturaRepartida({
     <li className={propias.elemento} id={`factura-${factura.id}`}>
       <div className={propias.fila}>
         <span>
-          <strong>{tipo}</strong>{" "}
+          <strong>
+            <NombreGasto nombre={tipo} color={color} />
+          </strong>{" "}
           <span className={propias.suave}>
             {factura.periodoInicio && factura.periodoFin
               ? t("periodo", { inicio: formatoFecha(factura.periodoInicio, idioma), fin: formatoFecha(factura.periodoFin, idioma) })

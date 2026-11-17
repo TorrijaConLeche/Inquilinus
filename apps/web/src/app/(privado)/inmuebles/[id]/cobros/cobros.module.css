@@ -103,3 +103,11 @@
   flex-wrap: wrap;
   gap: 8px 12px;
 }
+
+/* La etiqueta de una parte, con el color de su tipo de gasto delante (spec 006, R8). */
+.etiquetaParte {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}

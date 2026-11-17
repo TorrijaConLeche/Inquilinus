@@ -337,7 +337,7 @@
       "comunidad": "Comunidad"
     },
     "otroGasto": "Otro gasto",
-    "gastosColor": "Cada gasto recibe un color propio para verlo de un vistazo.",
+    "gastosColor": "Cada gasto recibe el color que ves a su lado. Puedes cambiarlo cuando quieras en la ficha del inmueble.",
     "guardarSeguir": "Guardar y seguir",
     "inquilinosAyuda": "Añade a quien vive ahora en el piso. Puedes hacerlo también más tarde.",
     "inquilinoNombre": "Nombre del inquilino {n}",
@@ -407,7 +407,7 @@
       "turquesa": "Turquesa",
       "oliva": "Oliva",
       "coral": "Coral",
-      "pizarra": "Pizarra"
+      "granate": "Granate"
     },
     "opcional": "opcional",
     "borrar": "Borrar",
@@ -456,7 +456,9 @@
     "borrarInmuebleDefinitivo": "Borrar para siempre",
     "escribeNombre": "Para confirmar, escribe «{nombre}»",
     "verCobros": "Cobros",
-    "verFacturas": "Facturas"
+    "verFacturas": "Facturas",
+    "color": "Color",
+    "colorUsado": "lo usa {nombres}"
   },
   "Cobros": {
     "titulo": "Cobros",

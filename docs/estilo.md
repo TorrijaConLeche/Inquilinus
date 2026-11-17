@@ -44,7 +44,7 @@ Cada color tiene dos tokens: `gasto-<color>` (puntos, bordes y marcas) y `gasto-
 | `turquesa` | `#1C8EA6` | `#DDF2F6` | `#5CC3D8` | `#17363D` |
 | `oliva` | `#7C8B2B` | `#EFF2DC` | `#B9C85E` | `#2F3319` |
 | `coral` | `#D0603F` | `#FCE8E1` | `#F09A7E` | `#43271F` |
-| `granate` | `#9B2C45` | `#F6E1E6` | `#E07E93` | `#3E1D25` |
+| `granate` | `#9B2C45` | `#F6E1E6` | `#E5606E` | `#45191E` |
 | `alquiler` | `#6B7270` | `#ECEDEC` | `#A7AFAC` | `#2A302E` |
 
 - Los colores fuertes contrastan al menos 3:1 con `superficie` (elementos gráficos, WCAG 1.4.11); `texto` sobre cada `-suave` contrasta al menos 4,5:1. Lo comprueba un test de la web.

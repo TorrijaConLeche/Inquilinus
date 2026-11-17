@@ -1,17 +1,18 @@
 "use client";
-import type { TipoGasto } from "@inquilinus/contracts";
+import { primerColorLibre, type ColorGasto, type TipoGasto } from "@inquilinus/contracts";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { Aviso } from "../../../../componentes/Aviso";
 import { Campo } from "../../../../componentes/Campo";
+import { NombreGasto, SelectorColor } from "../../../../componentes/ColorGasto";
 import formulario from "../../../../componentes/formulario.module.css";
 import { useAccion } from "../../../../lib/use-accion";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
 
 /**
- * Tipos de gasto (spec 007, R10). El color se asigna solo (el primero libre);
- * el selector de color y su paleta llegan con la tarea 6.1. Con facturas se
+ * Tipos de gasto (spec 007, R10) con su color (spec 006, R7, R7b y R8): al
+ * crearlo, el primero libre; se puede cambiar al editarlo. Con facturas se
  * archivan; sin ellas, se borran (R11).
  */
 export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tiposGasto: TipoGasto[] }) {
@@ -20,26 +21,38 @@ export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tip
   const { enviando, error, ejecutar, limpiarError } = useAccion();
   const [abierto, setAbierto] = useState<string | "nuevo" | null>(null);
   const [nombre, setNombre] = useState("");
+  const [color, setColor] = useState<ColorGasto>("ambar");
   const [borrando, setBorrando] = useState<string | null>(null);
+  const activos = tiposGasto.filter((tg) => !tg.archivado);
+  const archivados = tiposGasto.filter((tg) => tg.archivado);
 
-  const abrir = (cual: string, valor = "") => {
+  const abrir = (cual: string, valor = "", suColor?: ColorGasto) => {
     limpiarError();
     setBorrando(null);
     setNombre(valor);
+    setColor(suColor ?? primerColorLibre(activos.map((tg) => tg.color)));
     setAbierto(cual);
   };
   const cerrar = () => setAbierto(null);
 
   const guardar = async (e: FormEvent) => {
     e.preventDefault();
-    if (abierto === "nuevo") await ejecutar(`/inmuebles/${inmuebleId}/tipos-gasto`, { cuerpo: { nombre } }, cerrar);
-    else if (abierto) await ejecutar(`/inmuebles/${inmuebleId}/tipos-gasto/${abierto}`, { metodo: "PATCH", cuerpo: { nombre } }, cerrar);
+    if (abierto === "nuevo") await ejecutar(`/inmuebles/${inmuebleId}/tipos-gasto`, { cuerpo: { nombre, color } }, cerrar);
+    else if (abierto)
+      await ejecutar(`/inmuebles/${inmuebleId}/tipos-gasto/${abierto}`, { metodo: "PATCH", cuerpo: { nombre, color } }, cerrar);
   };
 
   const formularioNombre = (
     <form className={propias.enLinea} onSubmit={guardar} noValidate>
       {error && <Aviso tipo="error">{te(error)}</Aviso>}
       <Campo etiqueta={t("nombreGasto")} autoFocus value={nombre} onChange={(e) => setNombre(e.target.value)} />
+      {/* R7b: los colores de los demás tipos activos salen marcados, pero se pueden elegir. */}
+      <SelectorColor
+        valor={color}
+        onCambio={setColor}
+        otros={activos.filter((tg) => tg.id !== abierto)}
+        nombreGrupo={`color-gasto-${abierto ?? "nuevo"}`}
+      />
       <div className={propias.botones}>
         <button type="button" className={formulario.botonSecundario} onClick={cerrar}>
           {t("cancelar")}
@@ -50,9 +63,6 @@ export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tip
       </div>
     </form>
   );
-
-  const activos = tiposGasto.filter((tg) => !tg.archivado);
-  const archivados = tiposGasto.filter((tg) => tg.archivado);
 
   const archivar = (id: string, archivado: boolean) => {
     setAbierto(null);
@@ -69,8 +79,9 @@ export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tip
         {activos.map((tg) => (
           <li key={tg.id} className={propias.elemento}>
             <div className={propias.fila}>
-              <span className={propias.nombre}>{tg.nombre}</span>
-              <span className={propias.etiquetaColor}>{t(`colores.${tg.color}`)}</span>
+              <span className={propias.nombre}>
+                <NombreGasto nombre={tg.nombre} color={tg.color} />
+              </span>
             </div>
             {abierto === tg.id ? (
               formularioNombre
@@ -96,8 +107,8 @@ export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tip
               </div>
             ) : (
               <div className={propias.acciones}>
-                <button type="button" className={formulario.botonEnlace} onClick={() => abrir(tg.id, tg.nombre)}>
-                  {t("renombrar")}
+                <button type="button" className={formulario.botonEnlace} onClick={() => abrir(tg.id, tg.nombre, tg.color)}>
+                  {t("editar")}
                 </button>
                 {/* R11: con facturas se archiva; sin ellas, se borra. */}
                 {tg.conFacturas ? (
@@ -128,7 +139,7 @@ export function TiposGasto({ inmuebleId, tiposGasto }: { inmuebleId: string; tip
           <ul className={propias.estancias}>
             {archivados.map((tg) => (
               <li key={tg.id} className={propias.fila}>
-                <span>{tg.nombre}</span>
+                <NombreGasto nombre={tg.nombre} color={tg.color} />
                 <button type="button" className={formulario.botonEnlace} disabled={enviando} onClick={() => archivar(tg.id, false)}>
                   {t("restaurar")}
                 </button>

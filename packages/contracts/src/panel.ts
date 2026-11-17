@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { RespuestaError } from './comunes.ts';
 import { Centimos, Mes } from './inmuebles.ts';
+import { ColorGasto } from './inquilinos.ts';
 import { ParteGasto } from './repartos.ts';
 
 // Panel principal (spec 009, R1–R5b). Sin inmuebles archivados; los bloqueados no cuentan.
@@ -12,9 +13,11 @@ export const ConceptoPendiente = z
     tipo: z.enum(['alquiler', 'gasto', 'liquidacion']),
     /** Nombre del tipo de gasto («Luz»); null en el alquiler y en la liquidación. */
     nombreGasto: z.string().nullable(),
+    /** Spec 006, R8: su color; null en el alquiler y en la liquidación. */
+    colorGasto: ColorGasto.nullable(),
     /** Spec 011, R12: una liquidación es una sola línea (lo que falta) que se despliega en sus partes. */
     liquidacion: z
-      .object({ id: z.uuid(), nombre: z.string(), partes: z.array(ParteGasto.extend({ nombreGasto: z.string().nullable() })) })
+      .object({ id: z.uuid(), nombre: z.string(), partes: z.array(ParteGasto.extend({ nombreGasto: z.string().nullable(), colorGasto: ColorGasto.nullable() })) })
       .nullable(),
     mes: Mes,
     importe: Centimos,

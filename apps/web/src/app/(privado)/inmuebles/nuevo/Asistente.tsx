@@ -3,12 +3,13 @@
 // 1) nombre y dirección; 2) modalidad, meses parciales y día de cobro;
 // 3) habitaciones con su precio → aquí se crea el inmueble, todo o nada;
 // 4) tipos de gasto y 5) inquilinos, opcionales: cada uno se guarda al momento.
-import type { Inmueble, Inquilino, TipoGasto } from "@inquilinus/contracts";
+import { primerColorLibre, type ColorGasto, type Inmueble, type Inquilino, type TipoGasto } from "@inquilinus/contracts";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
 import { Aviso } from "../../../../componentes/Aviso";
 import { Campo } from "../../../../componentes/Campo";
+import { PuntoColor } from "../../../../componentes/ColorGasto";
 import formulario from "../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../lib/api-cliente";
 import { eurosACentimos } from "../../../../lib/dinero";
@@ -113,6 +114,18 @@ export function Asistente({ mesActual, hoy }: { mesActual: string; hoy: string }
   };
 
   // --- Paso 4: tipos de gasto -----------------------------------------------
+
+  // Spec 006, R7: el color que recibirá cada gasto elegido, en el orden en que se crean (el primero libre).
+  const colorDe = (() => {
+    const colores = new Map<string, ColorGasto>();
+    const usados: ColorGasto[] = [];
+    for (const clave of [...sugeridos, ...otrosGastos.map((g) => `otro:${g}`)]) {
+      const color = primerColorLibre(usados);
+      usados.push(color);
+      colores.set(clave, color);
+    }
+    return (clave: string) => colores.get(clave);
+  })();
 
   const guardarGastos = async (e: FormEvent) => {
     e.preventDefault();
@@ -356,12 +369,14 @@ export function Asistente({ mesActual, hoy }: { mesActual: string; hoy: string }
                   checked={sugeridos.includes(s)}
                   onChange={(e) => setSugeridos(e.target.checked ? [...sugeridos, s] : sugeridos.filter((x) => x !== s))}
                 />
+                {colorDe(s) && <PuntoColor color={colorDe(s)} />}
                 {t(`sugerencias.${s}`)}
               </label>
             ))}
             {otrosGastos.map((g) => (
               <label key={g} className={propias.chip}>
                 <input type="checkbox" checked onChange={() => setOtrosGastos(otrosGastos.filter((x) => x !== g))} />
+                <PuntoColor color={colorDe(`otro:${g}`)} />
                 {g}
               </label>
             ))}

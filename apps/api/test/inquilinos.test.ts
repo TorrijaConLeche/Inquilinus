@@ -258,6 +258,16 @@ describe("tipos de gasto (spec 007, R10; spec 006, R7)", () => {
     ]);
   });
 
+  it("C13 · se puede elegir un color que ya usa otro tipo de gasto (R7b)", async () => {
+    const cookie = await cuenta();
+    const { id } = await inmueble(cookie);
+    const crear = async (cuerpo: object) => TipoGasto.parse(await (await pedir(`/inmuebles/${id}/tipos-gasto`, { cuerpo, cookie })).json());
+    const luz = await crear({ nombre: "Luz" });
+    expect((await crear({ nombre: "Agua", color: luz.color })).color).toBe("ambar");
+    // Sin color elegido, el siguiente libre.
+    expect((await crear({ nombre: "Gas" })).color).toBe("azul");
+  });
+
   it("R10: renombrar y cambiar de color; color fuera de la paleta o nombre vacío, error", async () => {
     const cookie = await cuenta();
     const { id } = await inmueble(cookie);

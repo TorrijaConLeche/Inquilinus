@@ -1,7 +1,8 @@
 "use client";
-import type { ParteReparto } from "@inquilinus/contracts";
+import type { ColorGasto, ParteReparto } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { Aviso } from "../../../../componentes/Aviso";
+import { PuntoColor } from "../../../../componentes/ColorGasto";
 import formulario from "../../../../componentes/formulario.module.css";
 import { formatoEuros } from "../../../../lib/dinero";
 import { formatoFecha } from "../../../../lib/fechas";
@@ -17,12 +18,15 @@ export function FilaParte({
   inmuebleId,
   parte,
   etiqueta,
+  color,
   detalle,
   hoy,
 }: {
   inmuebleId: string;
   parte: ParteReparto;
   etiqueta: string;
+  /** Spec 006, R8: el color de su tipo de gasto, si la etiqueta lo nombra. */
+  color?: ColorGasto | null;
   detalle?: string;
   hoy: string;
 }) {
@@ -37,7 +41,10 @@ export function FilaParte({
     <li className={estilos.cobro}>
       <div className={estilos.lineaCobro}>
         <div className={estilos.concepto}>
-          <span>{etiqueta}</span>
+          <span className={estilos.etiquetaParte}>
+            {color !== undefined && <PuntoColor color={color} />}
+            {etiqueta}
+          </span>
           <span className={estilos.marcas}>
             {parte.pagadoEn ? (
               <span className={estilos.pagado}>{t("pagadoEl", { fecha: formatoFecha(parte.pagadoEn, idioma) })}</span>

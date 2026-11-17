@@ -61,6 +61,7 @@ export {
   NuevoInquilino,
   NuevoTipoGasto,
   Ocupacion,
+  primerColorLibre,
   rutasInquilinos,
   TipoGasto,
 } from './inquilinos.ts';

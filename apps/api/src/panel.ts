@@ -1,7 +1,7 @@
 // Panel principal (spec 009, R1–R5b): totales, pendientes por inmueble e
 // inquilino, una tarjeta por inmueble y avisos. Todo filtrado por el usuario.
 // Los inmuebles archivados no aparecen; los bloqueados no cuentan (R4).
-import type { ConceptoPendiente, Panel } from "@inquilinus/contracts";
+import type { ColorGasto, ConceptoPendiente, Panel } from "@inquilinus/contracts";
 import { resumenPanel, type Concepto } from "@inquilinus/domain";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
@@ -46,12 +46,16 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
     activos.length === 0
       ? []
       : bd
-          .select({ id: t.tipoGasto.id, nombre: t.tipoGasto.nombre })
+          .select({ id: t.tipoGasto.id, nombre: t.tipoGasto.nombre, color: t.tipoGasto.color })
           .from(t.tipoGasto)
           .where(inArray(t.tipoGasto.inmuebleId, activos.map((i) => i.id))),
   ]);
   const nombreGasto = new Map<string, string | null>(
     partes.map((p) => [p.id, tipos.find((tg) => tg.id === p.tipoGastoId)?.nombre ?? null]),
+  );
+  // Spec 006, R8: el color del tipo de gasto de cada parte.
+  const colorGasto = new Map<string, ColorGasto | null>(
+    partes.map((p) => [p.id, (tipos.find((tg) => tg.id === p.tipoGastoId)?.color as ColorGasto | undefined) ?? null]),
   );
   // Quien solo tiene partes de gastos (sin cobros) también necesita su nombre.
   const sinNombre = [...new Set(partes.map((p) => p.inquilinoId))].filter((id) => !nombreInquilino.has(id));
@@ -114,6 +118,7 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
           id: c.id,
           tipo: c.tipo,
           nombreGasto: c.tipo === "gasto" ? (nombreGasto.get(c.id) ?? null) : null,
+          colorGasto: c.tipo === "gasto" ? (colorGasto.get(c.id) ?? null) : null,
           liquidacion: null,
           mes: c.mes,
           importe: c.importe,
@@ -124,6 +129,7 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
       id: liquidacionId,
       tipo: "liquidacion",
       nombreGasto: null,
+      colorGasto: null,
       mes: pendientes[0]!.mes,
       // Lo que le falta por pagar de la liquidación.
       importe: pendientes.reduce((s, c) => s + c.importe, 0),
@@ -133,7 +139,7 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
         nombre: nombreLiquidacion.get(liquidacionId) ?? "",
         partes: partes
           .filter((p) => p.liquidacionId === liquidacionId && p.inquilinoId === inquilinoId)
-          .map(({ inmuebleId: _, ...p }) => ({ ...p, nombreGasto: nombreGasto.get(p.id) ?? null })),
+          .map(({ inmuebleId: _, ...p }) => ({ ...p, nombreGasto: nombreGasto.get(p.id) ?? null, colorGasto: colorGasto.get(p.id) ?? null })),
       },
     }));
     return [...sueltos, ...agrupados].sort((a, b) => (a.mes === b.mes ? ORDEN[a.tipo] - ORDEN[b.tipo] : a.mes < b.mes ? -1 : 1));

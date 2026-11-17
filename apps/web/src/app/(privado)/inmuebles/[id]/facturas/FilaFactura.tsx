@@ -1,10 +1,11 @@
 "use client";
-import type { Factura, TipoGasto } from "@inquilinus/contracts";
+import { primerColorLibre, type Factura, type TipoGasto } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Aviso } from "../../../../../componentes/Aviso";
 import { Campo } from "../../../../../componentes/Campo";
+import { SelectorColor } from "../../../../../componentes/ColorGasto";
 import formulario from "../../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../../lib/api-cliente";
 import { eurosACentimos, formatoEuros } from "../../../../../lib/dinero";
@@ -29,6 +30,8 @@ export function FilaFactura({ inmuebleId, factura, tiposGasto }: { inmuebleId: s
   const ruta = `/inmuebles/${inmuebleId}/facturas/${factura.id}`;
   const [tipoGastoId, setTipoGastoId] = useState(factura.tipoGastoId ?? "");
   const [nombreTipo, setNombreTipo] = useState("");
+  // Spec 006, R7: el tipo nuevo, por defecto con el primer color libre.
+  const [colorTipo, setColorTipo] = useState(() => primerColorLibre(tiposGasto.filter((tg) => !tg.archivado).map((tg) => tg.color)));
   const [inicio, setInicio] = useState(factura.periodoInicio ?? "");
   const [fin, setFin] = useState(factura.periodoFin ?? "");
   const [importe, setImporte] = useState(aTexto(factura.importeTotal));
@@ -99,7 +102,7 @@ export function FilaFactura({ inmuebleId, factura, tiposGasto }: { inmuebleId: s
   const crearTipo = async () => {
     if (!nombreTipo.trim()) return;
     setEnviando(true);
-    const r = await pedirApi<TipoGasto>(`/inmuebles/${inmuebleId}/tipos-gasto`, { cuerpo: { nombre: nombreTipo } });
+    const r = await pedirApi<TipoGasto>(`/inmuebles/${inmuebleId}/tipos-gasto`, { cuerpo: { nombre: nombreTipo, color: colorTipo } });
     setEnviando(false);
     if (!r.ok) return setError(r.error);
     setTipoGastoId(r.datos.id);
@@ -139,7 +142,10 @@ export function FilaFactura({ inmuebleId, factura, tiposGasto }: { inmuebleId: s
             id={`tipo-${factura.id}`}
             className={propias.selector}
             value={tipoGastoId}
-            onChange={(e) => setTipoGastoId(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value === NUEVO) setColorTipo(primerColorLibre(activos.map((tg) => tg.color)));
+              setTipoGastoId(e.target.value);
+            }}
           >
             <option value="">{t("eligeTipo")}</option>
             {activos.map((tg) => (
@@ -151,11 +157,19 @@ export function FilaFactura({ inmuebleId, factura, tiposGasto }: { inmuebleId: s
           </select>
         </div>
         {tipoGastoId === NUEVO && (
-          <div className={estilos.nuevoTipo}>
+          <div className={propias.enLinea}>
             <Campo etiqueta={t("nombreTipo")} autoFocus value={nombreTipo} onChange={(e) => setNombreTipo(e.target.value)} />
-            <button type="button" className={formulario.botonSecundario} disabled={enviando || !nombreTipo.trim()} onClick={() => void crearTipo()}>
-              {t("crearTipo")}
-            </button>
+            <SelectorColor valor={colorTipo} onCambio={setColorTipo} otros={activos} nombreGrupo={`color-${factura.id}`} />
+            <div className={propias.botones}>
+              <button
+                type="button"
+                className={formulario.botonSecundario}
+                disabled={enviando || !nombreTipo.trim()}
+                onClick={() => void crearTipo()}
+              >
+                {t("crearTipo")}
+              </button>
+            </div>
           </div>
         )}
         <div className={propias.dosColumnas}>

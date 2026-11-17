@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Aviso } from "../../../../../componentes/Aviso";
 import { Campo } from "../../../../../componentes/Campo";
+import { PuntoColor } from "../../../../../componentes/ColorGasto";
 import formulario from "../../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../../lib/api-cliente";
 import { formatoEuros } from "../../../../../lib/dinero";
@@ -101,7 +102,7 @@ function ElegirFacturas({
               onChange={(e) => setElegidas(e.target.checked ? [...elegidas, f.id] : elegidas.filter((id) => id !== f.id))}
             />
             <span>
-              {etiqueta(f)} · <span className={estilos.importe}>{formatoEuros(f.importeTotal ?? 0, idioma)}</span>
+              <PuntoColor color={tiposGasto.find((tg) => tg.id === f.tipoGastoId)?.color ?? null} /> {etiqueta(f)} · <span className={estilos.importe}>{formatoEuros(f.importeTotal ?? 0, idioma)}</span>
             </span>
           </label>
         ))}
@@ -367,6 +368,7 @@ export function TarjetaLiquidacion({
         {liquidacion.facturas.map((f) => (
           <li key={f.facturaId} className={propias.fila}>
             <span>
+              <PuntoColor color={tiposGasto.find((tg) => tg.id === f.tipoGastoId)?.color ?? null} />{" "}
               {etiqueta({ id: f.facturaId, ...f })} ·{" "}
               <span className={estilos.importe}>{formatoEuros(f.importeTotal, idioma)}</span>
             </span>
