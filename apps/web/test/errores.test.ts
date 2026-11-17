@@ -72,6 +72,10 @@ describe("claveDeError", () => {
       "CAMPO_OBLIGATORIO",
       "PERIODO_INVALIDO",
       "TIPO_GASTO_DESCONOCIDO",
+      "FACTURA_DESCONOCIDA",
+      "FACTURA_NO_REPARTIDA",
+      "FACTURA_EN_LIQUIDACION",
+      "LIQUIDACION_VACIA",
       "OTRO",
     ];
     for (const codigo of codigos) {

@@ -9,6 +9,7 @@ import propias from "../detalle.module.css";
 import { ConfirmarTodas } from "./ConfirmarTodas";
 import { FacturaRepartida } from "./FacturaRepartida";
 import { FilaFactura } from "./FilaFactura";
+import { NuevaLiquidacion, PropuestaLiquidacion, TarjetaLiquidacion } from "./Liquidaciones";
 import { SubirFacturas } from "./SubirFacturas";
 
 export async function generateMetadata() {
@@ -21,16 +22,32 @@ const POR_REVISAR = ["subida", "propuesta", "error_extraccion"];
 /** Facturas del inmueble (spec 003): subir PDF, revisar y confirmar, y las ya confirmadas. */
 export default async function FacturasInmueble({ params }: { params: Promise<{ id: string }> }) {
   const t = await getTranslations("Facturas");
+  const tl = await getTranslations("Liquidaciones");
   const usuario = await usuarioActual();
   const datos = usuario ? await facturasDe(usuario, (await params).id) : null;
   if (!datos) notFound();
-  const { inmueble, facturas, tiposGasto, inquilinos } = datos;
+  const { inmueble, facturas, tiposGasto, inquilinos, liquidaciones } = datos;
+  const hoy = hoyEnMadrid();
   const porRevisar = facturas.filter((f) => POR_REVISAR.includes(f.estado));
   // Las confirmadas, de la más reciente a la más antigua por periodo.
   const confirmadas = facturas
     .filter((f) => !POR_REVISAR.includes(f.estado))
     .sort((a, b) => (b.periodoInicio ?? "").localeCompare(a.periodoInicio ?? ""));
   const nombreTipo = (id: string | null) => tiposGasto.find((tg) => tg.id === id)?.nombre ?? "—";
+  // Spec 011: las repartidas fuera de toda liquidación, de la más antigua a la más reciente.
+  const sueltas = facturas
+    .filter((f) => f.estado === "repartida" && f.liquidacionId === null)
+    .sort((a, b) => (a.periodoInicio ?? "").localeCompare(b.periodoInicio ?? ""));
+  // R4b: lotes sin nada por revisar y con al menos dos repartidas sueltas, del más reciente al más antiguo.
+  const lotes = [...new Set(facturas.map((f) => f.lote))];
+  const subidaDe = (lote: string) =>
+    facturas.filter((f) => f.lote === lote).reduce((max, f) => (f.subidaEn > max ? f.subidaEn : max), "");
+  const propuestas = lotes
+    .filter((lote) => !porRevisar.some((f) => f.lote === lote))
+    .map((lote) => ({ lote, facturaIds: sueltas.filter((f) => f.lote === lote).map((f) => f.id) }))
+    .filter((p) => p.facturaIds.length >= 2)
+    .sort((a, b) => subidaDe(b.lote).localeCompare(subidaDe(a.lote)));
+  const nombreLiquidacion = (id: string | null) => liquidaciones.find((l) => l.id === id)?.nombre ?? null;
 
   return (
     <>
@@ -64,6 +81,30 @@ export default async function FacturasInmueble({ params }: { params: Promise<{ i
         )}
       </section>
 
+      {(liquidaciones.length > 0 || sueltas.length > 0) && (
+        <section className={privado.seccion} aria-labelledby="titulo-liquidaciones">
+          <h2 id="titulo-liquidaciones">{tl("titulo")}</h2>
+          <p className={propias.suave}>{tl("explicacion")}</p>
+          <PropuestaLiquidacion inmuebleId={inmueble.id} propuestas={propuestas} sueltas={sueltas} tiposGasto={tiposGasto} />
+          {liquidaciones.length > 0 && (
+            <ul className={propias.lista}>
+              {[...liquidaciones].reverse().map((l) => (
+                <TarjetaLiquidacion
+                  key={l.id}
+                  inmuebleId={inmueble.id}
+                  liquidacion={l}
+                  sueltas={sueltas}
+                  tiposGasto={tiposGasto}
+                  inquilinos={inquilinos}
+                  hoy={hoy}
+                />
+              ))}
+            </ul>
+          )}
+          <NuevaLiquidacion inmuebleId={inmueble.id} sueltas={sueltas} tiposGasto={tiposGasto} />
+        </section>
+      )}
+
       {confirmadas.length > 0 && (
         <section className={privado.seccion} aria-labelledby="titulo-confirmadas">
           <h2 id="titulo-confirmadas">{t("confirmadasTitulo")}</h2>
@@ -77,7 +118,8 @@ export default async function FacturasInmueble({ params }: { params: Promise<{ i
                   factura={f}
                   tipo={nombreTipo(f.tipoGastoId)}
                   inquilinos={inquilinos}
-                  hoy={hoyEnMadrid()}
+                  liquidacion={nombreLiquidacion(f.liquidacionId)}
+                  hoy={hoy}
                 />
               ) : null,
             )}

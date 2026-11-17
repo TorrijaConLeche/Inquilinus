@@ -431,7 +431,7 @@ export async function cobrosDelMes(
   mes: string,
   mesActual: string,
 ): Promise<CobrosDelMes> {
-  const [todos, datos, partes, asumePropietarioGastos, liquidaciones] = await Promise.all([
+  const [todos, datos, partes, sinOcuparSueltas, liquidaciones] = await Promise.all([
     listarCobros(bd, inmuebleId, { quitados: true }),
     datosDelInmueble(bd, inmuebleId),
     partesDeGastos(bd, [inmuebleId]),
@@ -459,7 +459,8 @@ export async function cobrosDelMes(
     gastosAtrasados: sinInmueble
       .filter((p) => p.mes < mesActual && p.mes !== mes && p.pagadoEn === null)
       .sort((a, b) => (a.mes === b.mes ? 0 : a.mes < b.mes ? -1 : 1)),
-    asumePropietarioGastos,
+    // Lo sin ocupar de las sueltas repartidas en el mes y de las liquidaciones del mes (spec 011, R11).
+    asumePropietarioGastos: liquidaciones.filter((l) => l.mes === mes).reduce((s, l) => s + l.sinOcupar, sinOcuparSueltas),
     liquidaciones: liquidaciones.filter((l) => l.mes === mes),
     liquidacionesAtrasadas: liquidaciones.filter(
       (l) => l.mes < mesActual && l.mes !== mes && l.inquilinos.some((q) => q.pendiente > 0),

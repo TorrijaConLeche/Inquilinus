@@ -14,6 +14,7 @@ import { useAccion } from "../../../../../lib/use-accion";
 import privado from "../../../privado.module.css";
 import propias from "../detalle.module.css";
 import { FilaParte } from "../FilaParte";
+import { LineaLiquidacion } from "../LineaLiquidacion";
 import estilos from "./cobros.module.css";
 import { FilaCobro } from "./FilaCobro";
 
@@ -62,8 +63,15 @@ export function CobrosMes({
       inquilino: q,
       cobros: datos.cobros.filter((c) => c.inquilinoId === q.id),
       gastos: datos.gastos.filter((g) => g.inquilinoId === q.id),
+      // Spec 011, R13: una línea por liquidación del mes.
+      liquidaciones: datos.liquidaciones.flatMap((l) =>
+        l.inquilinos.filter((e) => e.inquilinoId === q.id).map((e) => ({ liquidacion: l, inquilino: e })),
+      ),
     }))
-    .filter((g) => g.cobros.length > 0 || g.gastos.length > 0);
+    .filter((g) => g.cobros.length > 0 || g.gastos.length > 0 || g.liquidaciones.length > 0);
+  const atrasadasLiquidadas = datos.liquidacionesAtrasadas.flatMap((l) =>
+    l.inquilinos.filter((e) => e.pendiente > 0).map((e) => ({ liquidacion: l, inquilino: e })),
+  );
 
   const generar = async () => {
     setMensaje(null);
@@ -73,7 +81,9 @@ export function CobrosMes({
       return;
     }
     setErrorPago(null);
-    setMensaje(resultado.datos.creados.length === 0 ? t("nadaQueGenerar") : t("generados", { n: resultado.datos.creados.length }));
+    setMensaje(
+      resultado.datos.creados.length === 0 ? t("nadaQueGenerar") : t("generados", { n: resultado.datos.creados.length }),
+    );
     router.refresh();
   };
 
@@ -101,10 +111,11 @@ export function CobrosMes({
     router.refresh();
   };
 
-  const delMes = [...datos.cobros, ...datos.gastos];
+  const delMes = [...datos.cobros, ...datos.gastos, ...datos.liquidaciones.flatMap((l) => l.inquilinos.flatMap((e) => e.partes))];
   const cobrado = suma(delMes.filter((c) => c.pagadoEn));
   const pendiente = suma(delMes.filter((c) => !c.pagadoEn));
-  const atrasados = suma([...datos.atrasados, ...datos.gastosAtrasados]);
+  const atrasados =
+    suma([...datos.atrasados, ...datos.gastosAtrasados]) + atrasadasLiquidadas.reduce((s, a) => s + a.inquilino.pendiente, 0);
   // R11: vacíos del alquiler y días sin ocupar de las facturas del mes.
   const asumes =
     datos.asumePropietario === null && datos.asumePropietarioGastos === 0
@@ -113,7 +124,7 @@ export function CobrosMes({
 
   return (
     <>
-      {datos.atrasados.length + datos.gastosAtrasados.length > 0 && (
+      {datos.atrasados.length + datos.gastosAtrasados.length + atrasadasLiquidadas.length > 0 && (
         <section className={`${privado.seccion} ${estilos.atrasados}`} aria-labelledby="titulo-atrasados">
           <h2 id="titulo-atrasados">{t("atrasados")}</h2>
           <p className={propias.suave}>{t("atrasadosExplicacion", { total: formatoEuros(atrasados, idioma) })}</p>
@@ -131,6 +142,17 @@ export function CobrosMes({
                 hoy={hoy}
               />
             ))}
+            {atrasadasLiquidadas.map(({ liquidacion, inquilino }) => (
+              <LineaLiquidacion
+                key={`${liquidacion.id}-${inquilino.inquilinoId}`}
+                inmuebleId={inmuebleId}
+                liquidacion={liquidacion}
+                inquilino={inquilino}
+                etiqueta={`${nombre(inquilino.inquilinoId)} · ${liquidacion.nombre}`}
+                tiposGasto={tiposGasto}
+                hoy={hoy}
+              />
+            ))}
           </ul>
         </section>
       )}
@@ -141,8 +163,10 @@ export function CobrosMes({
         {errorPago && <Aviso tipo="error">{te(errorPago)}</Aviso>}
         {grupos.length === 0 && <p className={propias.suave}>{t("sinCobros")}</p>}
 
-        {grupos.map(({ inquilino, cobros, gastos }) => {
-          const pendientes = [...cobros, ...gastos].filter((c) => !c.pagadoEn);
+        {grupos.map(({ inquilino, cobros, gastos, liquidaciones }) => {
+          const pendientes = [...cobros, ...gastos, ...liquidaciones.flatMap((l) => l.inquilino.partes)].filter(
+            (c) => !c.pagadoEn,
+          );
           const recienPagado =
             ultimoPagoTodo?.inquilinoId === inquilino.id && ultimoPagoTodo.cobros.length + ultimoPagoTodo.partes.length > 0;
           return (
@@ -162,6 +186,17 @@ export function CobrosMes({
               <ul className={estilos.cobros}>
                 {cobros.map((c) => (
                   <FilaCobro key={c.id} base={base} cobro={c} etiqueta={etiqueta(c)} hoy={hoy} />
+                ))}
+                {liquidaciones.map(({ liquidacion, inquilino: suyo }) => (
+                  <LineaLiquidacion
+                    key={liquidacion.id}
+                    inmuebleId={inmuebleId}
+                    liquidacion={liquidacion}
+                    inquilino={suyo}
+                    etiqueta={liquidacion.nombre}
+                    tiposGasto={tiposGasto}
+                    hoy={hoy}
+                  />
                 ))}
                 {gastos.map((p) => (
                   <FilaParte key={p.id} inmuebleId={inmuebleId} parte={p} etiqueta={etiquetaGasto(p)} hoy={hoy} />
@@ -240,7 +275,9 @@ function AnadirCobro({ base, mes, inquilinos }: { base: string; mes: string; inq
     e.preventDefault();
     setRevisado(true);
     if (centimos === null || !inquilinoId) return;
-    void ejecutar(base, { cuerpo: { inquilinoId, mes, ...(centimos !== undefined && { renta: centimos }) } }, () => setAbierto(false));
+    void ejecutar(base, { cuerpo: { inquilinoId, mes, ...(centimos !== undefined && { renta: centimos }) } }, () =>
+      setAbierto(false),
+    );
   };
 
   if (!abierto) {
@@ -271,7 +308,12 @@ function AnadirCobro({ base, mes, inquilinos }: { base: string; mes: string; inq
           <label htmlFor="inquilino-cobro" className={formulario.etiqueta}>
             {t("inquilino")}
           </label>
-          <select id="inquilino-cobro" className={propias.selector} value={inquilinoId} onChange={(e) => setInquilinoId(e.target.value)}>
+          <select
+            id="inquilino-cobro"
+            className={propias.selector}
+            value={inquilinoId}
+            onChange={(e) => setInquilinoId(e.target.value)}
+          >
             {inquilinos.map((q) => (
               <option key={q.id} value={q.id}>
                 {q.nombre}

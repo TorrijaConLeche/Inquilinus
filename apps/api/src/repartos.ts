@@ -238,6 +238,7 @@ export async function partesDeGastos(bd: ConexionBd, inmuebleIds: string[]): Pro
       tipoGastoId: t.factura.tipoGastoId,
       periodoInicio: t.factura.periodoInicio,
       periodoFin: t.factura.periodoFin,
+      importeFactura: t.factura.importeTotal,
       creadoEn: t.reparto.creadoEn,
     })
     .from(t.repartoLinea)
@@ -257,6 +258,7 @@ export async function partesDeGastos(bd: ConexionBd, inmuebleIds: string[]): Pro
     tipoGastoId: f.tipoGastoId,
     periodoInicio: f.periodoInicio!,
     periodoFin: f.periodoFin!,
+    importeFactura: f.importeFactura!,
     mes: f.mesLiquidacion ?? mesEnMadrid(f.creadoEn),
   }));
 }

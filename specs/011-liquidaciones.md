@@ -66,9 +66,9 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 �
 
 ## Tareas
 
-- [ ] Dominio: totales, estado por inquilino, nombre automático y numeración
-- [ ] API: crear (desde lote o a mano), cambiar, renombrar, borrar y marcar pagada
-- [ ] Propuesta al confirmar un lote
-- [ ] Panel y cobros del inmueble agrupados y desplegables
+- [x] Dominio: totales, estado por inquilino, nombre automático y numeración
+- [x] API: crear (desde lote o a mano), cambiar, renombrar, borrar y marcar pagada
+- [x] Propuesta al confirmar un lote
+- [x] Panel y cobros del inmueble agrupados y desplegables
 - [ ] Liquidaciones en el timeline y en el enlace del inquilino (tareas 6.3 y 6.5)
 - [ ] Tests C1–C12 (C9 con el enlace del inquilino, tarea 6.5)

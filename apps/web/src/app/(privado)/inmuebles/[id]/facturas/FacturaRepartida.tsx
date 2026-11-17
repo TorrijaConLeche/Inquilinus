@@ -23,12 +23,15 @@ export function FacturaRepartida({
   factura,
   tipo,
   inquilinos,
+  liquidacion,
   hoy,
 }: {
   inmuebleId: string;
   factura: Factura;
   tipo: string;
   inquilinos: Inquilino[];
+  /** Spec 011: el nombre de su liquidación, o null si va suelta. */
+  liquidacion: string | null;
   hoy: string;
 }) {
   const t = useTranslations("Facturas");
@@ -58,7 +61,7 @@ export function FacturaRepartida({
   };
 
   return (
-    <li className={propias.elemento}>
+    <li className={propias.elemento} id={`factura-${factura.id}`}>
       <div className={propias.fila}>
         <span>
           <strong>{tipo}</strong>{" "}
@@ -75,6 +78,12 @@ export function FacturaRepartida({
           </a>
         </span>
       </div>
+
+      {liquidacion && factura.liquidacionId && (
+        <a href={`#liquidacion-${factura.liquidacionId}`} className={formulario.enlace}>
+          {t("enLiquidacion", { nombre: liquidacion })}
+        </a>
+      )}
 
       {reparto.desactualizado && (
         <Aviso tipo="info">

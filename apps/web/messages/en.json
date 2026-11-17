@@ -133,7 +133,11 @@
     "facturaConfirmada": "This bill is already confirmed and can't be discarded.",
     "campoObligatorio": "Some details are missing: choose the expense type and fill in the period and amount.",
     "periodoInvalido": "The end date can't be earlier than the start date.",
-    "tipoGastoDesconocido": "That expense type doesn't belong to this property."
+    "tipoGastoDesconocido": "That expense type doesn't belong to this property.",
+    "facturaDesconocida": "One of those bills doesn't belong to this property.",
+    "facturaNoRepartida": "Only confirmed and split bills can be grouped.",
+    "facturaEnLiquidacion": "One of those bills is already in another settlement.",
+    "liquidacionVacia": "A settlement can't be left without bills. If you no longer need it, delete it."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -164,7 +168,15 @@
     "vacioTexto": "Add a flat with its rooms and tenants, and you'll see here what you're owed and by whom.",
     "anadirInmueble": "Add a property",
     "gasto": "Expenses",
-    "avisoPorRevisar": "{n, plural, one {# bill to review in {inmueble}: confirm it to split it} other {# bills to review in {inmueble}: confirm them to split them}}"
+    "avisoPorRevisar": "{n, plural, one {# bill to review in {inmueble}: confirm it to split it} other {# bills to review in {inmueble}: confirm them to split them}}",
+    "conceptoLiquidacion": "{nombre}: {importe}",
+    "verLiquidacion": "See the bills in “{nombre}”",
+    "periodo": "from {inicio} to {fin}",
+    "detalleParte": "{total} bill, {n, plural, one {# day} other {# days}}",
+    "pagadaEl": "paid on {fecha}",
+    "pendienteParte": "pending",
+    "verCalculo": "See the calculation",
+    "verPdf": "View PDF"
   },
   "Ajustes": {
     "titulo": "Settings",
@@ -555,6 +567,41 @@
     "recalcularConPagos": "Some shares are already collected. Recalculate anyway? Each tenant keeps their payment.",
     "deshacer": "Undo confirmation",
     "deshacerSinPagos": "Undo the confirmation? Its split will be deleted and the bill will go back to “To review”.",
-    "deshacerConPagos": "Undo the confirmation? Its split will be deleted, including shares already collected (those payments are lost), and the bill will go back to “To review”."
+    "deshacerConPagos": "Undo the confirmation? Its split will be deleted, including shares already collected (those payments are lost), and the bill will go back to “To review”.",
+    "enLiquidacion": "In “{nombre}”"
+  },
+  "Liquidaciones": {
+    "estados": {
+      "pagada": "Paid",
+      "parcial": "Partly paid",
+      "pendiente": "Pending"
+    },
+    "falta": "{importe} to go",
+    "marcarPagada": "Mark as paid",
+    "deshacer": "Undo",
+    "verFacturas": "{n, plural, one {See their bill} other {See their # bills}}",
+    "dias": "{n, plural, one {# day} other {# days}}",
+    "titulo": "Settlements",
+    "explicacion": "Group several split bills to collect them together: each tenant sees their total and the detail of each bill.",
+    "propuesta": "You confirmed {n} bills together. Group them into a settlement?",
+    "crear": "Create settlement",
+    "noGracias": "No, thanks",
+    "elegirOtras": "Choose bills",
+    "elegirFacturas": "Bills",
+    "nombre": "Name",
+    "opcional": "optional",
+    "nombreAyuda": "If you leave it empty, it will be called “Settlement N” with the months of its bills.",
+    "cancelar": "Cancel",
+    "nueva": "New settlement",
+    "quitar": "Remove",
+    "sinOcupar": "You cover (empty days): {importe}",
+    "cambiarConPagos": "A tenant has already paid part of this settlement. Paid parts stay paid and their total changes. Continue?",
+    "seguir": "Continue",
+    "guardar": "Save",
+    "anadir": "Add",
+    "anadirFacturas": "Add bills",
+    "renombrar": "Rename",
+    "borrar": "Delete",
+    "borrarAviso": "Its bills will become standalone and be collected separately. No payment is lost."
   }
 }

@@ -49,3 +49,21 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+
+/* Liquidaciones (spec 011). */
+.eleccion {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.facturasLiquidacion {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}

@@ -52,6 +52,8 @@ export const ParteGasto = ParteReparto.extend({
   tipoGastoId: z.uuid().nullable(),
   periodoInicio: Fecha,
   periodoFin: Fecha,
+  /** Spec 011, R12: el importe total de su factura. */
+  importeFactura: Centimos,
   /** Spec 009, R8 y spec 011, R11b: el mes de la liquidación o, suelta, el del reparto. */
   mes: Mes,
 }).meta({ id: 'ParteGasto' });

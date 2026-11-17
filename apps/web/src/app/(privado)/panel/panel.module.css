@@ -120,6 +120,39 @@
   border-color: var(--acento);
 }
 
+/* Spec 011, R12: el desglose de una liquidación, debajo del enlace del inquilino. */
+.desglose {
+  padding: 0 12px 12px;
+  font-size: 0.875rem;
+}
+
+.desglose summary {
+  cursor: pointer;
+  color: var(--texto-suave);
+}
+
+.partes {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.parte {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .inmuebles {
   display: grid;
   gap: 12px;
