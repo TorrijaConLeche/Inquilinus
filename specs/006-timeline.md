@@ -15,10 +15,14 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 
 - **R1** — Eje horizontal de días en la parte inferior, con una rayita por día. Las rayitas del día 1 y del 15 son más largas y llevan etiqueta ("1 sep", "15 sep").
 - **R2** — Filas, de arriba abajo: Alquiler; una fila por tipo de gasto (en orden de creación); una fila por inquilino. Las etiquetas de fila se quedan fijas a la izquierda al desplazarse.
+- **R2b** — Los tipos de gasto archivados solo tienen fila si tienen alguna factura repartida. Hay una fila por cada inquilino que ha tenido alguna estancia en el inmueble, también los que ya se fueron.
 - **R3** — **Alquiler**: una chincheta por cobro, en su fecha de cobro (spec 005; por defecto el día de cobro del inmueble, o la fecha a la que se haya movido), con su importe.
+- **R3b** — Los cobros con la misma fecha (los de varios inquilinos de un mes) van en una sola chincheta con la suma de sus importes; su estado de pago es el del grupo (R10). Los cobros quitados no aparecen.
 - **R4** — **Factura**: una barra desde el inicio hasta el fin de su periodo, con su importe dentro.
+- **R4b** — Solo aparecen las facturas repartidas. Si dos facturas del mismo tipo se solapan (spec 003 lo permite confirmándolo), van en carriles distintos dentro de su fila.
 - **R5** — **Inquilino**: una línea desde la entrada hasta la salida, con un punto verde en la entrada y uno rojo en la salida, cada uno con su fecha. Sin salida, la línea llega hasta el borde derecho. Si un inquilino tiene varias ocupaciones, se dibuja un tramo por cada una.
 - **R6** — Zoom: mes (rayita por día), trimestre (por semana) y año (por mes). Se desliza en horizontal, también en el móvil. Por defecto se muestra el mes en curso y el anterior.
+- **R6b** — De una vez se ven unos dos meses con el zoom mes, unos seis con trimestre y unos doce con año. El eje va desde el primer mes con datos (o el anterior al actual, si es antes) hasta el último mes con datos (o el actual, si es después). Con trimestre y año, el día 1 de cada mes lleva etiqueta.
 
 **Colores**
 
@@ -29,7 +33,7 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 
 **Estado de pago**
 
-- **R10** — Propietaria: ✓ si todos han pagado; si no, "2/3 pagado". Inquilino: ✓ si él ha pagado su parte.
+- **R10** — En cada chincheta de alquiler y cada barra de factura. Propietaria: ✓ si todos han pagado; si no, "2/3 pagado". Inquilino: ✓ si él ha pagado su parte.
 
 **Al pulsar**
 
@@ -59,6 +63,8 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 | C10 | Zoom año (R6) | Rayitas por mes y etiquetas de mes |
 | C11 | Relevo (R5) | En H1, A sale el 15 y B entra el 15: dos líneas que se tocan el día 15 |
 | C12 | Estado parcial (R10) | Si 2 de 3 han pagado la luz, la barra muestra "2/3 pagado" |
+| C14 | Chincheta agrupada (R3b) | Los cobros de A, B y C del 1 de octubre son una chincheta con la suma; si solo A ha pagado, "1/3 pagado" |
+| C15 | Facturas solapadas (R4b) | Dos facturas de luz que se solapan van en dos carriles de la fila Luz |
 | C13 | Color repetido (R7b) | Al crear "Agua", el color de Luz aparece marcado "lo usa Luz" y se puede elegir |
 
 ## Fuera de alcance
