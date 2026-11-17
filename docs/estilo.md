@@ -28,8 +28,27 @@ Amable, serio y moderno. La app habla claro y sin tecnicismos, transmite calma c
 | `error-suave` | `#FBECEB` | `#3A2422` | Fondo de los avisos de error |
 
 - El texto sobre `primario` es `superficie` (blanco en claro). El contraste cumple WCAG AA.
-- Los colores de los tipos de gasto del timeline (spec 006) son una paleta aparte, distinta de `primario` y del color reservado al alquiler. Se define al implementar la spec 006, con versión clara y oscura.
+- Los colores de los tipos de gasto (spec 006, R7) son una paleta aparte, distinta de `primario` y del color reservado al alquiler. Ver «Colores de gasto».
 - Estados: éxito, aviso y error con sus propios tokens, siempre acompañados de texto o icono (spec 006, R9).
+
+## Colores de gasto
+
+Cada color tiene dos tokens: `gasto-<color>` (puntos, bordes y marcas) y `gasto-<color>-suave` (relleno de barras y etiquetas, con `texto` encima). El alquiler usa `alquiler` y `alquiler-suave`, un gris neutro que no se ofrece para gastos.
+
+| Color | Claro | Claro suave | Oscuro | Oscuro suave |
+| --- | --- | --- | --- | --- |
+| `ambar` | `#B7791F` | `#FBEFD9` | `#E3A94F` | `#3A2E19` |
+| `azul` | `#3B6FC4` | `#E3ECFA` | `#7FA6EB` | `#1F2C44` |
+| `violeta` | `#7B5CC4` | `#EEE8FA` | `#AE95EE` | `#2D2544` |
+| `rosa` | `#C2477F` | `#FAE6EF` | `#EB8DB7` | `#42232F` |
+| `turquesa` | `#1C8EA6` | `#DDF2F6` | `#5CC3D8` | `#17363D` |
+| `oliva` | `#7C8B2B` | `#EFF2DC` | `#B9C85E` | `#2F3319` |
+| `coral` | `#D0603F` | `#FCE8E1` | `#F09A7E` | `#43271F` |
+| `granate` | `#9B2C45` | `#F6E1E6` | `#E5606E` | `#45191E` |
+| `alquiler` | `#6B7270` | `#ECEDEC` | `#A7AFAC` | `#2A302E` |
+
+- Los colores fuertes contrastan al menos 3:1 con `superficie` (elementos gráficos, WCAG 1.4.11); `texto` sobre cada `-suave` contrasta al menos 4,5:1. Lo comprueba un test de la web.
+- El color nunca va solo: siempre acompaña al nombre del tipo de gasto (spec 006, R9).
 
 ## Modo oscuro
 

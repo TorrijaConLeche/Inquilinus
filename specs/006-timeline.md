@@ -22,7 +22,8 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 
 **Colores**
 
-- **R7** — Cada tipo de gasto tiene un color de una paleta fija, que la usuaria elige al crearlo (por defecto, el primero libre). El alquiler tiene un color reservado que no se puede elegir para gastos.
+- **R7** — Cada tipo de gasto tiene un color de una paleta fija de ocho (ámbar, azul, violeta, rosa, turquesa, oliva, coral y granate; ver `docs/estilo.md`), que la usuaria elige al crearlo (por defecto, el primero libre). El alquiler tiene un color reservado, un gris neutro, que no se puede elegir para gastos.
+- **R7b** — Se puede elegir un color que ya usa otro tipo de gasto activo del inmueble: el selector lo marca con el nombre de quien lo usa («lo usa Luz»). Con los ocho ocupados, el color por defecto vuelve a empezar por el principio.
 - **R8** — Un tipo de gasto conserva su color en todas partes (timeline, lista, modales, vista del inquilino) hasta que la usuaria lo cambie.
 - **R9** — El color nunca es lo único que transmite información: cada fila tiene su nombre y los estados llevan texto o icono.
 
@@ -58,6 +59,7 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 | C10 | Zoom año (R6) | Rayitas por mes y etiquetas de mes |
 | C11 | Relevo (R5) | En H1, A sale el 15 y B entra el 15: dos líneas que se tocan el día 15 |
 | C12 | Estado parcial (R10) | Si 2 de 3 han pagado la luz, la barra muestra "2/3 pagado" |
+| C13 | Color repetido (R7b) | Al crear "Agua", el color de Luz aparece marcado "lo usa Luz" y se puede elegir |
 
 ## Fuera de alcance
 
@@ -70,5 +72,6 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 - [ ] Componente de timeline compartido (propietaria e inquilino)
 - [ ] Ventanas de detalle de alquiler y de factura
 - [ ] Lista de movimientos
-- [ ] Selector de color al crear un tipo de gasto
+- [x] Paleta de colores de gasto (clara y oscura) y color del alquiler
+- [x] Selector de color al crear un tipo de gasto y al editarlo
 - [ ] Tests C1–C12

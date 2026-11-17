@@ -1,0 +1,129 @@
+/* Colores de gasto (spec 006, R7). Cada clase fija --color y --color-suave. */
+
+.ambar {
+  --color: var(--gasto-ambar);
+  --color-suave: var(--gasto-ambar-suave);
+}
+
+.azul {
+  --color: var(--gasto-azul);
+  --color-suave: var(--gasto-azul-suave);
+}
+
+.violeta {
+  --color: var(--gasto-violeta);
+  --color-suave: var(--gasto-violeta-suave);
+}
+
+.rosa {
+  --color: var(--gasto-rosa);
+  --color-suave: var(--gasto-rosa-suave);
+}
+
+.turquesa {
+  --color: var(--gasto-turquesa);
+  --color-suave: var(--gasto-turquesa-suave);
+}
+
+.oliva {
+  --color: var(--gasto-oliva);
+  --color-suave: var(--gasto-oliva-suave);
+}
+
+.coral {
+  --color: var(--gasto-coral);
+  --color-suave: var(--gasto-coral-suave);
+}
+
+.granate {
+  --color: var(--gasto-granate);
+  --color-suave: var(--gasto-granate-suave);
+}
+
+.alquiler {
+  --color: var(--alquiler);
+  --color-suave: var(--alquiler-suave);
+}
+
+/* Un punto del color; siempre junto al nombre (R9). */
+.punto {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  background: var(--color);
+  vertical-align: baseline;
+}
+
+/* Nombre del tipo de gasto con su punto delante. */
+.nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Selector de color (spec 006, R7 y R7b). */
+.selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.selector legend {
+  margin-bottom: 6px;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+  background: var(--color-suave);
+  color: var(--texto);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.opcion:has(input:checked) {
+  border-color: var(--color);
+  box-shadow: 0 0 0 1px var(--color);
+}
+
+.opcion:has(input:focus-visible) {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.opcion input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcion .punto {
+  width: 14px;
+  height: 14px;
+}
+
+.textos {
+  display: grid;
+  line-height: 1.25;
+}
+
+.usado {
+  font-size: 0.8125rem;
+  color: var(--texto-suave);
+}
+
+.marca {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--color);
+}

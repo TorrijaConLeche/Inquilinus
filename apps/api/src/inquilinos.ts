@@ -2,7 +2,7 @@
 // Las funciones reciben un inmueble que ya se ha comprobado que es del usuario
 // (las rutas lo hacen con `esSuyo`); aquí todo se filtra además por ese inmueble.
 import {
-  COLORES_GASTO,
+  primerColorLibre,
   type CambioHabitacion,
   type ColorGasto,
   type EdicionOcupacion,
@@ -249,14 +249,10 @@ export async function listarTiposGasto(bd: ConexionBd, inmuebleId: string): Prom
   return filas.map((f) => aTipoGasto(f, conFacturas.has(f.id)));
 }
 
-/** Spec 006, R7: sin color elegido, el primero de la paleta que no use otro tipo del inmueble. */
-function primerColorLibre(usados: string[]): ColorGasto {
-  return COLORES_GASTO.find((c) => !usados.includes(c)) ?? COLORES_GASTO[usados.length % COLORES_GASTO.length]!;
-}
-
 export async function crearTipoGasto(bd: ConexionBd, inmuebleId: string, nuevo: NuevoTipoGasto): Promise<TipoGasto> {
   const nombre = validarNombre(nuevo.nombre, "del tipo de gasto");
   const activos = (await listarTiposGasto(bd, inmuebleId)).filter((tg) => !tg.archivado);
+  // Spec 006, R7: sin color elegido, el primero que no use otro tipo activo del inmueble.
   const color = nuevo.color ?? primerColorLibre(activos.map((tg) => tg.color));
   const [fila] = await bd.insert(t.tipoGasto).values({ inmuebleId, nombre, color }).returning();
   return aTipoGasto(fila!, false);

@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { NombreGasto, PuntoColor } from "../../../componentes/ColorGasto";
 import formulario from "../../../componentes/formulario.module.css";
 import { formatoEuros } from "../../../lib/dinero";
 import { formatoFecha, formatoMes } from "../../../lib/fechas";
@@ -108,6 +109,8 @@ export default async function PanelPrincipal() {
                       <span className={propias.conceptos}>
                         {q.conceptos.map((c) => (
                           <span key={c.id} className={c.atrasado ? propias.atrasado : propias.concepto}>
+                            <PuntoColor color={c.tipo === "gasto" ? c.colorGasto : "alquiler"} />
+                            <span className={propias.textoConcepto}>
                             {c.tipo === "alquiler"
                               ? t("conceptoAlquiler", { mes: formatoMes(c.mes, idioma), importe: euros(c.importe) })
                               : c.tipo === "liquidacion"
@@ -117,6 +120,7 @@ export default async function PanelPrincipal() {
                                     mes: formatoMes(c.mes, idioma),
                                     importe: euros(c.importe),
                                   })}
+                            </span>
                           </span>
                         ))}
                       </span>
@@ -131,7 +135,9 @@ export default async function PanelPrincipal() {
                               <li key={p.id} className={propias.parte}>
                                 <span className={propias.fila}>
                                   <span>
-                                    <strong>{p.nombreGasto ?? t("gasto")}</strong>{" "}
+                                    <strong>
+                                      <NombreGasto nombre={p.nombreGasto ?? t("gasto")} color={p.colorGasto} />
+                                    </strong>{" "}
                                     {t("periodo", {
                                       inicio: formatoFecha(p.periodoInicio, idioma),
                                       fin: formatoFecha(p.periodoFin, idioma),

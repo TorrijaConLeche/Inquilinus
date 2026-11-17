@@ -17,6 +17,25 @@
   --sobre-primario: var(--superficie);
   --error: #b3403a;
   --error-suave: #fbeceb;
+  /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
+  --gasto-ambar: #b7791f;
+  --gasto-ambar-suave: #fbefd9;
+  --gasto-azul: #3b6fc4;
+  --gasto-azul-suave: #e3ecfa;
+  --gasto-violeta: #7b5cc4;
+  --gasto-violeta-suave: #eee8fa;
+  --gasto-rosa: #c2477f;
+  --gasto-rosa-suave: #fae6ef;
+  --gasto-turquesa: #1c8ea6;
+  --gasto-turquesa-suave: #ddf2f6;
+  --gasto-oliva: #7c8b2b;
+  --gasto-oliva-suave: #eff2dc;
+  --gasto-coral: #d0603f;
+  --gasto-coral-suave: #fce8e1;
+  --gasto-granate: #9b2c45;
+  --gasto-granate-suave: #f6e1e6;
+  --alquiler: #6b7270;
+  --alquiler-suave: #ecedec;
 
   --radio-control: 8px;
   --radio-tarjeta: 12px;
@@ -37,6 +56,25 @@
     --texto-suave: #9daea8;
     --error: #f2a49c;
     --error-suave: #3a2422;
+    /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
+    --gasto-ambar: #e3a94f;
+    --gasto-ambar-suave: #3a2e19;
+    --gasto-azul: #7fa6eb;
+    --gasto-azul-suave: #1f2c44;
+    --gasto-violeta: #ae95ee;
+    --gasto-violeta-suave: #2d2544;
+    --gasto-rosa: #eb8db7;
+    --gasto-rosa-suave: #42232f;
+    --gasto-turquesa: #5cc3d8;
+    --gasto-turquesa-suave: #17363d;
+    --gasto-oliva: #b9c85e;
+    --gasto-oliva-suave: #2f3319;
+    --gasto-coral: #f09a7e;
+    --gasto-coral-suave: #43271f;
+    --gasto-granate: #e5606e;
+    --gasto-granate-suave: #45191e;
+    --alquiler: #a7afac;
+    --alquiler-suave: #2a302e;
   }
 }
 
@@ -51,6 +89,25 @@
   --texto-suave: #9daea8;
   --error: #f2a49c;
   --error-suave: #3a2422;
+  /* Colores de gasto (spec 006, R7; docs/estilo.md) y el gris reservado al alquiler. */
+  --gasto-ambar: #e3a94f;
+  --gasto-ambar-suave: #3a2e19;
+  --gasto-azul: #7fa6eb;
+  --gasto-azul-suave: #1f2c44;
+  --gasto-violeta: #ae95ee;
+  --gasto-violeta-suave: #2d2544;
+  --gasto-rosa: #eb8db7;
+  --gasto-rosa-suave: #42232f;
+  --gasto-turquesa: #5cc3d8;
+  --gasto-turquesa-suave: #17363d;
+  --gasto-oliva: #b9c85e;
+  --gasto-oliva-suave: #2f3319;
+  --gasto-coral: #f09a7e;
+  --gasto-coral-suave: #43271f;
+  --gasto-granate: #e5606e;
+  --gasto-granate-suave: #45191e;
+  --alquiler: #a7afac;
+  --alquiler-suave: #2a302e;
 }
 
 *,

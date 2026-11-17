@@ -101,14 +101,21 @@
 }
 
 .concepto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 2px 10px;
   border: 1px solid var(--borde-fuerte);
   border-radius: 999px;
   color: var(--texto-suave);
 }
 
-.concepto::first-letter,
-.atrasado::first-letter {
+/* Con el punto del color delante, la mayúscula va en el texto. */
+.textoConcepto {
+  display: inline-block;
+}
+
+.textoConcepto::first-letter {
   text-transform: uppercase;
 }
 

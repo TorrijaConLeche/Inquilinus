@@ -49,6 +49,7 @@ export function CobrosMes({
 
   const nombre = (id: string) => inquilinos.find((q) => q.id === id)?.nombre ?? "—";
   const etiqueta = (c: Cobro) => t("alquilerDe", { mes: formatoMes(c.mes, idioma) });
+  const colorGasto = (p: ParteGasto) => tiposGasto.find((tg) => tg.id === p.tipoGastoId)?.color ?? null;
   // Spec 009, R8: «Luz (1 sept – 30 sept)».
   const etiquetaGasto = (p: ParteGasto) =>
     t("gastoDe", {
@@ -138,6 +139,7 @@ export function CobrosMes({
                 inmuebleId={inmuebleId}
                 parte={p}
                 etiqueta={`${nombre(p.inquilinoId)} · ${etiquetaGasto(p)}`}
+                color={colorGasto(p)}
                 detalle={t("repartidaEn", { mes: formatoMes(p.mes, idioma) })}
                 hoy={hoy}
               />
@@ -199,7 +201,7 @@ export function CobrosMes({
                   />
                 ))}
                 {gastos.map((p) => (
-                  <FilaParte key={p.id} inmuebleId={inmuebleId} parte={p} etiqueta={etiquetaGasto(p)} hoy={hoy} />
+                  <FilaParte key={p.id} inmuebleId={inmuebleId} parte={p} etiqueta={etiquetaGasto(p)} color={colorGasto(p)} hoy={hoy} />
                 ))}
               </ul>
             </div>

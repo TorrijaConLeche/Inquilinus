@@ -117,6 +117,7 @@ export default async function FacturasInmueble({ params }: { params: Promise<{ i
                   inmuebleId={inmueble.id}
                   factura={f}
                   tipo={nombreTipo(f.tipoGastoId)}
+                  color={tiposGasto.find((tg) => tg.id === f.tipoGastoId)?.color ?? null}
                   inquilinos={inquilinos}
                   liquidacion={nombreLiquidacion(f.liquidacionId)}
                   hoy={hoy}

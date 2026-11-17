@@ -337,7 +337,7 @@
       "comunidad": "Building fees"
     },
     "otroGasto": "Other expense",
-    "gastosColor": "Each expense gets its own colour so you can spot it at a glance.",
+    "gastosColor": "Each expense gets the colour shown next to it. You can change it any time on the property page.",
     "guardarSeguir": "Save and continue",
     "inquilinosAyuda": "Add whoever lives in the flat now. You can also do it later.",
     "inquilinoNombre": "Tenant {n} name",
@@ -407,7 +407,7 @@
       "turquesa": "Turquoise",
       "oliva": "Olive",
       "coral": "Coral",
-      "pizarra": "Slate"
+      "granate": "Burgundy"
     },
     "opcional": "optional",
     "borrar": "Delete",
@@ -456,7 +456,9 @@
     "borrarInmuebleDefinitivo": "Delete forever",
     "escribeNombre": "To confirm, type “{nombre}”",
     "verCobros": "Payments",
-    "verFacturas": "Bills"
+    "verFacturas": "Bills",
+    "color": "Colour",
+    "colorUsado": "used by {nombres}"
   },
   "Cobros": {
     "titulo": "Payments",

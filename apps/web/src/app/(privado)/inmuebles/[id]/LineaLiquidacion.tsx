@@ -64,6 +64,7 @@ export function LineaLiquidacion({
   };
 
   const nombreTipo = (id: string | null) => tiposGasto.find((tg) => tg.id === id)?.nombre ?? "—";
+  const colorTipo = (id: string | null) => tiposGasto.find((tg) => tg.id === id)?.color ?? null;
 
   return (
     <li className={estilos.cobro}>
@@ -109,6 +110,7 @@ export function LineaLiquidacion({
               key={p.id}
               inmuebleId={inmuebleId}
               parte={p}
+              color={colorTipo(p.tipoGastoId)}
               etiqueta={`${nombreTipo(p.tipoGastoId)} (${formatoFecha(p.periodoInicio, idioma)} – ${formatoFecha(p.periodoFin, idioma)})`}
               detalle={t("dias", { n: p.dias })}
               hoy={hoy}
