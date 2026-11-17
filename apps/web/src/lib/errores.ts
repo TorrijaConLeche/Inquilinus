@@ -63,6 +63,11 @@ const POR_CODIGO: Record<string, ClaveError> = {
   CAMPO_OBLIGATORIO: "campoObligatorio",
   PERIODO_INVALIDO: "periodoInvalido",
   TIPO_GASTO_DESCONOCIDO: "tipoGastoDesconocido",
+  // Liquidaciones (spec 011).
+  FACTURA_DESCONOCIDA: "facturaDesconocida",
+  FACTURA_NO_REPARTIDA: "facturaNoRepartida",
+  FACTURA_EN_LIQUIDACION: "facturaEnLiquidacion",
+  LIQUIDACION_VACIA: "liquidacionVacia",
 };
 
 export type ClaveError =
@@ -117,6 +122,10 @@ export type ClaveError =
   | "campoObligatorio"
   | "periodoInvalido"
   | "tipoGastoDesconocido"
+  | "facturaDesconocida"
+  | "facturaNoRepartida"
+  | "facturaEnLiquidacion"
+  | "liquidacionVacia"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

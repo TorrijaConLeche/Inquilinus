@@ -91,7 +91,7 @@ Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se rep
 - [ ] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`ExtractorFacturas`) que propone periodo, importe y tipo de gasto · `feat/003-extractor`. Hecha la subida, la lectura en paralelo con un extractor intercambiable y el modo a mano (`feat/003-subida-facturas`); falta la implementación con Bedrock, tras la 5.1
 - [x] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [x] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
-- [ ] **5.5 · Claude** — Liquidaciones: dominio, API, propuesta al confirmar un lote y vista agrupada en el panel y en los cobros del inmueble (spec 011) · `feat/011-liquidaciones`
+- [x] **5.5 · Claude** — Liquidaciones: dominio, API, propuesta al confirmar un lote y vista agrupada en el panel y en los cobros del inmueble (spec 011) · `feat/011-liquidaciones`
 - [ ] **5.6 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos · `test/003-evaluacion`
 
 ## Fase 6 · Timeline y enlace del inquilino (specs 006 y 004) → `v0.1.0`

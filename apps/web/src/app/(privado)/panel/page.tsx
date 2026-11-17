@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import formulario from "../../../componentes/formulario.module.css";
 import { formatoEuros } from "../../../lib/dinero";
-import { formatoMes } from "../../../lib/fechas";
+import { formatoFecha, formatoMes } from "../../../lib/fechas";
 import { panelDe, usuarioActual } from "../../../servidor/api";
 import estilos from "../privado.module.css";
 import propias from "./panel.module.css";
@@ -110,15 +110,61 @@ export default async function PanelPrincipal() {
                           <span key={c.id} className={c.atrasado ? propias.atrasado : propias.concepto}>
                             {c.tipo === "alquiler"
                               ? t("conceptoAlquiler", { mes: formatoMes(c.mes, idioma), importe: euros(c.importe) })
-                              : t("conceptoGasto", {
-                                  gasto: c.nombreGasto ?? t("gasto"),
-                                  mes: formatoMes(c.mes, idioma),
-                                  importe: euros(c.importe),
-                                })}
+                              : c.tipo === "liquidacion"
+                                ? t("conceptoLiquidacion", { nombre: c.liquidacion?.nombre ?? "", importe: euros(c.importe) })
+                                : t("conceptoGasto", {
+                                    gasto: c.nombreGasto ?? t("gasto"),
+                                    mes: formatoMes(c.mes, idioma),
+                                    importe: euros(c.importe),
+                                  })}
                           </span>
                         ))}
                       </span>
                     </Link>
+                    {/* Spec 011, R12: la liquidación se despliega en cada factura con la parte del inquilino. */}
+                    {q.conceptos.map((c) =>
+                      c.liquidacion ? (
+                        <details key={`detalle-${c.id}`} className={propias.desglose}>
+                          <summary>{t("verLiquidacion", { nombre: c.liquidacion.nombre })}</summary>
+                          <ul className={propias.partes}>
+                            {c.liquidacion.partes.map((p) => (
+                              <li key={p.id} className={propias.parte}>
+                                <span className={propias.fila}>
+                                  <span>
+                                    <strong>{p.nombreGasto ?? t("gasto")}</strong>{" "}
+                                    {t("periodo", {
+                                      inicio: formatoFecha(p.periodoInicio, idioma),
+                                      fin: formatoFecha(p.periodoFin, idioma),
+                                    })}
+                                  </span>
+                                  <span className={propias.importe}>{euros(p.importe)}</span>
+                                </span>
+                                <span className={estilos.suave}>
+                                  {t("detalleParte", { total: euros(p.importeFactura), n: p.dias })} ·{" "}
+                                  {p.pagadoEn ? t("pagadaEl", { fecha: formatoFecha(p.pagadoEn, idioma) }) : t("pendienteParte")}
+                                </span>
+                                <span className={propias.enlaces}>
+                                  <Link
+                                    href={`/inmuebles/${inmueble.inmuebleId}/facturas#factura-${p.facturaId}`}
+                                    className={formulario.enlace}
+                                  >
+                                    {t("verCalculo")}
+                                  </Link>
+                                  <a
+                                    href={`/api/inmuebles/${inmueble.inmuebleId}/facturas/${p.facturaId}/pdf`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={formulario.enlace}
+                                  >
+                                    {t("verPdf")}
+                                  </a>
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      ) : null,
+                    )}
                   </li>
                 ))}
               </ul>

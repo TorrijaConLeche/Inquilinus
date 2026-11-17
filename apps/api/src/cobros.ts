@@ -27,6 +27,7 @@ import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
+import { listarLiquidaciones } from "./liquidaciones.ts";
 import { calcularReparto, pagarPartesDelMes, partesDeGastos, repartosVigilados, sinOcuparDelMes } from "./repartos.ts";
 
 type FilaCobro = typeof t.cobroAlquiler.$inferSelect;
@@ -430,13 +431,15 @@ export async function cobrosDelMes(
   mes: string,
   mesActual: string,
 ): Promise<CobrosDelMes> {
-  const [todos, datos, partes, asumePropietarioGastos] = await Promise.all([
+  const [todos, datos, partes, sinOcuparSueltas, liquidaciones] = await Promise.all([
     listarCobros(bd, inmuebleId, { quitados: true }),
     datosDelInmueble(bd, inmuebleId),
     partesDeGastos(bd, [inmuebleId]),
     sinOcuparDelMes(bd, inmuebleId, mes),
+    listarLiquidaciones(bd, inmuebleId),
   ]);
-  const sinInmueble = partes.map(({ inmuebleId: _, ...p }) => p);
+  // Las partes de facturas en una liquidación van agrupadas en ella (spec 011, R13).
+  const sinInmueble = partes.filter((p) => p.liquidacionId === null).map(({ inmuebleId: _, ...p }) => p);
   let asumePropietario: number | null = null;
   try {
     asumePropietario = calcularAlquilerMes({ ...entradaParaMes(datos, mes), mes }).propietario;
@@ -456,7 +459,12 @@ export async function cobrosDelMes(
     gastosAtrasados: sinInmueble
       .filter((p) => p.mes < mesActual && p.mes !== mes && p.pagadoEn === null)
       .sort((a, b) => (a.mes === b.mes ? 0 : a.mes < b.mes ? -1 : 1)),
-    asumePropietarioGastos,
+    // Lo sin ocupar de las sueltas repartidas en el mes y de las liquidaciones del mes (spec 011, R11).
+    asumePropietarioGastos: liquidaciones.filter((l) => l.mes === mes).reduce((s, l) => s + l.sinOcupar, sinOcuparSueltas),
+    liquidaciones: liquidaciones.filter((l) => l.mes === mes),
+    liquidacionesAtrasadas: liquidaciones.filter(
+      (l) => l.mes < mesActual && l.mes !== mes && l.inquilinos.some((q) => q.pendiente > 0),
+    ),
   };
 }
 

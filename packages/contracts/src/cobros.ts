@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { Fecha, RespuestaError } from './comunes.ts';
 import { Centimos, Mes } from './inmuebles.ts';
+import { Liquidacion } from './liquidaciones.ts';
 import { ParteGasto } from './repartos.ts';
 
 // Cobros de alquiler (spec 005). Importes en céntimos; el mes del cobro no cambia nunca.
@@ -94,10 +95,14 @@ export const CobrosDelMes = z
     atrasados: z.array(Cobro),
     /** Renta de habitaciones vacías que asume la propietaria ese mes (R11); null si no se puede calcular. */
     asumePropietario: Centimos.nullable(),
-    /** R8: partes de gastos de las facturas repartidas ese mes. */
+    /** R8: partes de gastos de las facturas sueltas repartidas ese mes. */
     gastos: z.array(ParteGasto),
-    /** R7: partes de gastos pendientes de meses anteriores al mes en curso, sin el elegido. */
+    /** R7: partes de gastos sueltas pendientes de meses anteriores al mes en curso, sin el elegido. */
     gastosAtrasados: z.array(ParteGasto),
+    /** Spec 011, R11 y R13: las liquidaciones creadas ese mes. */
+    liquidaciones: z.array(Liquidacion),
+    /** Spec 011: liquidaciones de meses anteriores al mes en curso con algo pendiente, sin el elegido. */
+    liquidacionesAtrasadas: z.array(Liquidacion),
     /** R11: lo sin ocupar de las facturas repartidas ese mes, que también asume la propietaria. */
     asumePropietarioGastos: Centimos,
   })

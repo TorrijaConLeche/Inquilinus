@@ -218,8 +218,9 @@ export async function marcarParte(
 }
 
 /**
- * Partes de gastos del inmueble (spec 009, R8), con su factura y su mes (R12).
- * Sin lo sin ocupar, que no es de ningún inquilino.
+ * Partes de gastos del inmueble (spec 009, R8), con su factura y su mes: el de
+ * su liquidación si la tiene (spec 011, R11b) o el del reparto (R12). Sin lo
+ * sin ocupar, que no es de ningún inquilino.
  */
 export async function partesDeGastos(bd: ConexionBd, inmuebleIds: string[]): Promise<(ParteGasto & { inmuebleId: string })[]> {
   if (inmuebleIds.length === 0) return [];
@@ -231,15 +232,19 @@ export async function partesDeGastos(bd: ConexionBd, inmuebleIds: string[]): Pro
       importe: t.repartoLinea.importe,
       pagadoEn: t.repartoLinea.pagadoEn,
       facturaId: t.factura.id,
+      liquidacionId: t.factura.liquidacionId,
+      mesLiquidacion: t.liquidacion.mes,
       inmuebleId: t.factura.inmuebleId,
       tipoGastoId: t.factura.tipoGastoId,
       periodoInicio: t.factura.periodoInicio,
       periodoFin: t.factura.periodoFin,
+      importeFactura: t.factura.importeTotal,
       creadoEn: t.reparto.creadoEn,
     })
     .from(t.repartoLinea)
     .innerJoin(t.reparto, eq(t.reparto.id, t.repartoLinea.repartoId))
     .innerJoin(t.factura, eq(t.factura.id, t.reparto.facturaId))
+    .leftJoin(t.liquidacion, eq(t.liquidacion.id, t.factura.liquidacionId))
     .where(and(inArray(t.factura.inmuebleId, inmuebleIds), isNotNull(t.repartoLinea.inquilinoId)));
   return filas.map((f) => ({
     id: f.id,
@@ -248,22 +253,24 @@ export async function partesDeGastos(bd: ConexionBd, inmuebleIds: string[]): Pro
     importe: f.importe,
     pagadoEn: f.pagadoEn,
     facturaId: f.facturaId,
+    liquidacionId: f.liquidacionId,
     inmuebleId: f.inmuebleId,
     tipoGastoId: f.tipoGastoId,
     periodoInicio: f.periodoInicio!,
     periodoFin: f.periodoFin!,
-    mes: mesEnMadrid(f.creadoEn),
+    importeFactura: f.importeFactura!,
+    mes: f.mesLiquidacion ?? mesEnMadrid(f.creadoEn),
   }));
 }
 
-/** Lo sin ocupar de las facturas del inmueble repartidas en un mes (spec 009, R11). */
+/** Lo sin ocupar de las facturas sueltas del inmueble repartidas en un mes (spec 009, R11). */
 export async function sinOcuparDelMes(bd: ConexionBd, inmuebleId: string, mes: string): Promise<number> {
   const filas = await bd
     .select({ importe: t.repartoLinea.importe, creadoEn: t.reparto.creadoEn })
     .from(t.repartoLinea)
     .innerJoin(t.reparto, eq(t.reparto.id, t.repartoLinea.repartoId))
     .innerJoin(t.factura, eq(t.factura.id, t.reparto.facturaId))
-    .where(and(eq(t.factura.inmuebleId, inmuebleId), isNull(t.repartoLinea.inquilinoId)));
+    .where(and(eq(t.factura.inmuebleId, inmuebleId), isNull(t.repartoLinea.inquilinoId), isNull(t.factura.liquidacionId)));
   return filas.filter((f) => mesEnMadrid(f.creadoEn) === mes).reduce((s, f) => s + f.importe, 0);
 }
 

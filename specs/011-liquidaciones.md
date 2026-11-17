@@ -12,13 +12,16 @@ Agrupar varias facturas ya repartidas en una **liquidación** con número y nomb
 
 - **R1** — Una liquidación pertenece a un inmueble y tiene un **número correlativo** por inmueble (1, 2, 3…). Un número nunca se reutiliza, aunque se borre la liquidación.
 - **R2** — Al crearla recibe un **nombre automático**: "Liquidación N · " seguido de los meses que cubren sus facturas (por ejemplo, "Liquidación 1 · septiembre a noviembre de 2026"). La propietaria puede cambiarlo cuando quiera.
+- **R2b** — El nombre automático se escribe en el idioma en que la propietaria usa la app al crearla; después es un texto suyo como cualquier otro.
 - **R3** — Contiene facturas confirmadas y repartidas del inmueble, sin importar cuándo ni cómo se subieron. Una factura está como mucho en una liquidación. Una factura puede quedar **suelta**, fuera de toda liquidación, y se cobra por separado como hasta ahora.
 
 **Crear y cambiar**
 
 - **R4** — Al confirmar un lote (spec 003, R13), la app **propone** crear una liquidación con las facturas confirmadas de ese lote. La propietaria acepta, quita o añade facturas, o la descarta.
+- **R4b** — La propuesta aparece cuando el lote tiene al menos dos facturas repartidas sueltas y ya no le queda ninguna por revisar. Descartarla se recuerda en ese dispositivo.
 - **R5** — También se puede crear una liquidación a mano, eligiendo facturas sueltas del inmueble.
 - **R6** — Se pueden añadir o quitar facturas en cualquier momento. Si algún inquilino ya ha pagado partes de la liquidación, se pide confirmación; las partes pagadas siguen pagadas.
+- **R6b** — Una liquidación no se puede quedar sin facturas: para eso se borra (R7).
 - **R7** — Borrar una liquidación deja sus facturas sueltas. No se pierde ningún pago.
 
 **Totales y pagos**
@@ -27,6 +30,7 @@ Agrupar varias facturas ya repartidas en una **liquidación** con número y nomb
 - **R9** — Estado de cada inquilino en la liquidación: **pagada** (todas sus partes pagadas), **parcial** (alguna) o **pendiente** (ninguna). Se muestra lo que le falta por pagar.
 - **R10** — **"Marcar pagada"** para un inquilino marca como pagadas, con la fecha de hoy, todas sus partes pendientes de la liquidación. Se puede deshacer. Pagar factura a factura sigue siendo posible.
 - **R11** — Para los cobros del inmueble (spec 009, R8), una liquidación pertenece al mes en que se crea. Una factura suelta sigue perteneciendo al mes en que se reparte.
+- **R11b** — Las partes de las facturas de una liquidación, también las que se añaden después, cuentan en el mes de la liquidación: en los cobros, en el panel y en "Todo pagado" (spec 009, R10).
 
 **Dónde se ve**
 
@@ -62,9 +66,9 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 �
 
 ## Tareas
 
-- [ ] Dominio: totales, estado por inquilino, nombre automático y numeración
-- [ ] API: crear (desde lote o a mano), cambiar, renombrar, borrar y marcar pagada
-- [ ] Propuesta al confirmar un lote
-- [ ] Panel y cobros del inmueble agrupados y desplegables
-- [ ] Liquidaciones en el timeline y en el enlace del inquilino
-- [ ] Tests C1–C12
+- [x] Dominio: totales, estado por inquilino, nombre automático y numeración
+- [x] API: crear (desde lote o a mano), cambiar, renombrar, borrar y marcar pagada
+- [x] Propuesta al confirmar un lote
+- [x] Panel y cobros del inmueble agrupados y desplegables
+- [ ] Liquidaciones en el timeline y en el enlace del inquilino (tareas 6.3 y 6.5)
+- [ ] Tests C1–C12 (C9 con el enlace del inquilino, tarea 6.5)

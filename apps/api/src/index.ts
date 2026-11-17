@@ -11,3 +11,4 @@ export { cobrosDelMes } from "./cobros.ts";
 export { resumenDelPanel } from "./panel.ts";
 export type { ExtractorFacturas } from "./extractor.ts";
 export { listarFacturas } from "./facturas.ts";
+export { listarLiquidaciones } from "./liquidaciones.ts";

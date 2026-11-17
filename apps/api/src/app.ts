@@ -21,6 +21,7 @@ import { registrarRutasDocumentos } from "./rutas/documentos.ts";
 import { registrarRutasFacturas } from "./rutas/facturas.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
+import { registrarRutasLiquidaciones } from "./rutas/liquidaciones.ts";
 import { registrarRutasProcesos } from "./rutas/procesos.ts";
 
 export interface Dependencias {
@@ -150,6 +151,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasCobros(app, { bd, ahora });
+    registrarRutasLiquidaciones(app, { bd, ahora });
     registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {

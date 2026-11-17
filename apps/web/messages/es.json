@@ -133,7 +133,11 @@
     "facturaConfirmada": "Esta factura ya está confirmada y no se puede descartar.",
     "campoObligatorio": "Faltan datos: elige el tipo de gasto y rellena el periodo y el importe.",
     "periodoInvalido": "La fecha de fin no puede ser anterior a la de inicio.",
-    "tipoGastoDesconocido": "Ese tipo de gasto no es de este inmueble."
+    "tipoGastoDesconocido": "Ese tipo de gasto no es de este inmueble.",
+    "facturaDesconocida": "Alguna de esas facturas no es de este inmueble.",
+    "facturaNoRepartida": "Solo se pueden agrupar facturas confirmadas y repartidas.",
+    "facturaEnLiquidacion": "Alguna de esas facturas ya está en otra liquidación.",
+    "liquidacionVacia": "Una liquidación no se puede quedar sin facturas. Si ya no la necesitas, bórrala."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -164,7 +168,15 @@
     "vacioTexto": "Da de alta un piso con sus habitaciones e inquilinos y aquí verás qué te deben y de quién.",
     "anadirInmueble": "Añadir un inmueble",
     "gasto": "Gastos",
-    "avisoPorRevisar": "{n, plural, one {# factura por revisar en {inmueble}: confírmala para repartirla} other {# facturas por revisar en {inmueble}: confírmalas para repartirlas}}"
+    "avisoPorRevisar": "{n, plural, one {# factura por revisar en {inmueble}: confírmala para repartirla} other {# facturas por revisar en {inmueble}: confírmalas para repartirlas}}",
+    "conceptoLiquidacion": "{nombre}: {importe}",
+    "verLiquidacion": "Ver las facturas de «{nombre}»",
+    "periodo": "del {inicio} al {fin}",
+    "detalleParte": "factura de {total}, {n, plural, one {# día} other {# días}}",
+    "pagadaEl": "pagada el {fecha}",
+    "pendienteParte": "pendiente",
+    "verCalculo": "Ver el cálculo",
+    "verPdf": "Ver PDF"
   },
   "Ajustes": {
     "titulo": "Ajustes",
@@ -555,6 +567,41 @@
     "recalcularConPagos": "Alguna parte ya está cobrada. ¿Recalcular igualmente? Cada inquilino conserva su cobro.",
     "deshacer": "Deshacer confirmación",
     "deshacerSinPagos": "¿Deshacer la confirmación? Se borrará su reparto y la factura volverá a «Por revisar».",
-    "deshacerConPagos": "¿Deshacer la confirmación? Se borrará su reparto, también las partes que ya están cobradas (esos cobros se pierden), y la factura volverá a «Por revisar»."
+    "deshacerConPagos": "¿Deshacer la confirmación? Se borrará su reparto, también las partes que ya están cobradas (esos cobros se pierden), y la factura volverá a «Por revisar».",
+    "enLiquidacion": "En «{nombre}»"
+  },
+  "Liquidaciones": {
+    "estados": {
+      "pagada": "Pagada",
+      "parcial": "Parcial",
+      "pendiente": "Pendiente"
+    },
+    "falta": "faltan {importe}",
+    "marcarPagada": "Marcar pagada",
+    "deshacer": "Deshacer",
+    "verFacturas": "{n, plural, one {Ver su factura} other {Ver sus # facturas}}",
+    "dias": "{n, plural, one {# día} other {# días}}",
+    "titulo": "Liquidaciones",
+    "explicacion": "Agrupa varias facturas repartidas para cobrarlas juntas: cada inquilino ve su total y el detalle de cada factura.",
+    "propuesta": "Has confirmado {n} facturas juntas. ¿Las agrupas en una liquidación?",
+    "crear": "Crear liquidación",
+    "noGracias": "No, gracias",
+    "elegirOtras": "Elegir facturas",
+    "elegirFacturas": "Facturas",
+    "nombre": "Nombre",
+    "opcional": "opcional",
+    "nombreAyuda": "Si lo dejas vacío, se llamará «Liquidación N» con los meses de sus facturas.",
+    "cancelar": "Cancelar",
+    "nueva": "Nueva liquidación",
+    "quitar": "Quitar",
+    "sinOcupar": "Asumes tú (días sin ocupar): {importe}",
+    "cambiarConPagos": "Algún inquilino ya ha pagado partes de esta liquidación. Las partes pagadas siguen pagadas y su total cambia. ¿Seguir?",
+    "seguir": "Seguir",
+    "guardar": "Guardar",
+    "anadir": "Añadir",
+    "anadirFacturas": "Añadir facturas",
+    "renombrar": "Cambiar nombre",
+    "borrar": "Borrar",
+    "borrarAviso": "Sus facturas quedarán sueltas y se cobrarán por separado. No se pierde ningún pago."
   }
 }

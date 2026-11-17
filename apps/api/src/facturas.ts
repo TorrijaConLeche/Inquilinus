@@ -43,6 +43,7 @@ function aFactura(fila: FilaFactura, reparto: ResumenReparto | null = null): Fac
       ? { inicio: propuesta.inicio, fin: propuesta.fin, importe: propuesta.importe, tipoGastoId: propuesta.tipoGastoId }
       : null,
     subidaEn: fila.creadoEn.toISOString(),
+    liquidacionId: fila.liquidacionId,
     reparto,
   };
 }

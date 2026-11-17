@@ -8,6 +8,7 @@ import {
   listarFacturas,
   listarInmuebles,
   listarInquilinos,
+  listarLiquidaciones,
   listarTiposGasto,
   mesEnMadrid,
   metodoDobleFactor,
@@ -15,7 +16,7 @@ import {
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, Factura, Inmueble, Inquilino, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, Factura, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -114,13 +115,20 @@ export async function panelDe(usuario: UsuarioSesion): Promise<Panel | null> {
 export async function facturasDe(
   usuario: UsuarioSesion,
   inmuebleId: string,
-): Promise<{ inmueble: Inmueble; facturas: Factura[]; tiposGasto: TipoGasto[]; inquilinos: Inquilino[] } | null> {
+): Promise<{
+  inmueble: Inmueble;
+  facturas: Factura[];
+  tiposGasto: TipoGasto[];
+  inquilinos: Inquilino[];
+  liquidaciones: Liquidacion[];
+} | null> {
   const inmueble = await inmuebleDe(usuario, inmuebleId);
   if (!inmueble || !dependencias.bd) return null;
-  const [facturas, tiposGasto, inquilinos] = await Promise.all([
+  const [facturas, tiposGasto, inquilinos, liquidaciones] = await Promise.all([
     listarFacturas(dependencias.bd, inmueble.id, { porRevisar: false }),
     listarTiposGasto(dependencias.bd, inmueble.id),
     listarInquilinos(dependencias.bd, inmueble.id),
+    listarLiquidaciones(dependencias.bd, inmueble.id),
   ]);
-  return { inmueble, facturas, tiposGasto, inquilinos };
+  return { inmueble, facturas, tiposGasto, inquilinos, liquidaciones };
 }
