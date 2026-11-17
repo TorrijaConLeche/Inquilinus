@@ -2,16 +2,20 @@ import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { RespuestaError } from './comunes.ts';
 import { Centimos, Mes } from './inmuebles.ts';
+import { ParteGasto } from './repartos.ts';
 
 // Panel principal (spec 009, R1–R5b). Sin inmuebles archivados; los bloqueados no cuentan.
 
 export const ConceptoPendiente = z
   .object({
     id: z.uuid(),
-    /** Hasta la fase 5 solo hay alquileres. */
-    tipo: z.enum(['alquiler', 'gasto']),
-    /** Nombre del tipo de gasto («Luz»); null en el alquiler. */
+    tipo: z.enum(['alquiler', 'gasto', 'liquidacion']),
+    /** Nombre del tipo de gasto («Luz»); null en el alquiler y en la liquidación. */
     nombreGasto: z.string().nullable(),
+    /** Spec 011, R12: una liquidación es una sola línea (lo que falta) que se despliega en sus partes. */
+    liquidacion: z
+      .object({ id: z.uuid(), nombre: z.string(), partes: z.array(ParteGasto.extend({ nombreGasto: z.string().nullable() })) })
+      .nullable(),
     mes: Mes,
     importe: Centimos,
     /** De un mes anterior al actual (R3): va destacado y primero. */

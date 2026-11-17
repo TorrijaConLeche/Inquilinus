@@ -80,6 +80,8 @@ export const Factura = z
       })
       .nullable(),
     subidaEn: z.iso.datetime(),
+    /** Spec 011: la liquidación en la que está, o null si va suelta. */
+    liquidacionId: z.uuid().nullable(),
     /** Spec 001, R10: el reparto de una factura repartida; null si aún no se ha repartido. */
     reparto: ResumenReparto.nullable(),
   })

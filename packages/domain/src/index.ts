@@ -99,3 +99,9 @@ export {
   type Plan,
   type Periodicidad,
 } from './planes.ts';
+export {
+  nombreLiquidacion,
+  estadoEnLiquidacion,
+  type EstadoLiquidacion,
+  type IdiomaNombre,
+} from './liquidaciones.ts';

@@ -1,7 +1,7 @@
 // Panel principal (spec 009, R1–R5b): totales, pendientes por inmueble e
 // inquilino, una tarjeta por inmueble y avisos. Todo filtrado por el usuario.
 // Los inmuebles archivados no aparecen; los bloqueados no cuentan (R4).
-import type { Panel } from "@inquilinus/contracts";
+import type { ConceptoPendiente, Panel } from "@inquilinus/contracts";
 import { resumenPanel, type Concepto } from "@inquilinus/domain";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
@@ -89,6 +89,56 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
   ];
   const resumen = resumenPanel(conceptos, hoy);
 
+  // Spec 011, R12: las partes de una liquidación van en una sola línea por inquilino.
+  const partePorId = new Map(partes.map((p) => [p.id, p]));
+  const liquidaciones =
+    activos.length === 0
+      ? []
+      : await bd
+          .select({ id: t.liquidacion.id, nombre: t.liquidacion.nombre })
+          .from(t.liquidacion)
+          .where(inArray(t.liquidacion.inmuebleId, activos.map((i) => i.id)));
+  const nombreLiquidacion = new Map(liquidaciones.map((l) => [l.id, l.nombre]));
+  const ORDEN: Record<ConceptoPendiente["tipo"], number> = { alquiler: 0, liquidacion: 1, gasto: 2 };
+  const agrupar = (
+    inquilinoId: string,
+    lista: { id: string; tipo: "alquiler" | "gasto"; mes: string; importe: number; atrasado: boolean }[],
+  ): ConceptoPendiente[] => {
+    const sueltos: ConceptoPendiente[] = [];
+    const porLiquidacion = new Map<string, typeof lista>();
+    for (const c of lista) {
+      const liquidacionId = c.tipo === "gasto" ? partePorId.get(c.id)?.liquidacionId : null;
+      if (liquidacionId) porLiquidacion.set(liquidacionId, [...(porLiquidacion.get(liquidacionId) ?? []), c]);
+      else
+        sueltos.push({
+          id: c.id,
+          tipo: c.tipo,
+          nombreGasto: c.tipo === "gasto" ? (nombreGasto.get(c.id) ?? null) : null,
+          liquidacion: null,
+          mes: c.mes,
+          importe: c.importe,
+          atrasado: c.atrasado,
+        });
+    }
+    const agrupados: ConceptoPendiente[] = [...porLiquidacion].map(([liquidacionId, pendientes]) => ({
+      id: liquidacionId,
+      tipo: "liquidacion",
+      nombreGasto: null,
+      mes: pendientes[0]!.mes,
+      // Lo que le falta por pagar de la liquidación.
+      importe: pendientes.reduce((s, c) => s + c.importe, 0),
+      atrasado: pendientes[0]!.atrasado,
+      liquidacion: {
+        id: liquidacionId,
+        nombre: nombreLiquidacion.get(liquidacionId) ?? "",
+        partes: partes
+          .filter((p) => p.liquidacionId === liquidacionId && p.inquilinoId === inquilinoId)
+          .map(({ inmuebleId: _, ...p }) => ({ ...p, nombreGasto: nombreGasto.get(p.id) ?? null })),
+      },
+    }));
+    return [...sueltos, ...agrupados].sort((a, b) => (a.mes === b.mes ? ORDEN[a.tipo] - ORDEN[b.tipo] : a.mes < b.mes ? -1 : 1));
+  };
+
   // R4: facturas por revisar (subidas, leídas o que no se pudieron leer).
   const porRevisar =
     activos.length === 0
@@ -119,14 +169,7 @@ export async function resumenDelPanel(bd: ConexionBd, usuarioId: string, hoy: st
         inquilinoId: q.inquilinoId,
         nombre: nombreInquilino.get(q.inquilinoId) ?? "",
         total: q.total,
-        conceptos: q.conceptos.map((c) => ({
-          id: c.id,
-          tipo: c.tipo,
-          nombreGasto: c.tipo === "gasto" ? (nombreGasto.get(c.id) ?? null) : null,
-          mes: c.mes,
-          importe: c.importe,
-          atrasado: c.atrasado,
-        })),
+        conceptos: agrupar(q.inquilinoId, q.conceptos),
       })),
     })),
     inmuebles: activos.map((i) => ({

@@ -91,6 +91,17 @@ export {
   rutasFacturas,
 } from './facturas.ts';
 export { EdicionParte, ParteGasto, ParteReparto, RepartoFactura, ResumenReparto } from './repartos.ts';
+export {
+  EdicionLiquidacion,
+  EstadoLiquidacion,
+  InquilinoEnLiquidacion,
+  Liquidacion,
+  ListaLiquidaciones,
+  NuevaLiquidacion,
+  PagoLiquidacion,
+  ResultadoPagoLiquidacion,
+  rutasLiquidaciones,
+} from './liquidaciones.ts';
 export { generarOpenApi } from './openapi.ts';
 export { ConceptoPendiente, Panel, rutasPanel } from './panel.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';
