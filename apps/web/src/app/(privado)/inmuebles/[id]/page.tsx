@@ -4,7 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
-import { detalleDe, usuarioActual } from "../../../../servidor/api";
+import { Timeline } from "../../../../componentes/timeline/Timeline";
+import { detalleDe, timelineDe, usuarioActual } from "../../../../servidor/api";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
 import { ArchivarInmueble } from "./ArchivarInmueble";
@@ -30,8 +31,9 @@ export default async function DetalleInmueble({
 }) {
   const t = await getTranslations("Detalle");
   const usuario = await usuarioActual();
-  const detalle = usuario ? await detalleDe(usuario, (await params).id) : null;
-  if (!detalle) notFound();
+  const id = (await params).id;
+  const [detalle, timeline] = usuario ? await Promise.all([detalleDe(usuario, id), timelineDe(usuario, id)]) : [null, null];
+  if (!detalle || !timeline) notFound();
   const { inmueble, inquilinos, tiposGasto } = detalle;
   const { creado } = await searchParams;
 
@@ -55,6 +57,8 @@ export default async function DetalleInmueble({
       </div>
       {creado === "1" && <Aviso tipo="exito">{t("creado")}</Aviso>}
       {inmueble.archivado && <Aviso tipo="info">{t("archivadoAviso")}</Aviso>}
+      {/* Spec 006: la pieza central de la transparencia. */}
+      <Timeline datos={timeline} hoy={hoyEnMadrid()} />
       <DatosInmueble inmueble={inmueble} />
       <Habitaciones inmuebleId={inmueble.id} habitaciones={inmueble.habitaciones} mesActual={mesEnMadrid()} />
       <Inquilinos inmuebleId={inmueble.id} inquilinos={inquilinos} habitaciones={inmueble.habitaciones} hoy={hoyEnMadrid()} />

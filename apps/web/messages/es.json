@@ -605,5 +605,24 @@
     "renombrar": "Cambiar nombre",
     "borrar": "Borrar",
     "borrarAviso": "Sus facturas quedarán sueltas y se cobrarán por separado. No se pierde ningún pago."
+  },
+  "Timeline": {
+    "titulo": "Línea de tiempo",
+    "zoom": "Zoom",
+    "zooms": {
+      "mes": "Mes",
+      "trimestre": "Trimestre",
+      "anio": "Año"
+    },
+    "desplazar": "Línea de tiempo: desliza en horizontal para ver otras fechas",
+    "alquiler": "Alquiler",
+    "alquilerDel": "Alquiler del {fecha}:",
+    "todoPagado": "todo pagado",
+    "pagados": "{pagados}/{total} pagado",
+    "periodo": "del {inicio} al {fin}",
+    "entra": "entra {fecha}",
+    "sale": "sale {fecha}",
+    "vacio": "Cuando tengas inquilinos, cobros o facturas repartidas, aquí los verás sobre un eje de días.",
+    "pagadosCorto": "{pagados}/{total}"
   }
 }

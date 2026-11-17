@@ -12,3 +12,4 @@ export { resumenDelPanel } from "./panel.ts";
 export type { ExtractorFacturas } from "./extractor.ts";
 export { listarFacturas } from "./facturas.ts";
 export { listarLiquidaciones } from "./liquidaciones.ts";
+export { datosTimeline } from "./timeline.ts";

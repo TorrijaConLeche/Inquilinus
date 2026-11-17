@@ -5,6 +5,7 @@ import { rutasCuenta } from './cuenta.ts';
 import { rutasDocumentos } from './documentos.ts';
 import { rutasFacturas } from './facturas.ts';
 import { rutasLiquidaciones } from './liquidaciones.ts';
+import { rutasTimeline } from './timeline.ts';
 import { rutasPanel } from './panel.ts';
 import { rutasInmuebles } from './inmuebles.ts';
 import { rutasInquilinos } from './inquilinos.ts';
@@ -31,6 +32,7 @@ export function generarOpenApi() {
       ...rutasPanel,
       ...rutasFacturas,
       ...rutasLiquidaciones,
+      ...rutasTimeline,
     },
   });
 }

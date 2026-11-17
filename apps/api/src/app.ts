@@ -23,6 +23,7 @@ import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 import { registrarRutasLiquidaciones } from "./rutas/liquidaciones.ts";
 import { registrarRutasProcesos } from "./rutas/procesos.ts";
+import { registrarRutasTimeline } from "./rutas/timeline.ts";
 
 export interface Dependencias {
   /** Reloj (por defecto, la hora real). Los tests lo fijan para controlar el mes actual. */
@@ -152,6 +153,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasCobros(app, { bd, ahora });
     registrarRutasLiquidaciones(app, { bd, ahora });
+    registrarRutasTimeline(app, { bd });
     registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {
