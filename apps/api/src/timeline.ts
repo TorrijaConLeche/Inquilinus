@@ -5,13 +5,15 @@ import type { ConexionBd } from "./bd/cliente.ts";
 import { listarCobros } from "./cobros.ts";
 import { listarFacturas } from "./facturas.ts";
 import { listarInquilinos, listarTiposGasto } from "./inquilinos.ts";
+import { listarLiquidaciones } from "./liquidaciones.ts";
 
 export async function datosTimeline(bd: ConexionBd, inmuebleId: string): Promise<DatosTimeline> {
-  const [tiposGasto, inquilinos, cobros, facturas] = await Promise.all([
+  const [tiposGasto, inquilinos, cobros, facturas, liquidaciones] = await Promise.all([
     listarTiposGasto(bd, inmuebleId),
     listarInquilinos(bd, inmuebleId),
     listarCobros(bd, inmuebleId, { quitados: false }),
     listarFacturas(bd, inmuebleId, { porRevisar: false }),
+    listarLiquidaciones(bd, inmuebleId),
   ]);
   return {
     tiposGasto,
@@ -43,5 +45,6 @@ export async function datosTimeline(bd: ConexionBd, inmuebleId: string): Promise
         liquidacionId: f.liquidacionId,
         partes: f.reparto!.partes.map((p) => ({ inquilinoId: p.inquilinoId, importe: p.importe, pagadoEn: p.pagadoEn })),
       })),
+    liquidaciones: liquidaciones.map((l) => ({ id: l.id, numero: l.numero, nombre: l.nombre, mes: l.mes, total: l.total })),
   };
 }

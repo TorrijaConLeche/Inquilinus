@@ -106,4 +106,4 @@ export {
 export { generarOpenApi } from './openapi.ts';
 export { ConceptoPendiente, Panel, rutasPanel } from './panel.ts';
 export { RespuestaSalud, rutasSalud } from './salud.ts';
-export { DatosTimeline, rutasTimeline } from './timeline.ts';
+export { DatosTimeline, DesgloseAlquiler, rutasTimeline } from './timeline.ts';

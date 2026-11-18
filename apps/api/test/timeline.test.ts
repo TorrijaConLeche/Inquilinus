@@ -2,6 +2,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import {
   DatosTimeline,
+  DesgloseAlquiler,
   Factura,
   Inmueble,
   Inquilino,
@@ -173,6 +174,7 @@ describe("Spec 006 · datos del timeline", () => {
     });
     const pagos = new Map(luz.partes.map((p) => [p.inquilinoId, p.pagadoEn]));
     expect([pagos.get(e.a.id), pagos.get(e.b.id), pagos.get(e.c.id)]).toEqual(["2026-10-02", null, null]);
+    expect(datos.liquidaciones).toEqual([]);
     // Lo de cada inquilino no lleva datos de más (RGPD): ni documentos ni fianza.
     expect(Object.keys(datos.inquilinos[0]!).sort()).toEqual(["id", "nombre", "ocupaciones"]);
   });
@@ -185,5 +187,66 @@ describe("Aislamiento del timeline", () => {
     const ajena = await cuenta();
     expect((await pedir(`${e.base}/timeline`, { cookie: ajena })).status).toBe(404);
     expect((await pedir(`/inmuebles/no-es-un-uuid/timeline`, { cookie: e.cookie })).status).toBe(404);
+  });
+});
+
+describe("Spec 006 · desglose de un mes de alquiler (R11)", () => {
+  it("C4 · A 550 € (500 + 50), B 450 € (400 + 50), C 200 €; H3 vacía del 1 al 10, repartida entre A y B", async () => {
+    const cookie = await cuenta();
+    const i = Inmueble.parse(
+      await (
+        await pedir("/inmuebles", {
+          cuerpo: {
+            nombre: "Piso entero",
+            modalidad: "entero",
+            mesesParciales: "prorrateo",
+            habitaciones: [
+              { nombre: "H1", precioMensual: 50_000, desdeMes: "2026-01" },
+              { nombre: "H2", precioMensual: 40_000, desdeMes: "2026-01" },
+              { nombre: "H3", precioMensual: 30_000, desdeMes: "2026-01" },
+            ],
+          },
+          cookie,
+        })
+      ).json(),
+    );
+    const base = `/inmuebles/${i.id}`;
+    const [h1, h2, h3] = i.habitaciones.map((h) => h.id);
+    const alta = async (nombre: string, habitacionId: string, entrada: string) =>
+      Inquilino.parse(await (await pedir(`${base}/inquilinos`, { cuerpo: { nombre, ocupacion: { habitacionId, entrada } }, cookie })).json());
+    const a = await alta("A", h1!, "2026-09-01");
+    const b = await alta("B", h2!, "2026-09-01");
+    const c = await alta("C", h3!, "2026-09-11");
+    const generados = ResultadoGeneracion.parse(await (await pedir(`${base}/cobros/generar`, { cuerpo: { mes: "2026-09" }, cookie })).json()).creados;
+    await pedir(`${base}/cobros/${generados.find((x) => x.inquilinoId === a.id)!.id}`, { metodo: "PATCH", cuerpo: { pagadoEn: "2026-09-02" }, cookie });
+
+    const r = await pedir(`${base}/alquiler/2026-09`, { cookie });
+    expect(r.status).toBe(200);
+    const d = DesgloseAlquiler.parse(await r.json());
+    const de = (id: string) => d.lineas.find((l) => l.inquilinoId === id)!;
+    expect(de(a.id)).toMatchObject({ habitacionIds: [h1], calculado: { renta: 50_000, recargoVacios: 5_000, importe: 55_000 } });
+    expect(de(b.id).calculado).toEqual({ renta: 40_000, recargoVacios: 5_000, importe: 45_000 });
+    expect(de(c.id).calculado).toEqual({ renta: 20_000, recargoVacios: 0, importe: 20_000 });
+    // Lo guardado (foto fija) con su estado de pago.
+    expect(de(a.id).cobro).toMatchObject({ importe: 55_000, pagadoEn: "2026-09-02" });
+    expect(de(b.id).cobro).toMatchObject({ importe: 45_000, pagadoEn: null });
+    expect(d.vacios).toEqual([{ habitacionId: h3, desde: "2026-09-01", hasta: "2026-09-10", entre: [a.id, b.id].sort() }]);
+    expect(d.propietario).toBe(0);
+    expect(d.habitaciones.map((h) => h.nombre).sort()).toEqual(["H1", "H2", "H3"]);
+  });
+
+  it("un mes sin nadie: sin líneas; lo vacío lo asume la propietaria", async () => {
+    const e = await escenario();
+    const d = DesgloseAlquiler.parse(await (await pedir(`${e.base}/alquiler/2026-07`, { cookie: e.cookie })).json());
+    expect(d.lineas).toEqual([]);
+    expect(d.vacios.every((v) => v.entre.length === 0)).toBe(true);
+    expect(d.propietario).toBe(120_000);
+  });
+
+  it("aislamiento: otra cuenta, 404; sin sesión, 401; mes no válido, 404", async () => {
+    const e = await escenario();
+    expect((await pedir(`${e.base}/alquiler/2026-09`)).status).toBe(401);
+    expect((await pedir(`${e.base}/alquiler/2026-09`, { cookie: await cuenta() })).status).toBe(404);
+    expect((await pedir(`${e.base}/alquiler/2026-13`, { cookie: e.cookie })).status).toBe(404);
   });
 });

@@ -1,7 +1,7 @@
 // Cobros de alquiler (spec 005): listar, generar a mano, añadir, editar,
 // mover, quitar, restaurar y marcar pagado. Las funciones reciben un inmueble
 // que ya se ha comprobado que es del usuario; aquí todo se filtra además por él.
-import type { Cobro, CobrosDelMes, EdicionCobro, NuevoCobro, ParteGasto } from "@inquilinus/contracts";
+import type { Cobro, CobrosDelMes, DesgloseAlquiler, EdicionCobro, NuevoCobro, ParteGasto } from "@inquilinus/contracts";
 import {
   calcularAlquilerMes,
   cobroManual,
@@ -22,6 +22,7 @@ import {
   repartosDistintos,
   type ResultadoAlquilerMes,
   type ResultadoRepartoSuministro,
+  vaciosDelMes,
 } from "@inquilinus/domain";
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
@@ -500,4 +501,49 @@ export async function pagarTodo(
   // Y sus partes de gastos de ese mes (spec 009, R10).
   const partes = await pagarPartesDelMes(bd, inmuebleId, pago.inquilinoId, pago.mes, fecha);
   return { marcados: filas.map(aCobro), partes };
+}
+
+/**
+ * Spec 006, R11: el desglose de un mes de alquiler del inmueble. Cada cobro
+ * guardado (no quitado) y lo que sale hoy del cálculo, con los días vacíos.
+ */
+export async function desgloseAlquiler(bd: ConexionBd, inmuebleId: string, mes: string): Promise<DesgloseAlquiler> {
+  const [datos, cobros, habitaciones] = await Promise.all([
+    datosDelInmueble(bd, inmuebleId),
+    listarCobros(bd, inmuebleId, { mes, quitados: false }),
+    bd.select({ id: t.habitacion.id, nombre: t.habitacion.nombre }).from(t.habitacion).where(eq(t.habitacion.inmuebleId, inmuebleId)),
+  ]);
+  const entrada = { ...entradaParaMes(datos, mes), mes };
+  let calculo: ResultadoAlquilerMes | null = null;
+  try {
+    calculo = calcularAlquilerMes(entrada);
+  } catch (e) {
+    // Sin precio para el mes: se enseña lo guardado sin cálculo.
+    if (!(e instanceof ErrorValidacion)) throw e;
+  }
+  const inicio = `${mes}-01`;
+  const fin = fechaEnMes(mes, 31);
+  const habitacionesDe = (inquilinoId: string) => [
+    ...new Set(
+      datos.ocupaciones
+        .filter((o) => o.inquilinoId === inquilinoId && o.entrada <= fin && (o.salida === null || o.salida >= inicio))
+        .map((o) => o.habitacionId),
+    ),
+  ];
+  const ids = [...new Set([...(calculo?.lineas.map((l) => l.inquilinoId) ?? []), ...cobros.map((c) => c.inquilinoId)])];
+  return {
+    mes,
+    habitaciones,
+    lineas: ids.map((inquilinoId) => {
+      const linea = calculo?.lineas.find((l) => l.inquilinoId === inquilinoId);
+      return {
+        inquilinoId,
+        habitacionIds: habitacionesDe(inquilinoId),
+        cobro: cobros.find((c) => c.inquilinoId === inquilinoId) ?? null,
+        calculado: linea ? { renta: linea.renta, recargoVacios: linea.recargoVacios, importe: linea.importe } : null,
+      };
+    }),
+    vacios: calculo ? vaciosDelMes(entrada) : [],
+    propietario: calculo?.propietario ?? null,
+  };
 }
