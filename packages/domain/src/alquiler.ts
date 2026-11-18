@@ -1,5 +1,5 @@
 import { ErrorValidacion } from './errores.ts';
-import { rangoDelMes, type Mes } from './fechas.ts';
+import { desdeDia, rangoDelMes, type Fecha, type Mes } from './fechas.ts';
 import { calcularTramos, ordenInquilinos, presentesPorDia, type Ocupacion } from './presencia.ts';
 import { mcm, repartirMayorResto } from './redondeo.ts';
 
@@ -133,4 +133,49 @@ export function calcularAlquilerMes(entrada: EntradaAlquilerMes): ResultadoAlqui
     propietario: redondeados[orden.length * 2]!,
     rentaTotal: entrada.habitaciones.reduce((s, h) => s + h.precioMensual, 0),
   };
+}
+
+/** Un tramo seguido de días vacíos de una habitación con los mismos presentes (spec 006, R11). */
+export interface TramoVacio {
+  habitacionId: string;
+  desde: Fecha;
+  hasta: Fecha;
+  /** Entre quiénes se reparte (modo entero, R5); vacío si lo asume la propietaria (R5 sin presentes, R6). */
+  entre: string[];
+}
+
+/**
+ * Spec 006, R11 («H3 vacía del 1 al 10, repartida entre 2»): los días vacíos
+ * de cada habitación en el mes, agrupados en tramos seguidos con los mismos
+ * inquilinos presentes. Sigue las reglas de la spec 002 (R4–R7).
+ */
+export function vaciosDelMes(entrada: EntradaAlquilerMes): TramoVacio[] {
+  const { inicio, fin, dias: diasMes } = rangoDelMes(entrada.mes);
+  const tramos = calcularTramos(entrada.ocupaciones).filter((t) => t.hasta >= inicio && t.desde <= fin);
+  const presentesInmueble = presentesPorDia(tramos, inicio, fin);
+  const resultado: TramoVacio[] = [];
+  for (const h of entrada.habitaciones) {
+    const ocupantes = new Set<string>();
+    const vacios: number[] = [];
+    for (let d = 0; d < diasMes; d++) {
+      const t = tramos.find((x) => x.habitacionId === h.id && x.desde <= inicio + d && inicio + d <= x.hasta);
+      if (t) ocupantes.add(t.inquilinoId);
+      else vacios.push(d);
+    }
+    // R7: con mes completo y un único inquilino en el mes, la habitación no tiene días vacíos.
+    if (entrada.mesesParciales === 'mes_completo' && ocupantes.size === 1) continue;
+    let actual: TramoVacio | null = null;
+    let anterior = -2;
+    for (const d of vacios) {
+      const entre = entrada.modalidad === 'entero' ? [...presentesInmueble[d]!].sort() : [];
+      const mismo = actual !== null && d === anterior + 1 && actual.entre.join() === entre.join();
+      if (mismo) actual!.hasta = desdeDia(inicio + d);
+      else {
+        actual = { habitacionId: h.id, desde: desdeDia(inicio + d), hasta: desdeDia(inicio + d), entre };
+        resultado.push(actual);
+      }
+      anterior = d;
+    }
+  }
+  return resultado;
 }
