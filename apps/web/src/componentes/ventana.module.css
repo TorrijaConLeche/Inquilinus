@@ -2,6 +2,8 @@
 .ventana {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 0;
   border: 1px solid var(--borde);
   border-radius: var(--radio-ventana);

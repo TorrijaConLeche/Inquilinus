@@ -70,5 +70,5 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 â‚
 - [x] API: crear (desde lote o a mano), cambiar, renombrar, borrar y marcar pagada
 - [x] Propuesta al confirmar un lote
 - [x] Panel y cobros del inmueble agrupados y desplegables
-- [ ] Liquidaciones en el timeline y en el enlace del inquilino (tareas 6.3 y 6.5)
+- [ ] Liquidaciones en el timeline (hecho en la tarea 6.3) y en el enlace del inquilino (tarea 6.5)
 - [ ] Tests C1â€“C12 (C9 con el enlace del inquilino, tarea 6.5)
