@@ -1,0 +1,49 @@
+/* Ventana modal (docs/estilo.md: esquinas de 16 px, sin sombras marcadas). */
+.ventana {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-ventana);
+  background: var(--superficie);
+  color: var(--texto);
+}
+
+.ventana::backdrop {
+  background: color-mix(in srgb, var(--texto) 40%, transparent);
+}
+
+.contenido {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cabecera h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.cerrar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cerrar:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}

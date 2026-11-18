@@ -6,7 +6,8 @@
   "Comun": {
     "marca": "Inquilinus",
     "mostrarContrasena": "Show password",
-    "ocultarContrasena": "Hide password"
+    "ocultarContrasena": "Hide password",
+    "cerrar": "Close"
   },
   "Inicio": {
     "titulo": "Inquilinus",
@@ -624,5 +625,39 @@
     "sale": "moves out {fecha}",
     "vacio": "Once you have tenants, rent or split bills, you'll see them here along a timeline.",
     "pagadosCorto": "{pagados}/{total}"
+  },
+  "Detalles": {
+    "cargando": "Loading…",
+    "alquilerTitulo": "Rent due {fecha}",
+    "delMes": "Rent for {mes}",
+    "rentaYRecargo": "{renta} rent + {recargo} for empty days = {importe}",
+    "soloRenta": "{renta} rent",
+    "vaciaRepartida": "{habitacion} empty from {desde} to {hasta}, split between {n}",
+    "vaciaAsumes": "{habitacion} empty from {desde} to {hasta}: you cover it",
+    "editado": "Amount changed by hand",
+    "desactualizado": "Out of date: check it in rent",
+    "sinCobro": "No rent created",
+    "pagadoEl": "Paid on {fecha}",
+    "pendiente": "Pending",
+    "cobrado": "Paid",
+    "deshacer": "Undo",
+    "asumesTu": "You cover",
+    "total": "Total",
+    "gasto": "Expense",
+    "periodo": "Period",
+    "delAl": "from {desde} to {hasta}",
+    "importeTotal": "Total amount",
+    "liquidacion": "Settlement",
+    "calculo": "Calculation by period",
+    "tramo": "From {desde} to {hasta} ({n, plural, one {# day} other {# days}})",
+    "tramoVacio": "nobody there, you cover it",
+    "reparto": "Split",
+    "dias": "{n, plural, one {# day} other {# days}}",
+    "sinOcupar": "Empty: {importe} ({n, plural, one {# day} other {# days}}), you cover it",
+    "descargarPdf": "Download PDF",
+    "movimientos": "Activity",
+    "entra": "Moves in",
+    "sale": "Moves out",
+    "verMas": "Show more"
   }
 }

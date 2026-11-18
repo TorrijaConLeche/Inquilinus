@@ -347,3 +347,42 @@
 .anioMarca {
   display: block;
 }
+
+/* R11 y R12: chinchetas y barras pulsables. */
+.pulsable {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.importeChincheta {
+  border: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+button.importeChincheta:hover {
+  background: var(--color-suave);
+}
+
+.botonBarra {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.barra:has(button:hover) {
+  filter: brightness(0.96);
+}
+
+.pulsable:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
