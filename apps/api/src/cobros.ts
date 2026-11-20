@@ -27,6 +27,7 @@ import {
 import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
+import { actividadCobro, conceptoParte, registrar } from "./actividad.ts";
 import { ErrorPeticion } from "./errores.ts";
 import { listarLiquidaciones } from "./liquidaciones.ts";
 import { calcularReparto, pagarPartesDelMes, partesDeGastos, repartosVigilados, sinOcuparDelMes } from "./repartos.ts";
@@ -148,6 +149,8 @@ export async function generarCobros(bd: ConexionBd, inmuebleId: string, mes: str
     .values(nuevos.map((c) => ({ ...c, origen: "manual" as const })))
     .onConflictDoNothing()
     .returning();
+  // Spec 012: cada cobro generado queda en el histórico.
+  await registrar(bd, ...filas.map((c) => actividadCobro(inmuebleId, "cobro_generado", c, { origen: "manual" })));
   return filas.map(aCobro);
 }
 
@@ -197,6 +200,7 @@ export async function crearCobro(bd: ConexionBd, inmuebleId: string, nuevo: Nuev
       editado: importes.editado,
     })
     .returning();
+  await registrar(bd, actividadCobro(inmuebleId, "cobro_generado", fila!, { origen: "manual" }));
   return aCobro(fila!);
 }
 
@@ -242,7 +246,28 @@ export async function editarCobro(
     .set({ ...cambios, actualizadoEn: new Date() })
     .where(eq(t.cobroAlquiler.id, cobroId))
     .returning();
-  return aCobro(fila!);
+  // Spec 012: cada cambio, con el valor anterior y el nuevo (R4).
+  const nuevo = fila!;
+  await registrar(
+    bd,
+    ...[
+      nuevo.importe !== actual.importe
+        ? actividadCobro(inmuebleId, "cobro_editado", nuevo, { antes: actual.importe, despues: nuevo.importe })
+        : null,
+      nuevo.fechaCobro !== actual.fechaCobro
+        ? actividadCobro(inmuebleId, "cobro_movido", nuevo, { fechaAntes: actual.fechaCobro, fechaDespues: nuevo.fechaCobro })
+        : null,
+      (nuevo.quitadoEn !== null) !== (actual.quitadoEn !== null)
+        ? actividadCobro(inmuebleId, nuevo.quitadoEn ? "cobro_quitado" : "cobro_restaurado", nuevo)
+        : null,
+      nuevo.pagadoEn !== actual.pagadoEn
+        ? nuevo.pagadoEn
+          ? actividadCobro(inmuebleId, "cobro_pagado", nuevo, { fecha: nuevo.pagadoEn })
+          : actividadCobro(inmuebleId, "cobro_desmarcado", nuevo)
+        : null,
+    ].filter((a) => a !== null),
+  );
+  return aCobro(nuevo);
 }
 
 // --- Proceso diario (R2, R2b, R3, R8, R8b) -----------------------------------
@@ -281,8 +306,9 @@ export async function generarCobrosDelDia(bd: ConexionBd, hoy: string): Promise<
         .insert(t.cobroAlquiler)
         .values(nuevos.map((c) => ({ ...c, origen: "auto" as const })))
         .onConflictDoNothing()
-        .returning({ id: t.cobroAlquiler.id });
+        .returning();
       resumen.creados += filas.length;
+      await registrar(bd, ...filas.map((c) => actividadCobro(inmueble.id, "cobro_generado", c, { origen: "auto" })));
     } catch (error) {
       resumen.fallos.push(error instanceof ErrorValidacion ? error.codigo : error instanceof Error ? error.name : "DESCONOCIDO");
     }
@@ -416,6 +442,9 @@ export async function recalcularCobro(
     })
     .where(eq(t.cobroAlquiler.id, cobroId))
     .returning();
+  if (fila!.importe !== actual.importe) {
+    await registrar(bd, actividadCobro(inmuebleId, "cobro_recalculado", fila!, { antes: actual.importe, despues: fila!.importe }));
+  }
   return aCobro(fila!);
 }
 
@@ -500,6 +529,22 @@ export async function pagarTodo(
     .returning();
   // Y sus partes de gastos de ese mes (spec 009, R10).
   const partes = await pagarPartesDelMes(bd, inmuebleId, pago.inquilinoId, pago.mes, fecha);
+  if (filas.length + partes.length > 0) {
+    await registrar(bd, {
+      inmuebleId,
+      tipo: "todo_pagado",
+      inquilinoId: pago.inquilinoId,
+      detalle: {
+        mes: pago.mes,
+        fecha,
+        importe: filas.reduce((s, c) => s + c.importe, 0) + partes.reduce((s, p) => s + p.importe, 0),
+        conceptos: [
+          ...filas.map((c) => ({ tipo: "cobro" as const, id: c.id, inquilinoId: c.inquilinoId, importe: c.importe })),
+          ...partes.map(conceptoParte),
+        ],
+      },
+    });
+  }
   return { marcados: filas.map(aCobro), partes };
 }
 

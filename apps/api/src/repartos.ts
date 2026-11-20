@@ -12,6 +12,7 @@ import {
 } from "@inquilinus/domain";
 import { and, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { conceptoParte, registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
@@ -69,6 +70,43 @@ function lineasDe(repartoId: string, resultado: ResultadoRepartoSuministro, pago
 
 const detalleDe = (r: ResultadoRepartoSuministro): Detalle => ({ tramos: r.tramos, sinOcupar: r.sinOcupar });
 
+/** Spec 012: el reparto de una factura en el histórico, con la parte de cada inquilino. */
+async function registrarReparto(
+  bd: ConexionBd,
+  inmuebleId: string,
+  facturaId: string,
+  repartoId: string | null,
+  tipo: "factura_repartida" | "reparto_recalculado" | "reparto_deshecho",
+): Promise<void> {
+  const [factura] = await bd
+    .select({
+      tipoGastoId: t.factura.tipoGastoId,
+      periodoInicio: t.factura.periodoInicio,
+      periodoFin: t.factura.periodoFin,
+      importeTotal: t.factura.importeTotal,
+    })
+    .from(t.factura)
+    .where(eq(t.factura.id, facturaId));
+  const partes = repartoId
+    ? await bd
+        .select({ id: t.repartoLinea.id, inquilinoId: t.repartoLinea.inquilinoId, importe: t.repartoLinea.importe })
+        .from(t.repartoLinea)
+        .where(and(eq(t.repartoLinea.repartoId, repartoId), isNotNull(t.repartoLinea.inquilinoId)))
+    : [];
+  await registrar(bd, {
+    inmuebleId,
+    tipo,
+    tipoGastoId: factura?.tipoGastoId ?? null,
+    detalle: {
+      facturaId,
+      ...(factura?.importeTotal != null && { importe: factura.importeTotal }),
+      ...(factura?.periodoInicio && { periodoInicio: factura.periodoInicio }),
+      ...(factura?.periodoFin && { periodoFin: factura.periodoFin }),
+      conceptos: partes.map((p) => conceptoParte({ id: p.id, inquilinoId: p.inquilinoId!, importe: p.importe })),
+    },
+  });
+}
+
 /**
  * R10: reparte una factura confirmada con las estancias de ahora y la deja
  * `repartida`, todo o nada. La factura ya está validada (spec 003, R9).
@@ -87,6 +125,7 @@ export async function crearReparto(
     db.insert(t.reparto).values({ id: repartoId, facturaId: factura.id, detalle: detalleDe(resultado), creadoEn: ahora, calculadoEn: ahora }),
     db.insert(t.repartoLinea).values(lineasDe(repartoId, resultado)),
   ]);
+  await registrarReparto(bd, inmuebleId, factura.id, repartoId, "factura_repartida");
 }
 
 /** Resúmenes de los repartos de varias facturas, por id de factura. */
@@ -171,6 +210,7 @@ export async function recalcularReparto(bd: ConexionBd, inmuebleId: string, fact
       .set({ detalle: detalleDe(resultado), calculadoEn: new Date(), desactualizado: false, actualizadoEn: new Date() })
       .where(eq(t.reparto.id, actual.repartoId)),
   ]);
+  await registrarReparto(bd, inmuebleId, facturaId, actual.repartoId, "reparto_recalculado");
   return true;
 }
 
@@ -190,6 +230,7 @@ export async function deshacerReparto(bd: ConexionBd, inmuebleId: string, factur
       .set({ estado: actual.propuestaIa ? "propuesta" : "subida", actualizadoEn: new Date() })
       .where(eq(t.factura.id, facturaId)),
   ]);
+  await registrarReparto(bd, inmuebleId, facturaId, null, "reparto_deshecho");
   return true;
 }
 
@@ -202,7 +243,12 @@ export async function marcarParte(
   hoy: string,
 ): Promise<ParteReparto | null> {
   const [parte] = await bd
-    .select({ id: t.repartoLinea.id })
+    .select({
+      id: t.repartoLinea.id,
+      pagadoEn: t.repartoLinea.pagadoEn,
+      facturaId: t.factura.id,
+      tipoGastoId: t.factura.tipoGastoId,
+    })
     .from(t.repartoLinea)
     .innerJoin(t.reparto, eq(t.reparto.id, t.repartoLinea.repartoId))
     .innerJoin(t.factura, eq(t.factura.id, t.reparto.facturaId))
@@ -214,6 +260,21 @@ export async function marcarParte(
     .set({ pagadoEn: fecha, actualizadoEn: new Date() })
     .where(eq(t.repartoLinea.id, parteId))
     .returning();
+  // Spec 012: pagar o desmarcar una parte queda en el histórico.
+  if (fila!.pagadoEn !== parte.pagadoEn) {
+    await registrar(bd, {
+      inmuebleId,
+      tipo: fila!.pagadoEn ? "parte_pagada" : "parte_desmarcada",
+      inquilinoId: fila!.inquilinoId,
+      tipoGastoId: parte.tipoGastoId,
+      detalle: {
+        facturaId: parte.facturaId,
+        importe: fila!.importe,
+        ...(fila!.pagadoEn && { fecha: fila!.pagadoEn }),
+        conceptos: [conceptoParte({ id: fila!.id, inquilinoId: fila!.inquilinoId!, importe: fila!.importe })],
+      },
+    });
+  }
   return { id: fila!.id, inquilinoId: fila!.inquilinoId!, dias: fila!.dias, importe: fila!.importe, pagadoEn: fila!.pagadoEn };
 }
 
