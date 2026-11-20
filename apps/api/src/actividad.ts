@@ -44,7 +44,8 @@ const DE_ALQUILER = new Set<TipoActividad>([
 /** R6: `alquiler`, el tipo de gasto, o null si la actividad no es de dinero o mezcla varios. */
 function gastoDe(tipo: TipoActividad, tipoGastoId: string | null): string | null {
   if (DE_ALQUILER.has(tipo)) return "alquiler";
-  return tipoGastoId;
+  // Crear o archivar un tipo de gasto es del inmueble, no un movimiento de dinero (C3).
+  return grupoDe(tipo) === "inmueble" ? null : tipoGastoId;
 }
 
 /**

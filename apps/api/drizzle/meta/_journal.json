@@ -50,6 +50,13 @@
       "when": 1794938386536,
       "tag": "0006_color_granate",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795204150351,
+      "tag": "0007_historico_reconstruido",
+      "breakpoints": true
     }
   ]
 }
