@@ -11,6 +11,8 @@ export {
 } from './suministros.ts';
 export {
   calcularAlquilerMes,
+  vaciosDelMes,
+  type TramoVacio,
   type EntradaAlquilerMes,
   type Habitacion,
   type LineaAlquiler,

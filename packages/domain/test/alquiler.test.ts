@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calcularAlquilerMes, type EntradaAlquilerMes, type Ocupacion } from '../src/index.ts';
+import { calcularAlquilerMes, vaciosDelMes, type EntradaAlquilerMes, type Ocupacion } from '../src/index.ts';
 
 // Casos de la spec 002. Septiembre (30 días). H1 500 €, H2 400 €, H3 300 €.
 const HABITACIONES = [
@@ -96,5 +96,42 @@ describe('Spec 002 · Cálculo del alquiler mensual', () => {
     });
     const suma = r.lineas.reduce((s, l) => s + l.importe, 0) + r.propietario;
     expect(suma).toBe(r.rentaTotal);
+  });
+});
+
+describe('Spec 006 · explicación de los días vacíos (R11)', () => {
+  const vacios = (e: Partial<EntradaAlquilerMes> & Pick<EntradaAlquilerMes, 'ocupaciones'>) =>
+    vaciosDelMes({ mes: '2026-09', modalidad: 'habitaciones', mesesParciales: 'prorrateo', habitaciones: HABITACIONES, ...e });
+
+  it('C4 · H3 vacía del 1 al 10, repartida entre A y B', () => {
+    expect(
+      vacios({
+        modalidad: 'entero',
+        ocupaciones: [occ('H1', 'A', '2026-01-01'), occ('H2', 'B', '2026-01-01'), occ('H3', 'C', '2026-09-11')],
+      }),
+    ).toEqual([{ habitacionId: 'H3', desde: '2026-09-01', hasta: '2026-09-10', entre: ['A', 'B'] }]);
+  });
+
+  it('por habitaciones, el vacío lo asume la propietaria (nadie lo reparte)', () => {
+    expect(vacios({ ocupaciones: [occ('H1', 'A', '2026-01-01'), occ('H2', 'B', '2026-01-01')] })).toEqual([
+      { habitacionId: 'H3', desde: '2026-09-01', hasta: '2026-09-30', entre: [] },
+    ]);
+  });
+
+  it('entero sin nadie algunos días: un tramo sin presentes y otro repartido (C6 de la spec 002)', () => {
+    expect(vacios({ modalidad: 'entero', ocupaciones: [occ('H1', 'A', '2026-09-16')] })).toEqual([
+      { habitacionId: 'H1', desde: '2026-09-01', hasta: '2026-09-15', entre: [] },
+      { habitacionId: 'H2', desde: '2026-09-01', hasta: '2026-09-15', entre: [] },
+      { habitacionId: 'H2', desde: '2026-09-16', hasta: '2026-09-30', entre: ['A'] },
+      { habitacionId: 'H3', desde: '2026-09-01', hasta: '2026-09-15', entre: [] },
+      { habitacionId: 'H3', desde: '2026-09-16', hasta: '2026-09-30', entre: ['A'] },
+    ]);
+  });
+
+  it('con mes completo y un único inquilino, su habitación no tiene días vacíos (R7)', () => {
+    expect(vacios({ mesesParciales: 'mes_completo', ocupaciones: [occ('H1', 'A', '2026-09-11')] }).map((v) => v.habitacionId)).toEqual([
+      'H2',
+      'H3',
+    ]);
   });
 });

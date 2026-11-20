@@ -30,12 +30,24 @@ const ZOOMS: ZoomTimeline[] = ["mes", "trimestre", "anio"];
 const posicion = (desde: number, dias = 1, extra: CSSProperties = {}): CSSProperties =>
   ({ "--desde": desde, "--largo": dias, ...extra }) as CSSProperties;
 
+/** Lo que se pulsa en el timeline (R11 y R12): una chincheta de alquiler o una factura. */
+export type SeleccionTimeline = { tipo: "alquiler"; fecha: string; cobroIds: string[] } | { tipo: "factura"; facturaId: string };
+
 /**
  * Timeline del inmueble (spec 006, R1–R10): un eje de días con el alquiler,
  * cada tipo de gasto y la estancia de cada inquilino. El mismo componente sirve
- * a la propietaria y, más adelante, al enlace del inquilino (spec 004).
+ * a la propietaria y, más adelante, al enlace del inquilino (spec 004). Con
+ * `alPulsar`, chinchetas y barras son botones que abren su detalle.
  */
-export function Timeline({ datos, hoy }: { datos: DatosTimeline; hoy: string }) {
+export function Timeline({
+  datos,
+  hoy,
+  alPulsar,
+}: {
+  datos: DatosTimeline;
+  hoy: string;
+  alPulsar?: ((seleccion: SeleccionTimeline) => void) | undefined;
+}) {
   const t = useTranslations("Timeline");
   const idioma = useLocale();
   const [zoom, setZoom] = useState<ZoomTimeline>("mes");
@@ -154,10 +166,13 @@ export function Timeline({ datos, hoy }: { datos: DatosTimeline; hoy: string }) 
                       // R3 y R3b: una chincheta por fecha de cobro con su importe y su estado (R10).
                       return (
                         <li key={ch.fecha} className={`${estilos.chincheta} ${colores.alquiler}`} style={posicion(dia)} title={texto}>
-                          <span className="sr-only">{t("alquilerDel", { fecha: formatoDiaMes(ch.fecha, idioma) })}</span>
-                          <span className={estilos.importeChincheta}>
+                          <Pulsable
+                            clase={estilos.importeChincheta}
+                            alPulsar={alPulsar && (() => alPulsar({ tipo: "alquiler", fecha: ch.fecha, cobroIds: ch.ids }))}
+                          >
+                            <span className="sr-only">{t("alquilerDel", { fecha: formatoDiaMes(ch.fecha, idioma) })}</span>
                             {formatoEuros(ch.importe, idioma)} <span className={estilos.estado}>{marcaPago(ch.estado)}</span>
-                          </span>
+                          </Pulsable>
                         </li>
                       );
                     })}
@@ -168,7 +183,16 @@ export function Timeline({ datos, hoy }: { datos: DatosTimeline; hoy: string }) 
               if (fila.tipo === "gasto") {
                 const tipo = datos.tiposGasto.find((tg) => tg.id === fila.tipoGastoId)!;
                 return (
-                  <FilaGasto key={tipo.id} tipo={tipo} datos={datos} eje={eje} hoy={hoyEnEje} textoPago={textoPago} marcaPago={marcaPago} />
+                  <FilaGasto
+                    key={tipo.id}
+                    tipo={tipo}
+                    datos={datos}
+                    eje={eje}
+                    hoy={hoyEnEje}
+                    textoPago={textoPago}
+                    marcaPago={marcaPago}
+                    alPulsar={alPulsar}
+                  />
                 );
               }
 
@@ -275,6 +299,7 @@ function FilaGasto({
   hoy,
   textoPago,
   marcaPago,
+  alPulsar,
 }: {
   tipo: TipoGasto;
   datos: DatosTimeline;
@@ -282,6 +307,7 @@ function FilaGasto({
   hoy: number;
   textoPago: (e: EstadoPagoGrupo) => string;
   marcaPago: (e: EstadoPagoGrupo) => React.ReactNode;
+  alPulsar?: ((seleccion: SeleccionTimeline) => void) | undefined;
 }) {
   const idioma = useLocale();
   const t = useTranslations("Timeline");
@@ -312,16 +338,29 @@ function FilaGasto({
             style={posicion(tramo.desde, tramo.hasta - tramo.desde + 1, { "--carril": carril[i] } as CSSProperties)}
             title={`${tipo.nombre}, ${periodo}: ${formatoEuros(f.importeTotal, idioma)}, ${textoPago(estado)}`}
           >
-            <span className="sr-only">
-              {tipo.nombre}, {periodo}:
-            </span>
-            <span className={estilos.textoBarra}>
-              {formatoEuros(f.importeTotal, idioma)} <span className={estilos.estado}>{marcaPago(estado)}</span>
-            </span>
+            <Pulsable clase={estilos.botonBarra} alPulsar={alPulsar && (() => alPulsar({ tipo: "factura", facturaId: f.id }))}>
+              <span className="sr-only">
+                {tipo.nombre}, {periodo}:
+              </span>
+              <span className={estilos.textoBarra}>
+                {formatoEuros(f.importeTotal, idioma)} <span className={estilos.estado}>{marcaPago(estado)}</span>
+              </span>
+            </Pulsable>
           </li>
         );
       })}
     </Fila>
+  );
+}
+
+/** Un botón si se puede pulsar (R11, R12); si no, un simple contenedor. */
+function Pulsable({ clase, alPulsar, children }: { clase: string | undefined; alPulsar?: (() => void) | undefined; children: React.ReactNode }) {
+  return alPulsar ? (
+    <button type="button" className={`${clase} ${estilos.pulsable}`} onClick={alPulsar}>
+      {children}
+    </button>
+  ) : (
+    <span className={clase}>{children}</span>
   );
 }
 

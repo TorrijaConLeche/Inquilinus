@@ -4,7 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
-import { Timeline } from "../../../../componentes/timeline/Timeline";
 import { detalleDe, timelineDe, usuarioActual } from "../../../../servidor/api";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
@@ -12,6 +11,7 @@ import { ArchivarInmueble } from "./ArchivarInmueble";
 import { DatosInmueble } from "./DatosInmueble";
 import { Habitaciones } from "./Habitaciones";
 import { Inquilinos } from "./Inquilinos";
+import { TimelinePropietario } from "./TimelinePropietario";
 import { TiposGasto } from "./TiposGasto";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -58,7 +58,12 @@ export default async function DetalleInmueble({
       {creado === "1" && <Aviso tipo="exito">{t("creado")}</Aviso>}
       {inmueble.archivado && <Aviso tipo="info">{t("archivadoAviso")}</Aviso>}
       {/* Spec 006: la pieza central de la transparencia. */}
-      <Timeline datos={timeline} hoy={hoyEnMadrid()} />
+      <TimelinePropietario
+        inmuebleId={inmueble.id}
+        datos={timeline}
+        habitaciones={inmueble.habitaciones.map((h) => ({ id: h.id, nombre: h.nombre }))}
+        hoy={hoyEnMadrid()}
+      />
       <DatosInmueble inmueble={inmueble} />
       <Habitaciones inmuebleId={inmueble.id} habitaciones={inmueble.habitaciones} mesActual={mesEnMadrid()} />
       <Inquilinos inmuebleId={inmueble.id} inquilinos={inquilinos} habitaciones={inmueble.habitaciones} hoy={hoyEnMadrid()} />

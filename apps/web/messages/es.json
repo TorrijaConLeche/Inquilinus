@@ -6,7 +6,8 @@
   "Comun": {
     "marca": "Inquilinus",
     "mostrarContrasena": "Mostrar contraseña",
-    "ocultarContrasena": "Ocultar contraseña"
+    "ocultarContrasena": "Ocultar contraseña",
+    "cerrar": "Cerrar"
   },
   "Inicio": {
     "titulo": "Inquilinus",
@@ -624,5 +625,39 @@
     "sale": "sale {fecha}",
     "vacio": "Cuando tengas inquilinos, cobros o facturas repartidas, aquí los verás sobre un eje de días.",
     "pagadosCorto": "{pagados}/{total}"
+  },
+  "Detalles": {
+    "cargando": "Cargando…",
+    "alquilerTitulo": "Alquiler del {fecha}",
+    "delMes": "Alquiler de {mes}",
+    "rentaYRecargo": "{renta} de renta + {recargo} por días vacíos = {importe}",
+    "soloRenta": "{renta} de renta",
+    "vaciaRepartida": "{habitacion} vacía del {desde} al {hasta}, repartida entre {n}",
+    "vaciaAsumes": "{habitacion} vacía del {desde} al {hasta}: la asumes tú",
+    "editado": "Importe cambiado a mano",
+    "desactualizado": "Desactualizado: revísalo en los cobros",
+    "sinCobro": "Sin cobro generado",
+    "pagadoEl": "Pagado el {fecha}",
+    "pendiente": "Pendiente",
+    "cobrado": "Cobrado",
+    "deshacer": "Deshacer",
+    "asumesTu": "Asumes tú",
+    "total": "Total",
+    "gasto": "Gasto",
+    "periodo": "Periodo",
+    "delAl": "del {desde} al {hasta}",
+    "importeTotal": "Importe total",
+    "liquidacion": "Liquidación",
+    "calculo": "Cálculo por tramos",
+    "tramo": "Del {desde} al {hasta} ({n, plural, one {# día} other {# días}})",
+    "tramoVacio": "sin nadie, lo asumes tú",
+    "reparto": "Reparto",
+    "dias": "{n, plural, one {# día} other {# días}}",
+    "sinOcupar": "Sin ocupar: {importe} ({n, plural, one {# día} other {# días}}), lo asumes tú",
+    "descargarPdf": "Descargar PDF",
+    "movimientos": "Movimientos",
+    "entra": "Entra",
+    "sale": "Sale",
+    "verMas": "Ver más"
   }
 }

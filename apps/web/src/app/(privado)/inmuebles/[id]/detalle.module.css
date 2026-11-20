@@ -196,3 +196,53 @@
 .etiquetaEstado {
   composes: etiquetaColor;
 }
+
+/* Lista de movimientos debajo del timeline (spec 006, R13). */
+.movimientos {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.movimientos h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.listaMovimientos {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.movimiento {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+button.movimiento {
+  cursor: pointer;
+}
+
+button.movimiento:hover {
+  background: var(--fondo);
+}
+
+button.movimiento:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
