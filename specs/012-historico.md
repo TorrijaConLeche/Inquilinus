@@ -11,6 +11,7 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 **Qué se registra**
 
 - **R1** — Cada inmueble tiene su histórico. Se abre desde el detalle del inmueble (pantalla 2) y sustituye a la lista de movimientos bajo el timeline (spec 006, R13).
+- **R1b** — Bajo el timeline se ven las últimas actividades y un enlace «Ver todo el histórico» a su pantalla, con los filtros, el resumen y la agrupación por mes.
 - **R2** — El histórico incluye estos tipos de actividad, cada uno con su fecha y su detalle:
 
 | Grupo | Actividades |
@@ -25,6 +26,8 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 | Enlaces | Enlace generado, revocado o regenerado; descarga habilitada o deshabilitada |
 
 - **R3** — El registro es **solo de lectura**: nada del histórico se puede editar ni borrar. Si algo se corrige, la corrección aparece como una actividad nueva.
+- **R3b** — Lo ocurrido antes de que existiera el histórico se reconstruye una vez a partir de los datos guardados: cobros generados, pagados y quitados; facturas subidas y repartidas y partes pagadas; liquidaciones creadas; entradas y salidas ya ocurridas; fianzas recibidas y devueltas; habitaciones y tipos de gasto creados. Cada una con su fecha. Las ediciones anteriores (importe antes y después) no se conocen y no aparecen.
+- **R3c** — Las actividades de los enlaces llegan con ellos (spec 004, tarea 6.4).
 - **R4** — Cada actividad que cambia un importe muestra el valor anterior y el nuevo (por ejemplo, "Renta de octubre de Alex: 500 € → 450 €").
 
 **Consultar**
@@ -32,6 +35,7 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 - **R5** — Orden cronológico, lo más reciente primero, agrupado por mes.
 - **R6** — **Filtros**, combinables: inquilino (uno o varios), tipo de gasto (uno o varios, y "Alquiler"), grupo de actividad (R2), estado de pago (pagado o pendiente) y rango de fechas. Los filtros activos se ven siempre y se quitan con un toque.
 - **R7** — Con filtros, arriba aparece un resumen de lo filtrado: total cobrado y total pendiente. Por ejemplo, filtrando por Alex y "Luz" se ve lo que ha pagado y lo que debe de luz.
+- **R7b** — El estado de pago (filtro y resumen) es el de **hoy** de los conceptos a los que se refiere cada actividad: cobros de alquiler y partes de facturas, de los inquilinos filtrados. Cada concepto cuenta una sola vez en el resumen aunque aparezca en varias actividades.
 - **R8** — Al pulsar una actividad se abre su detalle: la ventana del cobro, de la factura o de la liquidación (specs 006 y 011), con el cálculo y el PDF cuando corresponda.
 
 **Inquilinos y RGPD**
@@ -63,8 +67,8 @@ Piso Centro con Alex y Jorge. En octubre: cobros de alquiler de los dos; luz de 
 
 ## Tareas
 
-- [ ] Registro de actividad en la API (cada acción de las specs 003-011 escribe su actividad)
-- [ ] Dominio: filtros combinados y resumen de lo filtrado
-- [ ] Pantalla de histórico con filtros y detalle
-- [ ] Histórico del inquilino en su enlace
-- [ ] Tests C1–C6, C8 y C9
+- [x] Registro de actividad en la API (cada acción de las specs 003-011 escribe su actividad; las de los enlaces, con la tarea 6.4) y reconstrucción de lo anterior
+- [x] Dominio: filtros combinados y resumen de lo filtrado
+- [x] Pantalla de histórico con filtros y detalle
+- [ ] Histórico del inquilino en su enlace (tarea 6.5)
+- [x] Tests C1–C6 y C9 (C8 con el enlace del inquilino, tarea 6.5)

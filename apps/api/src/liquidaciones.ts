@@ -4,6 +4,7 @@
 import type { EdicionLiquidacion, Liquidacion, NuevaLiquidacion, ParteGasto } from "@inquilinus/contracts";
 import { estadoEnLiquidacion, nombreLiquidacion, validarFecha, validarFechaPago, validarNombre } from "@inquilinus/domain";
 import { and, asc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { conceptoParte, registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
@@ -121,7 +122,19 @@ export async function crearLiquidacion(
     .update(t.factura)
     .set({ liquidacionId: creada!.id, actualizadoEn: new Date() })
     .where(and(inArray(t.factura.id, nueva.facturaIds), isNull(t.factura.liquidacionId)));
-  return (await listarLiquidaciones(bd, inmuebleId, [creada!.id]))[0]!;
+  const liquidacion = (await listarLiquidaciones(bd, inmuebleId, [creada!.id]))[0]!;
+  // Spec 012: la liquidación creada queda en el histórico.
+  await registrar(bd, {
+    inmuebleId,
+    tipo: "liquidacion_creada",
+    detalle: {
+      liquidacionId: liquidacion.id,
+      nombre: liquidacion.nombre,
+      importe: liquidacion.total,
+      facturaIds: liquidacion.facturas.map((f) => f.facturaId),
+    },
+  });
+  return liquidacion;
 }
 
 /** ¿Tiene ya alguna parte pagada? (R6) */
@@ -148,7 +161,7 @@ export async function editarLiquidacion(
   edicion: EdicionLiquidacion,
 ): Promise<Liquidacion | null> {
   const [liquidacion] = await bd
-    .select({ id: t.liquidacion.id })
+    .select({ id: t.liquidacion.id, nombre: t.liquidacion.nombre })
     .from(t.liquidacion)
     .where(and(eq(t.liquidacion.id, liquidacionId), eq(t.liquidacion.inmuebleId, inmuebleId)));
   if (!liquidacion) return null;
@@ -183,7 +196,24 @@ export async function editarLiquidacion(
       .set({ nombre: validarNombre(edicion.nombre, "de la liquidación"), actualizadoEn: new Date() })
       .where(eq(t.liquidacion.id, liquidacionId));
   }
-  return (await listarLiquidaciones(bd, inmuebleId, [liquidacionId]))[0]!;
+  const editada = (await listarLiquidaciones(bd, inmuebleId, [liquidacionId]))[0]!;
+  // Spec 012: cada cambio, en el histórico.
+  const base = { liquidacionId, nombre: editada.nombre };
+  await registrar(
+    bd,
+    ...[
+      quitar.length > 0
+        ? { inmuebleId, tipo: "liquidacion_factura_quitada" as const, detalle: { ...base, facturaIds: quitar, importe: editada.total } }
+        : null,
+      anadir.length > 0
+        ? { inmuebleId, tipo: "liquidacion_factura_anadida" as const, detalle: { ...base, facturaIds: anadir, importe: editada.total } }
+        : null,
+      editada.nombre !== liquidacion.nombre
+        ? { inmuebleId, tipo: "liquidacion_renombrada" as const, detalle: { ...base, nombreAntes: liquidacion.nombre } }
+        : null,
+    ].filter((a) => a !== null),
+  );
+  return editada;
 }
 
 /** R7: sus facturas quedan sueltas (la clave ajena las suelta) y los pagos se conservan. */
@@ -191,7 +221,10 @@ export async function borrarLiquidacion(bd: ConexionBd, inmuebleId: string, liqu
   const borradas = await bd
     .delete(t.liquidacion)
     .where(and(eq(t.liquidacion.id, liquidacionId), eq(t.liquidacion.inmuebleId, inmuebleId)))
-    .returning({ id: t.liquidacion.id });
+    .returning({ id: t.liquidacion.id, nombre: t.liquidacion.nombre });
+  if (borradas.length > 0) {
+    await registrar(bd, { inmuebleId, tipo: "liquidacion_borrada", detalle: { liquidacionId, nombre: borradas[0]!.nombre } });
+  }
   return borradas.length > 0;
 }
 
@@ -208,7 +241,7 @@ export async function pagarLiquidacion(
   hoy: string,
 ): Promise<ParteGasto[] | null> {
   const [liquidacion] = await bd
-    .select({ id: t.liquidacion.id })
+    .select({ id: t.liquidacion.id, nombre: t.liquidacion.nombre })
     .from(t.liquidacion)
     .where(and(eq(t.liquidacion.id, liquidacionId), eq(t.liquidacion.inmuebleId, inmuebleId)));
   if (!liquidacion) return null;
@@ -221,5 +254,17 @@ export async function pagarLiquidacion(
     .update(t.repartoLinea)
     .set({ pagadoEn: fecha, actualizadoEn: new Date() })
     .where(inArray(t.repartoLinea.id, pendientes.map((p) => p.id)));
+  await registrar(bd, {
+    inmuebleId,
+    tipo: "liquidacion_pagada",
+    inquilinoId: pago.inquilinoId,
+    detalle: {
+      liquidacionId,
+      nombre: liquidacion.nombre,
+      fecha,
+      importe: pendientes.reduce((s, p) => s + p.importe, 0),
+      conceptos: pendientes.map(conceptoParte),
+    },
+  });
   return pendientes.map(({ inmuebleId: _, ...p }) => ({ ...p, pagadoEn: fecha }));
 }

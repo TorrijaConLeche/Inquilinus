@@ -18,9 +18,10 @@ import {
   validarDiaCobro,
   validarNombre,
 } from "@inquilinus/domain";
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, lte } from "drizzle-orm";
 import { archivarHabitacion, archivarInmueble, borrarHabitacion } from "./archivo.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 
@@ -222,7 +223,27 @@ export async function editarInmueble(
   if (edicion.mesesParciales !== undefined) cambios.mesesParciales = edicion.mesesParciales;
   if (edicion.diaCobro !== undefined) cambios.diaCobro = validarDiaCobro(edicion.diaCobro);
   if (Object.keys(cambios).length > 0) {
+    const [antes] = await bd
+      .select({ diaCobro: t.inmueble.diaCobro, mesesParciales: t.inmueble.mesesParciales })
+      .from(t.inmueble)
+      .where(eq(t.inmueble.id, inmuebleId));
     await bd.update(t.inmueble).set(cambios).where(eq(t.inmueble.id, inmuebleId));
+    // Spec 012: día de cobro y opciones, con el antes y el después.
+    await registrar(
+      bd,
+      ...[
+        cambios.diaCobro !== undefined && cambios.diaCobro !== antes!.diaCobro
+          ? { inmuebleId, tipo: "dia_cobro_cambiado" as const, detalle: { antes: antes!.diaCobro, despues: cambios.diaCobro } }
+          : null,
+        cambios.mesesParciales !== undefined && cambios.mesesParciales !== antes!.mesesParciales
+          ? {
+              inmuebleId,
+              tipo: "opciones_cambiadas" as const,
+              detalle: { nombreAntes: antes!.mesesParciales, nombre: cambios.mesesParciales },
+            }
+          : null,
+      ].filter((a) => a !== null),
+    );
   }
   return true;
 }
@@ -243,6 +264,11 @@ export async function crearHabitacion(
     db.insert(t.habitacion).values({ id, inmuebleId, nombre }),
     db.insert(t.precioHabitacion).values({ habitacionId: id, desdeMes, precioMensual: nueva.precioMensual }),
   ]);
+  await registrar(bd, {
+    inmuebleId,
+    tipo: "habitacion_creada",
+    detalle: { habitacionId: id, nombre, importe: nueva.precioMensual, desdeMes },
+  });
   return true;
 }
 
@@ -289,6 +315,14 @@ export async function cambiarPrecio(
   cambio: CambioPrecio,
 ): Promise<boolean> {
   if (!(await habitacionSuya(bd, usuarioId, inmuebleId, habitacionId))) return false;
+  // El precio que regía ese mes, para el antes y el después (spec 012, R4).
+  const [anterior] = await bd
+    .select({ precio: t.precioHabitacion.precioMensual })
+    .from(t.precioHabitacion)
+    .where(and(eq(t.precioHabitacion.habitacionId, habitacionId), lte(t.precioHabitacion.desdeMes, cambio.desdeMes)))
+    .orderBy(desc(t.precioHabitacion.desdeMes))
+    .limit(1);
+  const [habitacion] = await bd.select({ nombre: t.habitacion.nombre }).from(t.habitacion).where(eq(t.habitacion.id, habitacionId));
   await bd
     .insert(t.precioHabitacion)
     .values({ habitacionId, desdeMes: cambio.desdeMes, precioMensual: cambio.precioMensual })
@@ -296,5 +330,18 @@ export async function cambiarPrecio(
       target: [t.precioHabitacion.habitacionId, t.precioHabitacion.desdeMes],
       set: { precioMensual: cambio.precioMensual, actualizadoEn: new Date() },
     });
+  if (anterior?.precio !== cambio.precioMensual) {
+    await registrar(bd, {
+      inmuebleId,
+      tipo: "precio_cambiado",
+      detalle: {
+        habitacionId,
+        nombre: habitacion?.nombre ?? "",
+        desdeMes: cambio.desdeMes,
+        ...(anterior && { antes: anterior.precio }),
+        despues: cambio.precioMensual,
+      },
+    });
+  }
   return true;
 }

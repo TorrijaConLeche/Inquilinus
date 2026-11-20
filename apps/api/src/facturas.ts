@@ -16,6 +16,7 @@ import { and, asc, eq, inArray, isNotNull, ne, or } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { claveFactura, clavePendiente, type Almacen } from "./almacen.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { prepararSubida, SEGUNDOS_PERMISO } from "./documentos.ts";
@@ -171,6 +172,14 @@ export async function crearFacturas(
     }),
   );
   const aceptadas = resultados.filter((r): r is Aceptada => r !== null);
+  // Spec 012: el lote subido queda en el histórico.
+  if (aceptadas.length > 0) {
+    await registrar(bd, {
+      inmuebleId: datos.inmuebleId,
+      tipo: "factura_subida",
+      detalle: { facturaIds: aceptadas.map((a) => a.facturaId), cantidad: aceptadas.length },
+    });
+  }
 
   // R2, R8 y R12: lectura en paralelo; una que falla no para a las demás.
   if (extractor && aceptadas.length > 0) {

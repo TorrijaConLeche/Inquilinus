@@ -17,6 +17,7 @@ import { aDia, desdeDia, validarInquilino, validarNombre, validarOcupaciones } f
 import { and, asc, eq, inArray, ne } from "drizzle-orm";
 import { exigirEditable, inquilinosConHistorial } from "./archivo.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { documentosYFianzas, type DocumentosYFianzas } from "./documentos.ts";
@@ -121,6 +122,12 @@ export async function crearInquilino(bd: ConexionBd, inmuebleId: string, nuevo: 
     db.insert(t.inquilino).values({ id, inmuebleId, nombre }),
     ...(ocupacion ? [db.insert(t.ocupacion).values(ocupacion)] : []),
   ]);
+  // Spec 012: el alta y, si la hay, su entrada (y su salida, si ya se sabe).
+  await registrar(
+    bd,
+    { inmuebleId, tipo: "inquilino_alta", inquilinoId: id, detalle: {} },
+    ...(ocupacion ? actividadesDeEstancia(inmuebleId, ocupacion) : []),
+  );
   return id;
 }
 
@@ -161,6 +168,7 @@ export async function crearOcupacion(
   };
   await validarEstancia(bd, inmuebleId, estancia);
   await bd.insert(t.ocupacion).values(estancia);
+  await registrar(bd, ...actividadesDeEstancia(inmuebleId, estancia));
   return true;
 }
 
@@ -188,6 +196,31 @@ export async function editarOcupacion(
     .update(t.ocupacion)
     .set({ entrada: nueva.entrada, salida: nueva.salida })
     .where(eq(t.ocupacion.id, ocupacionId));
+  // Spec 012: poner la salida es una salida; cualquier otro cambio, una corrección.
+  const base = { inmuebleId, inquilinoId: actual.inquilinoId };
+  const detalle = { habitacionId: actual.habitacionId };
+  await registrar(
+    bd,
+    ...[
+      nueva.entrada !== actual.entrada
+        ? { ...base, tipo: "estancia_corregida" as const, detalle: { ...detalle, campo: "entrada" as const, fechaAntes: actual.entrada, fechaDespues: nueva.entrada } }
+        : null,
+      nueva.salida !== actual.salida
+        ? actual.salida === null && nueva.salida !== null
+          ? { ...base, tipo: "salida" as const, detalle: { ...detalle, fecha: nueva.salida } }
+          : {
+              ...base,
+              tipo: "estancia_corregida" as const,
+              detalle: {
+                ...detalle,
+                campo: "salida" as const,
+                ...(actual.salida && { fechaAntes: actual.salida }),
+                ...(nueva.salida && { fechaDespues: nueva.salida }),
+              },
+            }
+        : null,
+    ].filter((a) => a !== null),
+  );
   return actual.inquilinoId;
 }
 
@@ -217,6 +250,12 @@ export async function cambiarHabitacion(
     db.update(t.ocupacion).set({ salida: diaAnterior }).where(eq(t.ocupacion.id, abierta.id)),
     db.insert(t.ocupacion).values(nueva),
   ]);
+  await registrar(bd, {
+    inmuebleId,
+    tipo: "cambio_habitacion",
+    inquilinoId,
+    detalle: { fecha: cambio.fecha, habitacionAntesId: abierta.habitacionId, habitacionId: cambio.habitacionId },
+  });
   return true;
 }
 
@@ -255,6 +294,7 @@ export async function crearTipoGasto(bd: ConexionBd, inmuebleId: string, nuevo: 
   // Spec 006, R7: sin color elegido, el primero que no use otro tipo activo del inmueble.
   const color = nuevo.color ?? primerColorLibre(activos.map((tg) => tg.color));
   const [fila] = await bd.insert(t.tipoGasto).values({ inmuebleId, nombre, color }).returning();
+  await registrar(bd, { inmuebleId, tipo: "tipo_gasto_creado", tipoGastoId: fila!.id, detalle: { nombre } });
   return aTipoGasto(fila!, false);
 }
 
@@ -270,9 +310,26 @@ export async function editarTipoGasto(
   if (edicion.color !== undefined) cambios.color = edicion.color;
   if (edicion.archivado !== undefined) cambios.archivado = edicion.archivado;
   const filtro = and(eq(t.tipoGasto.id, tipoGastoId), eq(t.tipoGasto.inmuebleId, inmuebleId));
+  const [antes] = await bd.select({ archivado: t.tipoGasto.archivado }).from(t.tipoGasto).where(filtro);
   const [fila] =
     Object.keys(cambios).length > 0
       ? await bd.update(t.tipoGasto).set(cambios).where(filtro).returning()
       : await bd.select().from(t.tipoGasto).where(filtro);
+  if (fila && antes && !antes.archivado && fila.archivado) {
+    await registrar(bd, { inmuebleId, tipo: "tipo_gasto_archivado", tipoGastoId: fila.id, detalle: { nombre: fila.nombre } });
+  }
   return fila ? aTipoGasto(fila, (await tiposConFacturas(bd, [fila.id])).has(fila.id)) : null;
+}
+
+/** Spec 012: la entrada de una estancia y, si ya tiene, su salida. */
+function actividadesDeEstancia(
+  inmuebleId: string,
+  e: { inquilinoId: string; habitacionId: string; entrada: string; salida: string | null },
+) {
+  return [
+    { inmuebleId, tipo: "entrada" as const, inquilinoId: e.inquilinoId, detalle: { fecha: e.entrada, habitacionId: e.habitacionId } },
+    ...(e.salida
+      ? [{ inmuebleId, tipo: "salida" as const, inquilinoId: e.inquilinoId, detalle: { fecha: e.salida, habitacionId: e.habitacionId } }]
+      : []),
+  ];
 }
