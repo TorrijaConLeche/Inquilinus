@@ -115,8 +115,13 @@ export async function listarHistorico(bd: ConexionBd, inmuebleId: string, f: Fil
     hasta: f.hasta,
   };
   const filtradas = filtrarHistorico(actividades, filtros);
+  // Con inquilinos elegidos, el estado de cada actividad es el de sus conceptos (R7b).
+  const estadoDe = (a: (typeof filtradas)[number]): Actividad["estadoPago"] => {
+    const suyos = f.inquilino?.length ? a.conceptos.filter((c) => f.inquilino!.includes(c.inquilinoId)) : a.conceptos;
+    return suyos.length === 0 ? null : suyos.every((c) => c.pagado) ? "pagado" : "pendiente";
+  };
   return {
-    actividades: filtradas.map(({ conceptos: _, ...a }) => a),
+    actividades: filtradas.map(({ conceptos: _, ...a }) => ({ ...a, estadoPago: estadoDe({ ...a, conceptos: _ }) })),
     resumen: hayFiltros(filtros) ? resumenHistorico(filtradas, filtros) : null,
   };
 }

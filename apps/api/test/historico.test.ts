@@ -167,7 +167,11 @@ describe("Spec 012 · histórico del inmueble", () => {
 
   it("C4 · Alex + Luz: pagado 20 €, pendiente 0 €; Jorge + Alquiler: pendiente 380 €", async () => {
     const e = await escenario();
-    expect((await e.historico(`?inquilino=${e.alex.id}&gasto=${e.luz.id}`)).resumen).toEqual({ pagado: 2_000, pendiente: 0 });
+    const alexLuz = await e.historico(`?inquilino=${e.alex.id}&gasto=${e.luz.id}`);
+    expect(alexLuz.resumen).toEqual({ pagado: 2_000, pendiente: 0 });
+    // El reparto de la luz, para Alex, está pagado (aunque Jorge deba su parte).
+    expect(alexLuz.actividades.find((a) => a.tipo === "factura_repartida")!.estadoPago).toBe("pagado");
+    expect((await e.historico(`?gasto=${e.luz.id}`)).actividades.find((a) => a.tipo === "factura_repartida")!.estadoPago).toBe("pendiente");
     expect((await e.historico(`?inquilino=${e.jorge.id}&gasto=alquiler`)).resumen).toEqual({ pagado: 0, pendiente: 38_000 });
     // Por estado: lo pendiente de hoy.
     const pendiente = await e.historico("?estado=pendiente");
