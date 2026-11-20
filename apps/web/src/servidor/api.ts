@@ -6,6 +6,7 @@ import {
   datosTimeline,
   dependenciasDesdeEntorno,
   hoyEnMadrid,
+  listarHistorico,
   listarFacturas,
   listarInmuebles,
   listarInquilinos,
@@ -17,7 +18,7 @@ import {
   verInmueble,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, DatosTimeline, Factura, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, DatosTimeline, Factura, FiltrosHistorico, Historico, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -88,6 +89,13 @@ export async function detalleDe(
     listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
   return { inmueble, inquilinos, tiposGasto };
+}
+
+/** Histórico del inmueble con filtros (spec 012), o null si no es suyo. */
+export async function historicoDe(usuario: UsuarioSesion, inmuebleId: string, filtros: FiltrosHistorico = {}): Promise<Historico | null> {
+  const inmueble = await inmuebleDe(usuario, inmuebleId);
+  if (!inmueble || !dependencias.bd) return null;
+  return listarHistorico(dependencias.bd, inmueble.id, filtros);
 }
 
 /** Lo que dibuja el timeline del inmueble (spec 006), o null si no es suyo. */

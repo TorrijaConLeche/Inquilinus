@@ -1,0 +1,96 @@
+/* Histórico del inmueble (spec 012). */
+
+.texto {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.meses {
+  display: grid;
+  gap: 20px;
+}
+
+.mes {
+  display: grid;
+  gap: 8px;
+}
+
+/* R6: filtros. */
+.filtros {
+  display: grid;
+  gap: 12px;
+}
+
+.grupoFiltro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.grupoFiltro legend {
+  margin-bottom: 6px;
+}
+
+.fechas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.fechas > * {
+  flex: 1 1 160px;
+}
+
+/* Los filtros activos se ven siempre y se quitan con un toque. */
+.activos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--primario);
+  border-radius: 999px;
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+/* R7: resumen de lo filtrado. */
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 12px 16px;
+  border-radius: var(--radio-control);
+  background: var(--fondo);
+}
+
+.cifra {
+  display: grid;
+}
+
+.cifra strong {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
-import { detalleDe, timelineDe, usuarioActual } from "../../../../servidor/api";
+import { detalleDe, historicoDe, timelineDe, usuarioActual } from "../../../../servidor/api";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
 import { ArchivarInmueble } from "./ArchivarInmueble";
@@ -32,8 +32,10 @@ export default async function DetalleInmueble({
   const t = await getTranslations("Detalle");
   const usuario = await usuarioActual();
   const id = (await params).id;
-  const [detalle, timeline] = usuario ? await Promise.all([detalleDe(usuario, id), timelineDe(usuario, id)]) : [null, null];
-  if (!detalle || !timeline) notFound();
+  const [detalle, timeline, historico] = usuario
+    ? await Promise.all([detalleDe(usuario, id), timelineDe(usuario, id), historicoDe(usuario, id)])
+    : [null, null, null];
+  if (!detalle || !timeline || !historico) notFound();
   const { inmueble, inquilinos, tiposGasto } = detalle;
   const { creado } = await searchParams;
 
@@ -62,6 +64,7 @@ export default async function DetalleInmueble({
         inmuebleId={inmueble.id}
         datos={timeline}
         habitaciones={inmueble.habitaciones.map((h) => ({ id: h.id, nombre: h.nombre }))}
+        ultimas={historico.actividades.slice(0, 5)}
         hoy={hoyEnMadrid()}
       />
       <DatosInmueble inmueble={inmueble} />
