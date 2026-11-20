@@ -7,6 +7,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { createHash } from "node:crypto";
 import { claveDocumento, clavePendiente, type Almacen, type PermisoSubida } from "./almacen.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
@@ -204,12 +205,28 @@ export async function borrarDocumento(
 /** R6d: crea o reemplaza la fianza del inquilino. */
 export async function guardarFianza(bd: ConexionBd, inquilinoId: string, peticion: PeticionFianza): Promise<Fianza> {
   const valida = validarFianza(peticion);
+  const [antes] = await bd.select().from(t.fianza).where(eq(t.fianza.inquilinoId, inquilinoId));
   const [fila] = await bd
     .insert(t.fianza)
     .values({ inquilinoId, ...valida })
     .onConflictDoUpdate({ target: t.fianza.inquilinoId, set: { ...valida, actualizadoEn: new Date() } })
     .returning();
-  return aFianza(fila!);
+  // Spec 012: recibida la primera vez; devuelta cuando cambia lo devuelto.
+  const nueva = fila!;
+  const [inquilino] = await bd.select({ inmuebleId: t.inquilino.inmuebleId }).from(t.inquilino).where(eq(t.inquilino.id, inquilinoId));
+  if (inquilino) {
+    const base = { inmuebleId: inquilino.inmuebleId, inquilinoId };
+    await registrar(
+      bd,
+      ...[
+        !antes ? { ...base, tipo: "fianza_recibida" as const, detalle: { importe: nueva.importe, ...(nueva.recibidaEn && { fecha: nueva.recibidaEn }) } } : null,
+        nueva.devueltaEn && (nueva.devueltaEn !== antes?.devueltaEn || nueva.importeDevuelto !== antes?.importeDevuelto)
+          ? { ...base, tipo: "fianza_devuelta" as const, detalle: { importe: nueva.importeDevuelto ?? 0, fecha: nueva.devueltaEn } }
+          : null,
+      ].filter((a) => a !== null),
+    );
+  }
+  return aFianza(nueva);
 }
 
 export async function borrarFianza(bd: ConexionBd, inquilinoId: string): Promise<boolean> {

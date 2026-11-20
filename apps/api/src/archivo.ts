@@ -5,6 +5,7 @@ import { confirmaBorradoInmueble, estanciaVigente, nombreAnonimo } from "@inquil
 import { and, count, eq, inArray, ne, type SQL } from "drizzle-orm";
 import type { Almacen } from "./almacen.ts";
 import { ejecutarEnBloque } from "./bd/bloque.ts";
+import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
@@ -120,6 +121,10 @@ export async function archivarHabitacion(
     if (await esUltimaActiva(bd, inmuebleId, habitacionId)) throw new ErrorPeticion("ULTIMA_HABITACION");
   }
   await bd.update(t.habitacion).set({ archivada }).where(eq(t.habitacion.id, habitacionId));
+  if (archivada && !habitacion.archivada) {
+    const [h] = await bd.select({ nombre: t.habitacion.nombre }).from(t.habitacion).where(eq(t.habitacion.id, habitacionId));
+    await registrar(bd, { inmuebleId, tipo: "habitacion_archivada", detalle: { habitacionId, nombre: h?.nombre ?? "" } });
+  }
   return true;
 }
 
@@ -226,6 +231,8 @@ export async function borrarInquilino(
         ]
       : [db.delete(t.inquilino).where(eq(t.inquilino.id, inquilinoId))]),
   ]);
+  // Spec 012, R10: anonimizado, sigue apareciendo como «Inquilino N»; borrado del todo, sin nombre.
+  await registrar(bd, { inmuebleId, tipo: "inquilino_borrado", inquilinoId: conHistorial ? inquilinoId : null, detalle: {} });
   return conHistorial ? "anonimizado" : "borrado";
 }
 

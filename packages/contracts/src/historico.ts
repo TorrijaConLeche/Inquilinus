@@ -87,6 +87,8 @@ export const DetalleActividad = z
     habitacionId: z.uuid(),
     habitacionAntesId: z.uuid(),
     desdeMes: Mes,
+    /** Qué se corrigió de una estancia. */
+    campo: z.enum(['entrada', 'salida']),
     conceptos: z.array(ConceptoActividad),
     /** Lo ocurrido antes de que existiera el histórico (R3b). */
     reconstruida: z.boolean(),
