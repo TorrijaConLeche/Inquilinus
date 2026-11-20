@@ -10,8 +10,12 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 
 - **R1** — Cada inquilino tendrá su propio enlace, que identifica quién ve la vista. El token será aleatorio de al menos 128 bits y solo se guardará su hash.
 - **R2** — La propietaria podrá copiar el enlace, enviarlo por WhatsApp, revocarlo y regenerarlo. Regenerar invalida el anterior.
+- **R2c** — Como solo se guarda el hash (R1), el enlace se copia o se envía al generarlo o al regenerarlo. Después, la ficha del inquilino muestra que tiene enlace, desde cuándo, hasta cuándo funciona y si permite la descarga; para volver a mandarlo, se regenera.
+- **R2d** — «Enviar por WhatsApp» abre WhatsApp con un mensaje que lleva el enlace, sin número: la propietaria elige el contacto (no se guardan datos de contacto, R9).
+- **R2e** — Un inquilino borrado (anonimizado, spec 007, R12) no puede tener enlace. Generar, revocar, regenerar y cambiar la descarga quedan en el histórico (spec 012, grupo Enlaces).
 - **R2b** — La propietaria podrá habilitar o deshabilitar la descarga de facturas en cada enlace. Por defecto está habilitada.
 - **R3** — El enlace funciona durante la estancia y hasta 3 meses después de la fecha de salida (inclusive). Si cambia la fecha de salida, la caducidad se recalcula.
+- **R3b** — La caducidad se calcula al consultar con la última salida del inquilino; si tiene una estancia sin salida, no caduca.
 - **R4** — Con un token revocado, caducado o inexistente, la página mostrará el mismo mensaje ("Este enlace ya no está disponible"), sin revelar cuál es el motivo ni ningún dato.
 - **R5** — Arriba se mostrará el **total pendiente**: suma de cobros de alquiler y partes de gastos sin pagar.
 - **R6** — Debajo, el timeline del inmueble con su fila resaltada (spec 006) y una lista (lo más reciente primero) con:
@@ -53,6 +57,6 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 
 - [x] Caducidad (R3), total pendiente (R5) y tramos del detalle (R7) en `packages/domain`
 - [ ] Guardar el detalle por tramos junto al reparto (foto fija)
-- [ ] Generar, revocar y regenerar enlaces en `apps/api`
+- [ ] Generar, revocar y regenerar enlaces en `apps/api` y en la ficha del inquilino (tarea 6.4)
 - [ ] Vista pública en `apps/web`
 - [ ] Tests C1–C10 y C7b
