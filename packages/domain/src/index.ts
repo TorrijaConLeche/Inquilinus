@@ -124,3 +124,17 @@ export {
   type Marca,
   type ZoomTimeline,
 } from './timeline.ts';
+export {
+  GRUPOS_ACTIVIDAD,
+  TIPOS_ACTIVIDAD,
+  agruparPorMes,
+  filtrarHistorico,
+  grupoDe,
+  hayFiltros,
+  resumenHistorico,
+  type ActividadFiltrable,
+  type ConceptoActividad,
+  type FiltrosHistorico,
+  type GrupoActividad,
+  type TipoActividad,
+} from './historico.ts';
