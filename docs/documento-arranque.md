@@ -92,7 +92,7 @@ Web primero, API-first, con el dominio en un paquete compartido para que la app 
 
 **Proveedores:** no hace falta que sean europeos; se exige que los datos estén en la UE y que cada proveedor tenga contrato de encargo (DPA). Criterio: calidad, coste y sencillez. Coste estimado en la fase 2: prácticamente 0 €/mes más céntimos de IA y almacenamiento. Postgres, S3 y Next.js son estándar, así que cambiar de proveedor no requiere tocar el código.
 
-**RGPD desde el inicio:** medidas técnicas y organizativas en `docs/rgpd.md`. Datos en la UE, ficheros privados y cifrados, mínimo acceso, plazos de conservación y borrado de datos de inquilinos; del inquilino solo se guarda el nombre y, como documentos, el contrato y el justificante de la fianza, que nunca pasan por la IA. La cláusula informativa para inquilinos y el registro de actividades van en la fase 2; la documentación para otros propietarios, en la fase 3. Todo lo legal se valida con un asesor.
+**RGPD desde el inicio:** medidas técnicas y organizativas en `docs/rgpd.md`. Datos en la UE, ficheros privados y cifrados, mínimo acceso, plazos de conservación y borrado de datos de inquilinos; del inquilino solo se guarda el nombre y, como documentos, el contrato y el justificante de la fianza, que nunca pasan por la IA. Informar a los inquilinos es obligación de cada propietaria, como lo sería sin la app; Inquilinus, como encargada del tratamiento, firma con cada una un contrato de encargo (borrador en `docs/legal/contrato-encargo.md`). Todo lo legal se valida con un asesor.
 
 ## Competencia y posicionamiento
 

@@ -37,7 +37,7 @@ Esta política explica qué datos personales trata Inquilinus, para qué, durant
 
 Para gestionar tus alquileres introduces datos de tus inquilinos: su nombre, sus fechas de estancia, los cobros, las facturas de suministros, el contrato y el justificante de la fianza. No pedimos ni guardamos DNI, nóminas, teléfonos ni emails de tus inquilinos.
 
-**Sobre esos datos tú eres la responsable del tratamiento** y Inquilinus los trata por tu cuenta, solo para prestarte el servicio, como **encargado del tratamiento**. Las condiciones de ese encargo están en [pendiente: contrato de encargo del tratamiento (tarea 7.4)] ⚖️. Debes informar a tus inquilinos de que usas Inquilinus para gestionar sus datos.
+**Sobre esos datos tú eres la responsable del tratamiento** y Inquilinus los trata por tu cuenta, solo para prestarte el servicio, como **encargado del tratamiento**. Las condiciones de ese encargo están en [pendiente: contrato de encargo del tratamiento (tarea 7.3)] ⚖️. Debes informar a tus inquilinos de que usas Inquilinus para gestionar sus datos.
 
 ### Lectura de facturas con inteligencia artificial
 
