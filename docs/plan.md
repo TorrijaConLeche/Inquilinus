@@ -104,11 +104,11 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [x] **6.4b · Claude** — Histórico del inmueble con filtros y resumen (spec 012). El registro de actividad se añade desde la fase 3 en cada acción · `feat/012-historico`
 - [x] **6.4 · Claude** — Enlaces: generar, revocar, regenerar, WhatsApp y permiso de descarga · `feat/004-enlaces`
 - [x] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
-- [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
+- [x] **6.6 · Claude** — Repaso de `docs/rgpd.md` con lo que hace la app y borrador del contrato de encargo (DPA) para las propietarias. Informar a los inquilinos es cosa de cada propietaria: la app no lo hace por ella · `docs/rgpd-revision`
 - [ ] **6.6b · Claude** — Avisos de plazos de conservación vencidos (spec 007, R14), con los plazos que fije el asesor · `feat/007-plazos`
-- [ ] **6.7 · Tú** — Revisar la cláusula informativa y entregarla a tus inquilinos
+- [ ] **6.7 · Tú** — Revisar con el asesor (junto a 2.9) el contrato de encargo y lo marcado con ⚖️ en `docs/rgpd.md`, y hacer las comprobaciones de «Por comprobar» (bucket, copias de Neon, registros de Vercel, DPA aceptados, doble factor)
 - [ ] **6.8 · Claude** — Etiqueta `v0.1.0`
-- [ ] **6.9 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.3)
+- [ ] **6.9 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.4)
 - [ ] **6.10 · Claude** — Dominio en Vercel, remitente de los emails y direcciones de Google con el dominio nuevo · `chore/dominio`
 
 ## Fase 7 · Uso real y validación
@@ -117,8 +117,8 @@ Depende de: fase 6.
 
 - [ ] **7.1 · Tú** — Usar la app unos meses con tus inmuebles y anotar lo que molesta
 - [ ] **7.2 · Claude** — Corregir y mejorar a partir de lo anotado (specs nuevas o actualizadas)
-- [ ] **7.3 · Tú** — Beta gratuita con propietarias cercanas (plan Advanced sin coste)
-- [ ] **7.4 · Claude** — Preparar el contrato de encargo (DPA) para otras propietarias, para revisión del asesor
+- [ ] **7.3 · Claude** — Publicar en la app el contrato de encargo revisado por el asesor: anexo de los términos y versión nueva que las usuarias aceptan. Antes de la beta · `feat/contrato-encargo`
+- [ ] **7.4 · Tú** — Beta gratuita con propietarias cercanas (plan Advanced sin coste)
 
 ## Fase 8 · Planes y pagos (spec 010)
 

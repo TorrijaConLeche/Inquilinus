@@ -36,7 +36,7 @@ This policy explains what personal data Inquilinus processes, why, for how long 
 
 To manage your rentals you enter data about your tenants: their name, the dates of their stay, payments, utility bills, the contract and the deposit receipt. We don't ask for or keep your tenants' ID documents, payslips, phone numbers or emails.
 
-**For that data you are the controller**, and Inquilinus processes it on your behalf, only to provide the service, as a **processor**. The terms of that processing are in [pending: data processing agreement (task 7.4)] ⚖️. You must tell your tenants that you use Inquilinus to manage their data.
+**For that data you are the controller**, and Inquilinus processes it on your behalf, only to provide the service, as a **processor**. The terms of that processing are in [pending: data processing agreement (task 7.3)] ⚖️. You must tell your tenants that you use Inquilinus to manage their data.
 
 ### Reading bills with artificial intelligence
 
