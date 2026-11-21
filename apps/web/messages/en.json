@@ -138,7 +138,8 @@
     "facturaDesconocida": "One of those bills doesn't belong to this property.",
     "facturaNoRepartida": "Only confirmed and split bills can be grouped.",
     "facturaEnLiquidacion": "One of those bills is already in another settlement.",
-    "liquidacionVacia": "A settlement can't be left without bills. If you no longer need it, delete it."
+    "liquidacionVacia": "A settlement can't be left without bills. If you no longer need it, delete it.",
+    "enlaceExistente": "This tenant already has a link. If you need another, regenerate it."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -742,7 +743,34 @@
       "tipo_gasto_creado": "Expense type {nombre} created",
       "tipo_gasto_archivado": "Expense type {nombre} archived",
       "fianza_recibida": "{inquilino}'s deposit received: {importe}",
-      "fianza_devuelta": "{inquilino}'s deposit returned: {importe}"
+      "fianza_devuelta": "{inquilino}'s deposit returned: {importe}",
+      "enlace_generado": "{inquilino}'s link created",
+      "enlace_regenerado": "{inquilino}'s link regenerated",
+      "enlace_revocado": "{inquilino}'s link revoked",
+      "descarga_habilitada": "Bill downloads enabled on {inquilino}'s link",
+      "descarga_deshabilitada": "Bill downloads disabled on {inquilino}'s link"
     }
+  },
+  "Enlace": {
+    "titulo": "Link for the tenant",
+    "explicacion": "A link with no account where they see what they still owe, their rent, the split bills with the calculation and their deposit. They never see anyone else's.",
+    "generar": "Create link",
+    "nuevo": "New link",
+    "soloAhora": "Copy or send it now: for security it isn't stored and can't be shown again. If you lose it, regenerate it.",
+    "copiar": "Copy",
+    "copiado": "Copied",
+    "whatsapp": "Send by WhatsApp",
+    "hecho": "Done",
+    "mensaje": "Hi {nombre}. Here you can see your payments and expenses for {inmueble}: {enlace}",
+    "creado": "Link active since {fecha}.",
+    "mientrasViva": "It works while they live here and for 3 months after they move out.",
+    "hasta": "It works until {fecha}.",
+    "caducado": "It expired on {fecha}.",
+    "permiteDescarga": "Allow downloading the bills as PDF",
+    "regenerar": "Regenerate",
+    "revocar": "Revoke",
+    "cancelar": "Cancel",
+    "regenerarAviso": "A new link is created and the current one stops working.",
+    "revocarAviso": "The link will stop working. You can create another one whenever you like."
   }
 }

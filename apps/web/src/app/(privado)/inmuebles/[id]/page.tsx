@@ -69,7 +69,7 @@ export default async function DetalleInmueble({
       />
       <DatosInmueble inmueble={inmueble} />
       <Habitaciones inmuebleId={inmueble.id} habitaciones={inmueble.habitaciones} mesActual={mesEnMadrid()} />
-      <Inquilinos inmuebleId={inmueble.id} inquilinos={inquilinos} habitaciones={inmueble.habitaciones} hoy={hoyEnMadrid()} />
+      <Inquilinos inmuebleId={inmueble.id} nombreInmueble={inmueble.nombre} inquilinos={inquilinos} habitaciones={inmueble.habitaciones} hoy={hoyEnMadrid()} />
       <TiposGasto inmuebleId={inmueble.id} tiposGasto={tiposGasto} />
       <ArchivarInmueble id={inmueble.id} nombre={inmueble.nombre} archivado={inmueble.archivado} />
     </>

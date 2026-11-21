@@ -138,7 +138,8 @@
     "facturaDesconocida": "Alguna de esas facturas no es de este inmueble.",
     "facturaNoRepartida": "Solo se pueden agrupar facturas confirmadas y repartidas.",
     "facturaEnLiquidacion": "Alguna de esas facturas ya está en otra liquidación.",
-    "liquidacionVacia": "Una liquidación no se puede quedar sin facturas. Si ya no la necesitas, bórrala."
+    "liquidacionVacia": "Una liquidación no se puede quedar sin facturas. Si ya no la necesitas, bórrala.",
+    "enlaceExistente": "Este inquilino ya tiene un enlace. Si necesitas otro, regéneralo."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -742,7 +743,34 @@
       "tipo_gasto_creado": "Tipo de gasto {nombre} creado",
       "tipo_gasto_archivado": "Tipo de gasto {nombre} archivado",
       "fianza_recibida": "Fianza de {inquilino} recibida: {importe}",
-      "fianza_devuelta": "Fianza de {inquilino} devuelta: {importe}"
+      "fianza_devuelta": "Fianza de {inquilino} devuelta: {importe}",
+      "enlace_generado": "Enlace de {inquilino} generado",
+      "enlace_regenerado": "Enlace de {inquilino} regenerado",
+      "enlace_revocado": "Enlace de {inquilino} revocado",
+      "descarga_habilitada": "Descarga de facturas habilitada en el enlace de {inquilino}",
+      "descarga_deshabilitada": "Descarga de facturas deshabilitada en el enlace de {inquilino}"
     }
+  },
+  "Enlace": {
+    "titulo": "Enlace para el inquilino",
+    "explicacion": "Un enlace sin cuenta donde ve lo que le falta por pagar, sus cobros, los gastos repartidos con el cálculo y su fianza. Nunca ve lo de los demás.",
+    "generar": "Generar enlace",
+    "nuevo": "Enlace nuevo",
+    "soloAhora": "Cópialo o envíalo ahora: por seguridad no se guarda y no se podrá volver a ver. Si lo pierdes, regéneralo.",
+    "copiar": "Copiar",
+    "copiado": "Copiado",
+    "whatsapp": "Enviar por WhatsApp",
+    "hecho": "Hecho",
+    "mensaje": "Hola, {nombre}. Aquí puedes ver tus pagos y gastos de {inmueble}: {enlace}",
+    "creado": "Enlace activo desde el {fecha}.",
+    "mientrasViva": "Funciona mientras viva aquí y hasta 3 meses después de su salida.",
+    "hasta": "Funciona hasta el {fecha}.",
+    "caducado": "Caducó el {fecha}.",
+    "permiteDescarga": "Permitir descargar las facturas en PDF",
+    "regenerar": "Regenerar",
+    "revocar": "Revocar",
+    "cancelar": "Cancelar",
+    "regenerarAviso": "Se crea un enlace nuevo y el que tiene ahora deja de funcionar.",
+    "revocarAviso": "El enlace dejará de funcionar. Podrás generar otro cuando quieras."
   }
 }
