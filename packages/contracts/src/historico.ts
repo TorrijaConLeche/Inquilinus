@@ -48,6 +48,11 @@ export const TipoActividad = z
     'tipo_gasto_archivado',
     'fianza_recibida',
     'fianza_devuelta',
+    'enlace_generado',
+    'enlace_regenerado',
+    'enlace_revocado',
+    'descarga_habilitada',
+    'descarga_deshabilitada',
   ])
   .meta({ id: 'TipoActividad' });
 export type TipoActividad = z.infer<typeof TipoActividad>;
