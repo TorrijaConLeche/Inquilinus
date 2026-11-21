@@ -70,5 +70,5 @@ Piso Centro con Alex y Jorge. En octubre: cobros de alquiler de los dos; luz de 
 - [x] Registro de actividad en la API (cada acción de las specs 003-011 escribe su actividad; las de los enlaces, con la tarea 6.4) y reconstrucción de lo anterior
 - [x] Dominio: filtros combinados y resumen de lo filtrado
 - [x] Pantalla de histórico con filtros y detalle
-- [ ] Histórico del inquilino en su enlace (tarea 6.5)
+- [x] Histórico del inquilino en su enlace (tarea 6.5): la lista de su vista con filtros (spec 004, R6b)
 - [x] Tests C1–C6 y C9 (C8 con el enlace del inquilino, tarea 6.5)

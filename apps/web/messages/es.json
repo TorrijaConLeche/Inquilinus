@@ -625,7 +625,8 @@
     "entra": "entra {fecha}",
     "sale": "sale {fecha}",
     "vacio": "Cuando tengas inquilinos, cobros o facturas repartidas, aquí los verás sobre un eje de días.",
-    "pagadosCorto": "{pagados}/{total}"
+    "pagadosCorto": "{pagados}/{total}",
+    "pendiente": "pendiente"
   },
   "Detalles": {
     "cargando": "Cargando…",
@@ -772,5 +773,49 @@
     "cancelar": "Cancelar",
     "regenerarAviso": "Se crea un enlace nuevo y el que tiene ahora deja de funcionar.",
     "revocarAviso": "El enlace dejará de funcionar. Podrás generar otro cuando quieras."
+  },
+  "Vista": {
+    "titulo": "Tu alquiler",
+    "noDisponible": "Este enlace ya no está disponible",
+    "noDisponibleTexto": "Si necesitas ver tus pagos, pide un enlace nuevo a quien te alquila.",
+    "idioma": "Idioma",
+    "hola": "Hola, {nombre}",
+    "intro": "Esto es lo tuyo en {inmueble}: lo que te falta por pagar, tus cobros y tus gastos, con el cálculo de cada uno.",
+    "bloqueado": "Este inmueble no está actualizado: puede que falten cobros o gastos recientes.",
+    "pendiente": "Te falta por pagar",
+    "alDia": "Estás al día ✓",
+    "historico": "Tus movimientos",
+    "filtroTipo": "Qué",
+    "todo": "Todo",
+    "alquiler": "Alquiler",
+    "gasto": "Gasto",
+    "liquidaciones": "Liquidaciones",
+    "fianza": "Fianza",
+    "desde": "Desde",
+    "hasta": "Hasta",
+    "nada": "Nada con estos filtros.",
+    "alquilerDe": "Alquiler de {mes}",
+    "periodo": "del {desde} al {hasta}",
+    "pagadoEl": "Pagado el {fecha}",
+    "estados": {
+      "pendiente": "Pendiente",
+      "pagada": "Pagada",
+      "parcial": "Parcial"
+    },
+    "falta": "faltan {importe}",
+    "renta": "Renta: {importe}",
+    "recargo": "Por días vacíos: {importe}",
+    "vacia": "{habitacion} vacía del {desde} al {hasta}, repartida entre {n}",
+    "total": "Total: {importe}",
+    "totalFactura": "Total de la factura: {importe}",
+    "tramo": "Del {desde} al {hasta}: {con} → {importe}",
+    "tramoSolo": "Del {desde} al {hasta}: solo tú → {importe}",
+    "tuParte": "Tu parte: {importe} ({n, plural, one {# día} other {# días}})",
+    "enLiquidacion": "Va en la {nombre}",
+    "descargarPdf": "Descargar la factura (PDF)",
+    "fianzaRecibida": "Recibida el {fecha}",
+    "fianzaDevuelta": "Devuelta el {fecha}: {importe}",
+    "pie": "Solo tú ves esta página. Si algo no cuadra, habla con quien te alquila.",
+    "tu": "tú"
   }
 }

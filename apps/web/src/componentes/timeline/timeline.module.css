@@ -386,3 +386,13 @@ button.importeChincheta:hover {
   outline: 2px solid var(--primario);
   outline-offset: 2px;
 }
+
+/* Spec 004, R6c: la fila del inquilino que mira su enlace. */
+.resaltada .etiqueta,
+.resaltada .pista {
+  background: var(--primario-suave);
+}
+
+.resaltada .nombreFila {
+  color: var(--primario-texto);
+}

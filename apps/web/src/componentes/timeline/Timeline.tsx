@@ -43,10 +43,16 @@ export function Timeline({
   datos,
   hoy,
   alPulsar,
+  resaltado,
 }: {
   datos: DatosTimeline;
   hoy: string;
   alPulsar?: ((seleccion: SeleccionTimeline) => void) | undefined;
+  /**
+   * Spec 004, R6c: en el enlace del inquilino, su fila resaltada. Entonces el
+   * estado es solo el suyo (spec 006, R10): «✓» o «pendiente».
+   */
+  resaltado?: string | undefined;
 }) {
   const t = useTranslations("Timeline");
   const idioma = useLocale();
@@ -105,7 +111,7 @@ export function Timeline({
   };
 
   const textoPago = (estado: EstadoPagoGrupo) =>
-    estado.completo ? t("todoPagado") : t("pagados", { pagados: estado.pagados, total: estado.total });
+    estado.completo ? t("todoPagado") : resaltado ? t("pendiente") : t("pagados", { pagados: estado.pagados, total: estado.total });
   // R6b: con trimestre y año, en corto («1/3»); el texto entero, para lectores de pantalla.
   const compacto = zoom !== "mes";
   const marcaPago = (estado: EstadoPagoGrupo) =>
@@ -114,6 +120,8 @@ export function Timeline({
         <span aria-hidden="true">✓</span>
         <span className="sr-only">{t("todoPagado")}</span>
       </>
+    ) : resaltado ? (
+      t("pendiente")
     ) : compacto ? (
       <>
         <span aria-hidden="true">{t("pagadosCorto", { pagados: estado.pagados, total: estado.total })}</span>
@@ -201,7 +209,7 @@ export function Timeline({
                 <Fila
                   key={inquilino.id}
                   etiqueta={<span className={estilos.nombreFila}>{inquilino.nombre}</span>}
-                  clase={estilos.filaInquilino}
+                  clase={`${estilos.filaInquilino} ${inquilino.id === resaltado ? estilos.resaltada : ""}`}
                   hoy={hoyEnEje}
                   eje={eje}
                 >

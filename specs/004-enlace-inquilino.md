@@ -23,6 +23,8 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
   - gastos repartidos: tipo, periodo, total de la factura, su parte, días y pagado (con fecha) o pendiente;
   - liquidaciones: nombre, su total, estado y desglose por factura (spec 011, R15);
   - fianza: importe, fecha de recepción y, si procede, fecha e importe devuelto.
+- **R6b** — Esa lista es su histórico de dinero (spec 012, R9): se puede filtrar por tipo de gasto (y «Alquiler») y por fechas.
+- **R6c** — En su timeline están las estancias de todos (para entender el reparto), pero chinchetas y barras llevan solo lo suyo: la chincheta, su cobro; la barra, el total de la factura y si él ha pagado su parte (spec 006, R10). Al pulsarlas se abre la ventana con solo lo suyo (spec 006, R11 y R12).
 - **R7** — Cada gasto mostrará el detalle del cálculo por tramos de días, con el nombre de pila de los presentes. Por ejemplo: "Del 1 al 20: tú y Alex → 30,00 €. Del 21 al 30: tú, Alex y Jorge → 10,00 €".
 - **R7b** — El inquilino nunca verá lo que han pagado o deben los demás; solo el estado de sus propios pagos.
 - **R8** — Si la descarga está habilitada (R2b), el PDF de cada factura se podrá descargar con una URL firmada que caduca a los 5 minutos. Si no, no aparece el botón y la API responde 404.
@@ -30,6 +32,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 - **R10** — Se muestran los cobros y repartos guardados (foto fija). Si la propietaria recalcula, la vista se actualiza.
 - **R11b** — Si el inmueble está bloqueado por el plan (spec 010, R10d), la vista sigue funcionando con lo que había y muestra el aviso "Este inmueble no está actualizado".
 - **R11** — Las páginas llevarán `noindex`, `Cache-Control: private, no-store` y `Referrer-Policy: no-referrer`.
+- **R12** — La vista está en `/i/<token>` y usa el idioma del navegador, con un selector es/en que se recuerda en ese navegador (docs/estilo.md). La descarga del PDF va por `/api/publico/<token>/facturas/<id>/pdf`.
 
 ## Casos de prueba
 
@@ -56,7 +59,7 @@ La propietaria comparte con cada inquilino un enlace sin cuenta donde ve todo lo
 ## Tareas
 
 - [x] Caducidad (R3), total pendiente (R5) y tramos del detalle (R7) en `packages/domain`
-- [ ] Guardar el detalle por tramos junto al reparto (foto fija)
+- [x] Guardar el detalle por tramos junto al reparto (foto fija)
 - [x] Generar, revocar y regenerar enlaces en `apps/api` y en la ficha del inquilino (tarea 6.4)
-- [ ] Vista pública en `apps/web`
-- [ ] Tests C1–C10 y C7b
+- [x] Vista pública en `apps/web`
+- [x] Tests C1–C10 y C7b (C3, con la caducidad de `enlacePorToken`)

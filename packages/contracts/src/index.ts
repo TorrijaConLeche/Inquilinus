@@ -118,3 +118,4 @@ export {
   rutasHistorico,
 } from './historico.ts';
 export { EdicionEnlace, EnlaceGenerado, EnlaceInquilino, rutasEnlaces } from './enlaces.ts';
+export { VistaInquilino, rutasPublico } from './publico.ts';
