@@ -25,6 +25,7 @@ import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 import { registrarRutasLiquidaciones } from "./rutas/liquidaciones.ts";
 import { registrarRutasProcesos } from "./rutas/procesos.ts";
+import { registrarRutasPublico } from "./rutas/publico.ts";
 import { registrarRutasTimeline } from "./rutas/timeline.ts";
 
 export interface Dependencias {
@@ -114,6 +115,8 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
 
   const { auth, bd } = dependencias;
   if (bd) {
+    // Spec 004: la vista del inquilino, sin sesión (el token es la llave).
+    registrarRutasPublico(app, { bd, almacen: dependencias.almacen, ahora: dependencias.ahora ?? (() => new Date()) });
     registrarRutasProcesos(app, {
       bd,
       secretoCron: dependencias.secretoCron,
