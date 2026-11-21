@@ -11,6 +11,7 @@ import { useAccion } from "../../../../lib/use-accion";
 import estilos from "../../privado.module.css";
 import propias from "./detalle.module.css";
 import { DocumentosInquilino } from "./DocumentosInquilino";
+import { EnlaceInquilino } from "./EnlaceInquilino";
 
 /** Qué formulario está abierto: uno cada vez en toda la sección. */
 type Abierto =
@@ -22,11 +23,14 @@ type Abierto =
 /** Inquilinos y sus estancias (spec 007, R6–R9); antiguos aparte (R11d) y borrado o anonimizado (R12). */
 export function Inquilinos({
   inmuebleId,
+  nombreInmueble,
   inquilinos,
   habitaciones,
   hoy,
 }: {
   inmuebleId: string;
+  /** Para el mensaje de WhatsApp del enlace (spec 004, R2d). */
+  nombreInmueble: string;
   inquilinos: Inquilino[];
   habitaciones: Habitacion[];
   hoy: string;
@@ -275,6 +279,7 @@ export function Inquilinos({
             </div>
           ))}
         {!q.anonimizado && <DocumentosInquilino inmuebleId={inmuebleId} inquilino={q} />}
+        {!q.anonimizado && <EnlaceInquilino inmuebleId={inmuebleId} nombreInmueble={nombreInmueble} inquilino={q} />}
       </li>
     );
   };

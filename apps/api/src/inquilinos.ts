@@ -21,6 +21,7 @@ import { registrar } from "./actividad.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { documentosYFianzas, type DocumentosYFianzas } from "./documentos.ts";
+import { aEnlace, enlacesVigentes } from "./enlaces.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
 
 // --- Inquilinos -------------------------------------------------------------
@@ -32,7 +33,10 @@ function aInquilino(
   ocupaciones: FilaOcupacion[],
   { documentos, fianzas }: DocumentosYFianzas,
   conHistorial: Set<string>,
+  enlaces: Map<string, typeof t.enlaceInquilino.$inferSelect>,
 ): Inquilino {
+  const suyas = ocupaciones.filter((o) => o.inquilinoId === fila.id);
+  const enlace = enlaces.get(fila.id);
   return {
     id: fila.id,
     nombre: fila.nombre,
@@ -44,6 +48,7 @@ function aInquilino(
       .map((o) => ({ id: o.id, habitacionId: o.habitacionId, entrada: o.entrada, salida: o.salida })),
     documentos: documentos.get(fila.id) ?? [],
     fianza: fianzas.get(fila.id) ?? null,
+    enlace: enlace ? aEnlace(enlace, suyas) : null,
   };
 }
 
@@ -53,11 +58,12 @@ export async function listarInquilinos(bd: ConexionBd, inmuebleId: string): Prom
     bd.select().from(t.ocupacion).where(eq(t.ocupacion.inmuebleId, inmuebleId)),
   ]);
   const idsInquilinos = inquilinos.map((q) => q.id);
-  const [extras, conHistorial] = await Promise.all([
+  const [extras, conHistorial, enlaces] = await Promise.all([
     documentosYFianzas(bd, idsInquilinos),
     inquilinosConHistorial(bd, idsInquilinos),
+    enlacesVigentes(bd, idsInquilinos),
   ]);
-  return inquilinos.map((q) => aInquilino(q, ocupaciones, extras, conHistorial));
+  return inquilinos.map((q) => aInquilino(q, ocupaciones, extras, conHistorial, enlaces));
 }
 
 /** El inquilino con sus estancias, si es de ese inmueble. */
@@ -67,12 +73,13 @@ export async function verInquilino(bd: ConexionBd, inmuebleId: string, inquilino
     .from(t.inquilino)
     .where(and(eq(t.inquilino.id, inquilinoId), eq(t.inquilino.inmuebleId, inmuebleId)));
   if (!fila) return null;
-  const [ocupaciones, extras, conHistorial] = await Promise.all([
+  const [ocupaciones, extras, conHistorial, enlaces] = await Promise.all([
     bd.select().from(t.ocupacion).where(eq(t.ocupacion.inquilinoId, inquilinoId)),
     documentosYFianzas(bd, [inquilinoId]),
     inquilinosConHistorial(bd, [inquilinoId]),
+    enlacesVigentes(bd, [inquilinoId]),
   ]);
-  return aInquilino(fila, ocupaciones, extras, conHistorial);
+  return aInquilino(fila, ocupaciones, extras, conHistorial, enlaces);
 }
 
 /**

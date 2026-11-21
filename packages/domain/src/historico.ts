@@ -44,6 +44,11 @@ export const TIPOS_ACTIVIDAD = {
   tipo_gasto_archivado: 'inmueble',
   fianza_recibida: 'fianza',
   fianza_devuelta: 'fianza',
+  enlace_generado: 'enlaces',
+  enlace_regenerado: 'enlaces',
+  enlace_revocado: 'enlaces',
+  descarga_habilitada: 'enlaces',
+  descarga_deshabilitada: 'enlaces',
 } as const satisfies Record<string, GrupoActividad>;
 export type TipoActividad = keyof typeof TIPOS_ACTIVIDAD;
 

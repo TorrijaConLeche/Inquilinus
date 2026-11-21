@@ -76,6 +76,7 @@ describe("claveDeError", () => {
       "FACTURA_NO_REPARTIDA",
       "FACTURA_EN_LIQUIDACION",
       "LIQUIDACION_VACIA",
+      "ENLACE_EXISTENTE",
       "OTRO",
     ];
     for (const codigo of codigos) {

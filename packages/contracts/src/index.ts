@@ -117,3 +117,4 @@ export {
   TipoActividad,
   rutasHistorico,
 } from './historico.ts';
+export { EdicionEnlace, EnlaceGenerado, EnlaceInquilino, rutasEnlaces } from './enlaces.ts';

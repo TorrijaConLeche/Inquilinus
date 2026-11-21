@@ -68,6 +68,8 @@ const POR_CODIGO: Record<string, ClaveError> = {
   FACTURA_NO_REPARTIDA: "facturaNoRepartida",
   FACTURA_EN_LIQUIDACION: "facturaEnLiquidacion",
   LIQUIDACION_VACIA: "liquidacionVacia",
+  // Enlaces (spec 004).
+  ENLACE_EXISTENTE: "enlaceExistente",
 };
 
 export type ClaveError =
@@ -126,6 +128,7 @@ export type ClaveError =
   | "facturaNoRepartida"
   | "facturaEnLiquidacion"
   | "liquidacionVacia"
+  | "enlaceExistente"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */

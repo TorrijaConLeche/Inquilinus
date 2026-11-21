@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { Fecha, RespuestaError } from './comunes.ts';
 import { Documento, Fianza } from './documentos.ts';
+import { EnlaceInquilino } from './enlaces.ts';
 
 // Inquilinos, ocupaciones y tipos de gasto (spec 007). Fechas como día natural `YYYY-MM-DD`.
 
@@ -82,6 +83,8 @@ export const Inquilino = z
     /** Como mucho uno de cada tipo (R6b). */
     documentos: z.array(Documento),
     fianza: Fianza.nullable(),
+    /** Spec 004: su enlace vigente (sin el token), o null si no tiene. */
+    enlace: EnlaceInquilino.nullable(),
   })
   .meta({ id: 'Inquilino' });
 export type Inquilino = z.infer<typeof Inquilino>;

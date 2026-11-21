@@ -19,6 +19,7 @@ import { crearRegistro, describirError, type Registro } from "./registro.ts";
 import { registrarRutasCobros } from "./rutas/cobros.ts";
 import { registrarRutasDocumentos } from "./rutas/documentos.ts";
 import { registrarRutasFacturas } from "./rutas/facturas.ts";
+import { registrarRutasEnlaces } from "./rutas/enlaces.ts";
 import { registrarRutasHistorico } from "./rutas/historico.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
@@ -156,6 +157,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasLiquidaciones(app, { bd, ahora });
     registrarRutasTimeline(app, { bd });
     registrarRutasHistorico(app, { bd });
+    registrarRutasEnlaces(app, { bd });
     registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora });
 
     app.get("/cuenta/exportacion", async (c) => {

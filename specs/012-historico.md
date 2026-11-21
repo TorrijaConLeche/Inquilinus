@@ -27,7 +27,7 @@ Cada inmueble tiene un **histórico** con todo lo que ha pasado: cobros, pagos, 
 
 - **R3** — El registro es **solo de lectura**: nada del histórico se puede editar ni borrar. Si algo se corrige, la corrección aparece como una actividad nueva.
 - **R3b** — Lo ocurrido antes de que existiera el histórico se reconstruye una vez a partir de los datos guardados: cobros generados, pagados y quitados; facturas subidas y repartidas y partes pagadas; liquidaciones creadas; entradas y salidas ya ocurridas; fianzas recibidas y devueltas; habitaciones y tipos de gasto creados. Cada una con su fecha. Las ediciones anteriores (importe antes y después) no se conocen y no aparecen.
-- **R3c** — Las actividades de los enlaces llegan con ellos (spec 004, tarea 6.4).
+- **R3c** — Las actividades de los enlaces llegan con ellos (spec 004, tarea 6.4): generado, regenerado, revocado y descarga habilitada o deshabilitada.
 - **R4** — Cada actividad que cambia un importe muestra el valor anterior y el nuevo (por ejemplo, "Renta de octubre de Alex: 500 € → 450 €").
 
 **Consultar**
