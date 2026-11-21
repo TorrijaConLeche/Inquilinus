@@ -808,13 +808,14 @@
     "vacia": "{habitacion} empty from {desde} to {hasta}, split between {n}",
     "total": "Total: {importe}",
     "totalFactura": "Bill total: {importe}",
-    "tramo": "From {desde} to {hasta}: you and {con} → {importe}",
+    "tramo": "From {desde} to {hasta}: {con} → {importe}",
     "tramoSolo": "From {desde} to {hasta}: only you → {importe}",
     "tuParte": "Your share: {importe} ({n, plural, one {# day} other {# days}})",
     "enLiquidacion": "Part of {nombre}",
     "descargarPdf": "Download the bill (PDF)",
     "fianzaRecibida": "Received on {fecha}",
     "fianzaDevuelta": "Returned on {fecha}: {importe}",
-    "pie": "Only you can see this page. If something doesn't add up, talk to your landlord."
+    "pie": "Only you can see this page. If something doesn't add up, talk to your landlord.",
+    "tu": "you"
   }
 }

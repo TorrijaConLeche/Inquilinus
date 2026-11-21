@@ -808,13 +808,14 @@
     "vacia": "{habitacion} vacía del {desde} al {hasta}, repartida entre {n}",
     "total": "Total: {importe}",
     "totalFactura": "Total de la factura: {importe}",
-    "tramo": "Del {desde} al {hasta}: tú y {con} → {importe}",
+    "tramo": "Del {desde} al {hasta}: {con} → {importe}",
     "tramoSolo": "Del {desde} al {hasta}: solo tú → {importe}",
     "tuParte": "Tu parte: {importe} ({n, plural, one {# día} other {# días}})",
     "enLiquidacion": "Va en la {nombre}",
     "descargarPdf": "Descargar la factura (PDF)",
     "fianzaRecibida": "Recibida el {fecha}",
     "fianzaDevuelta": "Devuelta el {fecha}: {importe}",
-    "pie": "Solo tú ves esta página. Si algo no cuadra, habla con quien te alquila."
+    "pie": "Solo tú ves esta página. Si algo no cuadra, habla con quien te alquila.",
+    "tu": "tú"
   }
 }

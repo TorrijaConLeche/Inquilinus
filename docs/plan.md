@@ -103,7 +103,7 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [x] **6.3 · Claude** — Ventanas de detalle del alquiler y de la factura · `feat/006-detalles`
 - [x] **6.4b · Claude** — Histórico del inmueble con filtros y resumen (spec 012). El registro de actividad se añade desde la fase 3 en cada acción · `feat/012-historico`
 - [x] **6.4 · Claude** — Enlaces: generar, revocar, regenerar, WhatsApp y permiso de descarga · `feat/004-enlaces`
-- [ ] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
+- [x] **6.5 · Claude** — Vista pública del inquilino con cabeceras de seguridad e idioma, incluidas sus liquidaciones · `feat/004-vista-publica`
 - [ ] **6.6 · Claude** — Repaso de `docs/rgpd.md` y borrador de la cláusula informativa para inquilinos · `docs/rgpd-revision`
 - [ ] **6.6b · Claude** — Avisos de plazos de conservación vencidos (spec 007, R14), con los plazos que fije el asesor · `feat/007-plazos`
 - [ ] **6.7 · Tú** — Revisar la cláusula informativa y entregarla a tus inquilinos

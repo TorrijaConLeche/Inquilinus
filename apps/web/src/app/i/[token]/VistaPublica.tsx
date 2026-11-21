@@ -308,7 +308,8 @@ function DetalleGasto({ gasto, vista, token }: { gasto: Gasto; vista: VistaInqui
           {t(tr.conQuien.length === 0 ? "tramoSolo" : "tramo", {
             desde: dia(tr.desde),
             hasta: dia(tr.hasta),
-            con: new Intl.ListFormat(idioma === "en" ? "en-GB" : "es-ES", { type: "conjunction" }).format(tr.conQuien),
+            // «tú, Bruno y Carla».
+            con: new Intl.ListFormat(idioma === "en" ? "en-GB" : "es-ES", { type: "conjunction" }).format([t("tu"), ...tr.conQuien]),
             importe: euros(tr.importe),
           })}
         </li>
