@@ -16,9 +16,10 @@ import {
   metodoDobleFactor,
   resumenDelPanel,
   verInmueble,
+  vistaInquilino,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, DatosTimeline, Factura, FiltrosHistorico, Historico, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, DatosTimeline, VistaInquilino, Factura, FiltrosHistorico, Historico, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
@@ -89,6 +90,12 @@ export async function detalleDe(
     listarTiposGasto(dependencias.bd, inmueble.id),
   ]);
   return { inmueble, inquilinos, tiposGasto };
+}
+
+/** Spec 004: la vista del inquilino de un token, o null si el enlace no está disponible (R4). Sin sesión. */
+export async function vistaDe(token: string): Promise<VistaInquilino | null> {
+  if (!dependencias.bd) return null;
+  return vistaInquilino(dependencias.bd, token, hoyEnMadrid());
 }
 
 /** Histórico del inmueble con filtros (spec 012), o null si no es suyo. */

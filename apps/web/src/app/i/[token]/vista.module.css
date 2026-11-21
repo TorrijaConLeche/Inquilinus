@@ -1,0 +1,189 @@
+/* Vista del inquilino (spec 004). Una columna cómoda en el móvil. */
+
+.pagina {
+  display: grid;
+  gap: 20px;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+
+.barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.marca {
+  font-weight: 600;
+  color: var(--primario);
+}
+
+.idiomas {
+  display: inline-flex;
+}
+
+.idiomas button {
+  padding: 4px 10px;
+  border: 1px solid var(--borde-fuerte);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.idiomas button:first-child {
+  border-radius: var(--radio-control) 0 0 var(--radio-control);
+}
+
+.idiomas button:last-child {
+  margin-left: -1px;
+  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+}
+
+.idiomas button[aria-pressed="true"] {
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+  border-color: var(--primario);
+  font-weight: 600;
+}
+
+.cabecera {
+  display: grid;
+  gap: 4px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.suave {
+  margin: 0;
+  color: var(--texto-suave);
+}
+
+.tarjeta,
+.pendienteTarjeta {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.tarjeta h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+/* R5: lo que le falta por pagar, bien visible. */
+.pendienteTarjeta {
+  gap: 4px;
+}
+
+.pendienteTarjeta h2 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+.cifra {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filtros > * {
+  flex: 1 1 160px;
+}
+
+.lista {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.elemento {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.resumen {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.resumen:focus-visible {
+  outline: 2px solid var(--primario);
+  outline-offset: 2px;
+}
+
+.concepto {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.derecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.importe {
+  font-variant-numeric: tabular-nums;
+}
+
+.detalle {
+  padding: 0 12px 12px;
+}
+
+.lineas {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pagado,
+.pendiente {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+}
+
+.pagado {
+  background: var(--primario-suave);
+  color: var(--primario-texto);
+}
+
+.pendiente {
+  border: 1px solid var(--borde-fuerte);
+  color: var(--texto-suave);
+}
+
+.pie {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+  text-align: center;
+}

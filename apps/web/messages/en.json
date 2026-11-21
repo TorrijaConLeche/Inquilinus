@@ -625,7 +625,8 @@
     "entra": "moves in {fecha}",
     "sale": "moves out {fecha}",
     "vacio": "Once you have tenants, rent or split bills, you'll see them here along a timeline.",
-    "pagadosCorto": "{pagados}/{total}"
+    "pagadosCorto": "{pagados}/{total}",
+    "pendiente": "pending"
   },
   "Detalles": {
     "cargando": "Loading…",
@@ -772,5 +773,48 @@
     "cancelar": "Cancel",
     "regenerarAviso": "A new link is created and the current one stops working.",
     "revocarAviso": "The link will stop working. You can create another one whenever you like."
+  },
+  "Vista": {
+    "titulo": "Your rental",
+    "noDisponible": "This link is no longer available",
+    "noDisponibleTexto": "If you need to see your payments, ask your landlord for a new link.",
+    "idioma": "Language",
+    "hola": "Hi, {nombre}",
+    "intro": "This is everything that's yours at {inmueble}: what you still owe, your rent and your expenses, with how each one is calculated.",
+    "bloqueado": "This property isn't up to date: recent rent or expenses may be missing.",
+    "pendiente": "You still owe",
+    "alDia": "You're up to date ✓",
+    "historico": "Your activity",
+    "filtroTipo": "What",
+    "todo": "Everything",
+    "alquiler": "Rent",
+    "gasto": "Expense",
+    "liquidaciones": "Settlements",
+    "fianza": "Deposit",
+    "desde": "From",
+    "hasta": "To",
+    "nada": "Nothing matches these filters.",
+    "alquilerDe": "Rent for {mes}",
+    "periodo": "from {desde} to {hasta}",
+    "pagadoEl": "Paid on {fecha}",
+    "estados": {
+      "pendiente": "Pending",
+      "pagada": "Paid",
+      "parcial": "Partly paid"
+    },
+    "falta": "{importe} to go",
+    "renta": "Rent: {importe}",
+    "recargo": "For empty days: {importe}",
+    "vacia": "{habitacion} empty from {desde} to {hasta}, split between {n}",
+    "total": "Total: {importe}",
+    "totalFactura": "Bill total: {importe}",
+    "tramo": "From {desde} to {hasta}: you and {con} → {importe}",
+    "tramoSolo": "From {desde} to {hasta}: only you → {importe}",
+    "tuParte": "Your share: {importe} ({n, plural, one {# day} other {# days}})",
+    "enLiquidacion": "Part of {nombre}",
+    "descargarPdf": "Download the bill (PDF)",
+    "fianzaRecibida": "Received on {fecha}",
+    "fianzaDevuelta": "Returned on {fecha}: {importe}",
+    "pie": "Only you can see this page. If something doesn't add up, talk to your landlord."
   }
 }
