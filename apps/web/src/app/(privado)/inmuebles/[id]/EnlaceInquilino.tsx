@@ -2,7 +2,7 @@
 import type { EnlaceGenerado, Inquilino } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Aviso } from "../../../../componentes/Aviso";
 import formulario from "../../../../componentes/formulario.module.css";
 import { pedirApi } from "../../../../lib/api-cliente";
@@ -28,6 +28,9 @@ export function EnlaceInquilino({ inmuebleId, nombreInmueble, inquilino }: { inm
   const [copiado, setCopiado] = useState(false);
   const [confirmando, setConfirmando] = useState<"regenerar" | "revocar" | null>(null);
   const enlace = inquilino.enlace;
+  // La casilla cambia al momento; si falla, vuelve a lo guardado.
+  const [descarga, setDescarga] = useState(enlace?.permiteDescarga ?? true);
+  useEffect(() => setDescarga(enlace?.permiteDescarga ?? true), [enlace?.permiteDescarga]);
 
   const pedir = async (camino: string, opciones: { metodo?: string; cuerpo?: unknown }) => {
     setEnviando(true);
@@ -124,9 +127,15 @@ export function EnlaceInquilino({ inmuebleId, nombreInmueble, inquilino }: { inm
           <label className={formulario.casilla}>
             <input
               type="checkbox"
-              checked={enlace.permiteDescarga}
+              checked={descarga}
               disabled={enviando}
-              onChange={(e) => void pedir(ruta, { metodo: "PATCH", cuerpo: { permiteDescarga: e.target.checked } })}
+              onChange={(e) => {
+                const valor = e.target.checked;
+                setDescarga(valor);
+                void pedir(ruta, { metodo: "PATCH", cuerpo: { permiteDescarga: valor } }).then((r) => {
+                  if (r === null) setDescarga(!valor);
+                });
+              }}
             />
             <span>{t("permiteDescarga")}</span>
           </label>
