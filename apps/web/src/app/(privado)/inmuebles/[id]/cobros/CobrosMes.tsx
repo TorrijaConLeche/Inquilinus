@@ -13,6 +13,7 @@ import { formatoFecha, formatoMes } from "../../../../../lib/fechas";
 import { useAccion } from "../../../../../lib/use-accion";
 import privado from "../../../privado.module.css";
 import propias from "../detalle.module.css";
+import { FormularioFechaPago } from "../FechaPago";
 import { FilaParte } from "../FilaParte";
 import { LineaLiquidacion } from "../LineaLiquidacion";
 import estilos from "./cobros.module.css";
@@ -46,6 +47,9 @@ export function CobrosMes({
   // R10: lo último que se marcó con «Todo pagado», para poder deshacerlo.
   const [ultimoPagoTodo, setUltimoPagoTodo] = useState<{ inquilinoId: string; cobros: string[]; partes: string[] } | null>(null);
   const [errorPago, setErrorPago] = useState<ClaveError | null>(null);
+  // R10: el inquilino cuyo «Todo pagado» se marca en otra fecha.
+  const [enOtraFecha, setEnOtraFecha] = useState<string | null>(null);
+  const [pagandoTodo, setPagandoTodo] = useState(false);
 
   const nombre = (id: string) => inquilinos.find((q) => q.id === id)?.nombre ?? "—";
   const etiqueta = (c: Cobro) => t("alquilerDe", { mes: formatoMes(c.mes, idioma) });
@@ -88,10 +92,16 @@ export function CobrosMes({
     router.refresh();
   };
 
-  const pagarTodo = async (inquilinoId: string) => {
+  /** R10: sin fecha, la API usa la de hoy. */
+  const pagarTodo = async (inquilinoId: string, fecha?: string) => {
     setErrorPago(null);
-    const resultado = await pedirApi<ResultadoPagoTodo>(`${base}/pagar-todo`, { cuerpo: { inquilinoId, mes: datos.mes } });
+    setPagandoTodo(true);
+    const resultado = await pedirApi<ResultadoPagoTodo>(`${base}/pagar-todo`, {
+      cuerpo: { inquilinoId, mes: datos.mes, ...(fecha ? { fecha } : {}) },
+    });
+    setPagandoTodo(false);
     if (!resultado.ok) return setErrorPago(resultado.error);
+    setEnOtraFecha(null);
     setUltimoPagoTodo({
       inquilinoId,
       cobros: resultado.datos.marcados.map((c) => c.id),
@@ -162,7 +172,7 @@ export function CobrosMes({
       <section className={privado.seccion} aria-labelledby="titulo-mes">
         <h2 id="titulo-mes">{t("alquileresDe", { mes: formatoMes(datos.mes, idioma) })}</h2>
         {mensaje && <Aviso tipo="exito">{mensaje}</Aviso>}
-        {errorPago && <Aviso tipo="error">{te(errorPago)}</Aviso>}
+        {errorPago && enOtraFecha === null && <Aviso tipo="error">{te(errorPago)}</Aviso>}
         {grupos.length === 0 && <p className={propias.suave}>{t("sinCobros")}</p>}
 
         {grupos.map(({ inquilino, cobros, gastos, liquidaciones }) => {
@@ -176,15 +186,43 @@ export function CobrosMes({
               <div className={propias.fila}>
                 <span className={propias.nombre}>{inquilino.nombre}</span>
                 {pendientes.length > 0 ? (
-                  <button type="button" className={formulario.botonEnlace} onClick={() => void pagarTodo(inquilino.id)}>
-                    {t("todoPagado")}
-                  </button>
+                  <span className={propias.acciones}>
+                    <button
+                      type="button"
+                      className={formulario.botonEnlace}
+                      disabled={pagandoTodo}
+                      onClick={() => void pagarTodo(inquilino.id)}
+                    >
+                      {t("todoPagado")}
+                    </button>
+                    <button
+                      type="button"
+                      className={formulario.botonEnlace}
+                      onClick={() => {
+                        setErrorPago(null);
+                        setEnOtraFecha(inquilino.id);
+                      }}
+                    >
+                      {t("enOtraFecha")}
+                    </button>
+                  </span>
                 ) : recienPagado ? (
                   <button type="button" className={formulario.botonEnlace} onClick={() => void deshacerPagoTodo()}>
                     {t("deshacerTodoPagado")}
                   </button>
                 ) : null}
               </div>
+              {enOtraFecha === inquilino.id && pendientes.length > 0 && (
+                <FormularioFechaPago
+                  inicial={hoy}
+                  hoy={hoy}
+                  textoBoton={t("todoPagado")}
+                  enviando={pagandoTodo}
+                  error={errorPago}
+                  alGuardar={(fecha) => void pagarTodo(inquilino.id, fecha)}
+                  alCancelar={() => setEnOtraFecha(null)}
+                />
+              )}
               <ul className={estilos.cobros}>
                 {cobros.map((c) => (
                   <FilaCobro key={c.id} base={base} cobro={c} etiqueta={etiqueta(c)} hoy={hoy} />

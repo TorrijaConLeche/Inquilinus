@@ -217,6 +217,32 @@ describe("Spec 009 · Partes de gastos en los cobros y el panel", () => {
     expect((await e.parteDe(e.b)).pagadoEn).toBeNull();
   });
 
+  it("C9 · la fecha de pago de una parte se cambia, pero nunca a después de hoy", async () => {
+    const e = await escenario();
+    await e.pagar(e.b, "2026-10-20");
+    expect((await e.pagar(e.b, "2026-10-15")).status).toBe(200);
+    expect((await e.parteDe(e.b)).pagadoEn).toBe("2026-10-15");
+    const futura = await e.pagar(e.b, "2026-10-21");
+    expect(futura.status).toBe(400);
+    expect(await error(futura)).toBe("PAGO_FUTURO");
+    expect((await e.parteDe(e.b)).pagadoEn).toBe("2026-10-15");
+  });
+
+  it("C10 · «Todo pagado» en otra fecha marca con esa fecha; en el futuro, nada", async () => {
+    const e = await escenario();
+    await pedir(`${e.base}/cobros/generar`, { cuerpo: { mes: "2026-10" }, cookie: e.cookie });
+    const pagarTodo = (fecha: string) =>
+      pedir(`${e.base}/cobros/pagar-todo`, { cuerpo: { inquilinoId: e.a.id, mes: "2026-10", fecha }, cookie: e.cookie });
+    const futura = await pagarTodo("2026-10-21");
+    expect(futura.status).toBe(400);
+    expect(await error(futura)).toBe("PAGO_FUTURO");
+    expect((await e.parteDe(e.a)).pagadoEn).toBeNull();
+    const r = ResultadoPagoTodo.parse(await (await pagarTodo("2026-10-18")).json());
+    expect(r.marcados.map((c) => c.pagadoEn)).toEqual(["2026-10-18"]);
+    expect(r.partes.map((p) => p.pagadoEn)).toEqual(["2026-10-18"]);
+    expect((await e.parteDe(e.a)).pagadoEn).toBe("2026-10-18");
+  });
+
   it("C1 y C2 · el panel suma las partes de gastos pendientes con su nombre", async () => {
     const e = await escenario();
     const p = Panel.parse(await (await pedir("/panel", { cookie: e.cookie })).json());

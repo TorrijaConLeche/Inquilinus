@@ -1,6 +1,7 @@
 "use client";
 import type { ColorGasto, ParteReparto } from "@inquilinus/contracts";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 import { Aviso } from "../../../../componentes/Aviso";
 import { PuntoColor } from "../../../../componentes/ColorGasto";
 import formulario from "../../../../componentes/formulario.module.css";
@@ -9,10 +10,12 @@ import { formatoFecha } from "../../../../lib/fechas";
 import { useAccion } from "../../../../lib/use-accion";
 import estilos from "./cobros/cobros.module.css";
 import propias from "./detalle.module.css";
+import { FormularioFechaPago } from "./FechaPago";
 
 /**
  * La parte de un inquilino en una factura (spec 001, R11): pendiente o
- * cobrada con su fecha, y un toque para marcarla hoy o deshacerlo (spec 009, R9).
+ * cobrada con su fecha, un toque para marcarla hoy, cambiar esa fecha o deshacerlo
+ * (spec 009, R9).
  */
 export function FilaParte({
   inmuebleId,
@@ -33,9 +36,10 @@ export function FilaParte({
   const t = useTranslations("Cobros");
   const te = useTranslations("Errores");
   const idioma = useLocale();
-  const { enviando, error, ejecutar } = useAccion();
-  const marcar = (pagadoEn: string | null) =>
-    void ejecutar(`/inmuebles/${inmuebleId}/partes/${parte.id}`, { metodo: "PATCH", cuerpo: { pagadoEn } });
+  const { enviando, error, ejecutar, limpiarError } = useAccion();
+  const [cambiandoFecha, setCambiandoFecha] = useState(false);
+  const marcar = (pagadoEn: string | null, alTerminar?: () => void) =>
+    void ejecutar(`/inmuebles/${inmuebleId}/partes/${parte.id}`, { metodo: "PATCH", cuerpo: { pagadoEn } }, alTerminar);
 
   return (
     <li className={estilos.cobro}>
@@ -67,7 +71,32 @@ export function FilaParte({
           )}
         </div>
       </div>
-      {error && <Aviso tipo="error">{te(error)}</Aviso>}
+      {error && !cambiandoFecha && <Aviso tipo="error">{te(error)}</Aviso>}
+      {parte.pagadoEn &&
+        (cambiandoFecha ? (
+          <FormularioFechaPago
+            inicial={parte.pagadoEn}
+            hoy={hoy}
+            textoBoton={t("guardar")}
+            enviando={enviando}
+            error={error}
+            alGuardar={(fecha) => marcar(fecha, () => setCambiandoFecha(false))}
+            alCancelar={() => setCambiandoFecha(false)}
+          />
+        ) : (
+          <div className={propias.acciones}>
+            <button
+              type="button"
+              className={formulario.botonEnlace}
+              onClick={() => {
+                limpiarError();
+                setCambiandoFecha(true);
+              }}
+            >
+              {t("cambiarFechaPago")}
+            </button>
+          </div>
+        ))}
     </li>
   );
 }

@@ -476,6 +476,7 @@
     "sinCobros": "No payments this month.",
     "todoPagado": "All paid",
     "deshacerTodoPagado": "Undo “All paid”",
+    "enOtraFecha": "On another date",
     "generar": "Create the missing ones",
     "generarExplicacion": "Creates this month's payments for whoever lived here and doesn't have one yet.",
     "generados": "{n, plural, one {# payment created.} other {# payments created.}}",

@@ -28,7 +28,7 @@ Agrupar varias facturas ya repartidas en una **liquidación** con número y nomb
 
 - **R8** — El **total de cada inquilino** es la suma de sus partes en las facturas de la liquidación. El total de la liquidación es la suma de sus facturas; lo que asume la propietaria (días sin ocupar) se muestra aparte.
 - **R9** — Estado de cada inquilino en la liquidación: **pagada** (todas sus partes pagadas), **parcial** (alguna) o **pendiente** (ninguna). Se muestra lo que le falta por pagar.
-- **R10** — **"Marcar pagada"** para un inquilino marca como pagadas, con la fecha de hoy, todas sus partes pendientes de la liquidación. Se puede deshacer. Pagar factura a factura sigue siendo posible.
+- **R10** — **"Marcar pagada"** para un inquilino marca como pagadas, con la fecha de hoy, todas sus partes pendientes de la liquidación. Al lado, **"En otra fecha"** hace lo mismo con la fecha que se elija (no posterior a hoy). Se puede deshacer, y la fecha de cada parte se puede cambiar después (spec 009, R9). Pagar factura a factura sigue siendo posible.
 - **R11** — Para los cobros del inmueble (spec 009, R8), una liquidación pertenece al mes en que se crea. Una factura suelta sigue perteneciendo al mes en que se reparte.
 - **R11b** — Las partes de las facturas de una liquidación, también las que se añaden después, cuentan en el mes de la liquidación: en los cobros, en el panel y en "Todo pagado" (spec 009, R10).
 
@@ -57,6 +57,7 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 �
 | C10 | Añadir una factura con pagos (R6) | Se pide confirmación; el total de A sube; sus partes pagadas siguen pagadas y pasa a parcial |
 | C11 | Borrar la liquidación (R7) | Las 3 facturas quedan sueltas y los pagos se conservan |
 | C12 | Renombrar (R2) | El nuevo nombre aparece en el panel y en el enlace del inquilino |
+| C13 | Marcar pagada en otra fecha (R10) | A, con el 2026-11-28: sus 3 partes pagadas el 2026-11-28; con una fecha futura, error y nada marcado |
 
 ## Fuera de alcance
 
@@ -72,3 +73,4 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 �
 - [x] Panel y cobros del inmueble agrupados y desplegables
 - [x] Liquidaciones en el timeline (tarea 6.3) y en el enlace del inquilino (tarea 6.5)
 - [x] Tests C1–C12 (C9 con el enlace del inquilino, tarea 6.5)
+- [ ] "En otra fecha" al marcar pagada (C13)
