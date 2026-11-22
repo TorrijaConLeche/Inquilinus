@@ -1,6 +1,7 @@
 // Lectura de facturas con IA (spec 003, R2, R8 y R10). La implementación con
-// Amazon Bedrock llega con la tarea 5.1; hasta entonces no hay extractor y las
-// facturas quedan para rellenarlas a mano (R8b). En los tests se usa uno simulado.
+// Amazon Bedrock está en extractor-bedrock.ts y se activa con APP_BEDROCK_MODELO;
+// sin ella no hay extractor y las facturas quedan para rellenarlas a mano (R8b).
+// En los tests se usa uno simulado.
 import type { LecturaFactura } from "@inquilinus/domain";
 
 export interface ExtractorFacturas {

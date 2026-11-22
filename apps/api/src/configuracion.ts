@@ -5,6 +5,7 @@ import type { Dependencias } from "./app.ts";
 import { crearAuth } from "./auth.ts";
 import { comprobadorBaseDatos, crearBaseDatos } from "./bd/cliente.ts";
 import { crearEnviadorSes } from "./correo/enviador.ts";
+import { crearExtractorBedrockAws, ErrorLectura } from "./extractor-bedrock.ts";
 import { crearLimitador } from "./limitador.ts";
 import { crearRegistro, type Registro } from "./registro.ts";
 
@@ -74,6 +75,23 @@ export function dependenciasDesdeEntorno(
     });
   } else {
     registro.aviso("almacen_desactivado", { codigo: "FALTA_APP_S3_BUCKET" });
+  }
+  // Lectura de facturas con IA (spec 003, R8b y R10b): solo con APP_BEDROCK_MODELO,
+  // en la región de APP_BEDROCK_REGION (o la de AWS) y siempre en la UE.
+  if (entorno["APP_BEDROCK_MODELO"]) {
+    try {
+      dependencias.extractor = crearExtractorBedrockAws({
+        region: entorno["APP_BEDROCK_REGION"] ?? entorno["APP_AWS_REGION"]!,
+        modelo: entorno["APP_BEDROCK_MODELO"],
+        idClave: entorno["APP_AWS_ACCESS_KEY_ID"]!,
+        claveSecreta: entorno["APP_AWS_SECRET_ACCESS_KEY"]!,
+        registro,
+      });
+    } catch (error) {
+      registro.aviso("lectura_ia_desactivada", {
+        codigo: error instanceof ErrorLectura ? error.codigo : "BEDROCK_CONFIGURACION",
+      });
+    }
   }
 
   dependencias.auth = crearAuth({

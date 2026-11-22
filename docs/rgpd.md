@@ -48,7 +48,7 @@ De **los demás** solo ve lo necesario para entender el reparto: su **nombre de 
 
 ## Medidas técnicas
 
-- **Datos en la UE**, comprobado: funciones de Vercel en Fráncfort (`fra1`), base de datos de Neon en Fráncfort (`eu-central-1`), ficheros y emails de AWS en Estocolmo (`eu-north-1`). La IA (Bedrock, perfil EU) aún no está activa (tarea 5.1).
+- **Datos en la UE**, comprobado: funciones de Vercel en Fráncfort (`fra1`), base de datos de Neon en Fráncfort (`eu-central-1`), ficheros y emails de AWS en Estocolmo (`eu-north-1`). La IA (Bedrock) aún no está activa (tarea 5.1); cuando se active, la app solo la usa con una región de la UE y el modelo base o el perfil de la UE, nunca el perfil global, y si no se cumple no la activa (spec 003, R10b).
 - **Cifrado** en todas las conexiones (TLS) y en reposo (base de datos y ficheros; ver «Por comprobar» del bucket).
 - **Ficheros privados**: se descargan solo con una URL firmada de 5 minutos, generada tras comprobar permisos. Las subidas sin confirmar se borran al día siguiente (regla de ciclo de vida).
 - **Mínimo privilegio**: el usuario de AWS de la app trabaja solo con los ficheros; comprobado que no puede ni leer la configuración del bucket.
@@ -56,7 +56,7 @@ De **los demás** solo ve lo necesario para entender el reparto: su **nombre de 
 - **Peticiones desde otras webs (CSRF)**: lo que cambia datos solo se acepta desde la propia app (cabecera `Origin`).
 - **Acceso**: Better Auth, bloqueo de 15 minutos tras 5 intentos fallidos, verificación en dos pasos y secretos fuera del código.
 - **Enlace del inquilino**: token aleatorio de 256 bits del que solo se guarda el hash (se ve una vez, al generarlo); revocable y regenerable; caduca 3 meses después de la última salida. Un enlace revocado, caducado o inventado da el mismo mensaje, sin decir por qué. La vista y su API llevan `noindex`, `Cache-Control: private, no-store` y `Referrer-Policy: no-referrer`. El PDF solo se descarga si la propietaria lo permite y la factura es de ese inquilino.
-- **Minimización en la IA**: a la IA solo llegan el PDF de la factura y los nombres de los tipos de gasto. Los contratos y justificantes nunca se le envían. Bedrock no entrena con los datos.
+- **Minimización en la IA**: a la IA solo llegan el PDF de la factura y los nombres de los tipos de gasto (un test lo comprueba). Los contratos y justificantes nunca se le envían. Bedrock no entrena con los datos. Si la lectura falla, el registro solo guarda un código, nunca el contenido de la factura ni la respuesta de la IA.
 - **Histórico de solo lectura**: no hay forma de editar ni borrar una actividad. Al borrar la cuenta o el inmueble, se borra con ellos.
 - **Logs sin datos personales**: el registro de la API (`apps/api/src/registro.ts`) usa una lista cerrada de campos, guarda las rutas por su patrón (nunca la URL real, ni el token del enlace) y los errores sin su mensaje.
 - **Riesgo conocido**: Vercel guarda por su cuenta registros de cada petición con la **ruta completa y la IP**. En las del enlace del inquilino, la ruta lleva el token. Solo los ve quien entra en la cuenta de Vercel (la titular), se guardan poco tiempo (ver «Por comprobar») y un token expuesto se anula regenerando el enlace.
