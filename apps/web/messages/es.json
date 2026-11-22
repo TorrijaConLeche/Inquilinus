@@ -617,6 +617,8 @@
       "trimestre": "Trimestre",
       "anio": "Año"
     },
+    "pistaZoomRaton": "Ctrl + rueda para acercar o alejar",
+    "pistaZoomTactil": "Pellizca para acercar o alejar",
     "desplazar": "Línea de tiempo: desliza en horizontal para ver otras fechas",
     "alquiler": "Alquiler",
     "alquilerDel": "Alquiler del {fecha}:",

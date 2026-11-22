@@ -109,14 +109,18 @@ export {
 } from './liquidaciones.ts';
 export {
   DIAS_VISIBLES,
+  DIAS_VISIBLES_MAX,
+  DIAS_VISIBLES_MIN,
   carriles,
   chinchetasAlquiler,
   diaEnEje,
   ejeTimeline,
   estadoPagoGrupo,
   filasTimeline,
+  limitarDiasVisibles,
   marcasTimeline,
   tramoEnEje,
+  zoomDeDiasVisibles,
   type ChinchetaAlquiler,
   type EjeTimeline,
   type EstadoPagoGrupo,

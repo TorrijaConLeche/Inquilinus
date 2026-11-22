@@ -3,21 +3,23 @@ import type { DatosTimeline, TipoGasto } from "@inquilinus/contracts";
 import {
   DIAS_VISIBLES,
   aDia,
-  desdeDia,
   carriles,
   chinchetasAlquiler,
   diaEnEje,
   ejeTimeline,
   estadoPagoGrupo,
   filasTimeline,
+  limitarDiasVisibles,
   marcasTimeline,
   tramoEnEje,
+  zoomDeDiasVisibles,
   type EjeTimeline,
   type EstadoPagoGrupo,
   type ZoomTimeline,
 } from "@inquilinus/domain";
 import { useLocale, useTranslations } from "next-intl";
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { flushSync } from "react-dom";
 import { formatoEuros } from "../../lib/dinero";
 import { formatoDiaMes, formatoMesCorto } from "../../lib/fechas";
 import { NombreGasto, PuntoColor } from "../ColorGasto";
@@ -56,10 +58,16 @@ export function Timeline({
 }) {
   const t = useTranslations("Timeline");
   const idioma = useLocale();
-  const [zoom, setZoom] = useState<ZoomTimeline>("mes");
+  // R6 y R6c: cuántos días se ven de una vez. Los botones ponen los de cada
+  // zoom; Ctrl + rueda y pellizcar, cualquiera entre los límites.
+  const [diasVisibles, setDiasVisibles] = useState(DIAS_VISIBLES.mes);
+  const zoom = zoomDeDiasVisibles(diasVisibles);
   const desplazable = useRef<HTMLDivElement>(null);
-  // El día que había en el centro antes de cambiar de zoom (el eje cambia con él).
-  const centro = useRef<string | null>(null);
+  // Al cambiar de zoom, el día (número absoluto, con decimales) que tiene que
+  // quedar en la posición `x` de la caja: el del centro o el que está bajo el
+  // ratón o entre los dedos. El eje cambia con el zoom.
+  const ancla = useRef<{ dia: number; x: number } | null>(null);
+  const colocado = useRef(false);
 
   const eje = useMemo(
     () =>
@@ -70,9 +78,9 @@ export function Timeline({
           ...datos.inquilinos.flatMap((q) => q.ocupaciones.flatMap((o) => (o.salida ? [o.entrada, o.salida] : [o.entrada]))),
         ],
         hoy,
-        DIAS_VISIBLES[zoom],
+        Math.ceil(diasVisibles),
       ),
-    [datos, hoy, zoom],
+    [datos, hoy, diasVisibles],
   );
   const marcas = useMemo(() => marcasTimeline(eje, zoom), [eje, zoom]);
   // El año va en las etiquetas de enero; si no hay ninguna, en la primera.
@@ -84,31 +92,90 @@ export function Timeline({
   });
 
   // R6: al abrir, el mes anterior al actual en el borde izquierdo; al cambiar
-  // de zoom, se conserva el día que había en el centro.
+  // de zoom, el día del ancla se queda donde estaba.
   useLayoutEffect(() => {
     const caja = desplazable.current;
     if (!caja) return;
     const anchoDia = caja.scrollWidth > 0 ? anchoDeDia(caja) : 0;
     if (anchoDia === 0) return;
-    const etiquetas = anchoEtiquetas(caja);
-    if (centro.current === null) {
+    if (ancla.current) {
+      caja.scrollLeft = (ancla.current.dia - aDia(eje.desde)) * anchoDia - (ancla.current.x - anchoEtiquetas(caja));
+      ancla.current = null;
+    } else if (!colocado.current) {
       caja.scrollLeft = diaEnEje(eje, primerDiaMesAnterior(hoy)) * anchoDia;
-    } else {
-      caja.scrollLeft = (diaEnEje(eje, centro.current) + 0.5) * anchoDia - (caja.clientWidth - etiquetas) / 2;
     }
-  }, [zoom, eje, hoy]);
+    colocado.current = true;
+  }, [diasVisibles, eje, hoy]);
 
-  const cambiarZoom = (nuevo: ZoomTimeline) => {
+  /** Cambia los días visibles sin mover el día que hay en `x` (por defecto, el del centro). */
+  const acercar = (cambio: (dias: number) => number, x?: number) => {
     const caja = desplazable.current;
     if (caja) {
       const anchoDia = anchoDeDia(caja);
+      const etiquetas = anchoEtiquetas(caja);
+      const enX = Math.max(x ?? etiquetas + (caja.clientWidth - etiquetas) / 2, etiquetas);
       if (anchoDia > 0) {
-        const dia = Math.floor((caja.scrollLeft + (caja.clientWidth - anchoEtiquetas(caja)) / 2) / anchoDia);
-        centro.current = desdeDia(aDia(eje.desde) + Math.min(Math.max(dia, 0), eje.dias - 1));
+        const dia = (caja.scrollLeft + enX - etiquetas) / anchoDia;
+        ancla.current = { dia: aDia(eje.desde) + Math.min(Math.max(dia, 0), eje.dias), x: enX };
       }
     }
-    setZoom(nuevo);
+    setDiasVisibles(limitarDiasVisibles(cambio(diasVisibles)));
   };
+  const cambiarZoom = (nuevo: ZoomTimeline) => acercar(() => DIAS_VISIBLES[nuevo]);
+
+  // R6c: Ctrl + rueda (pellizcar en el trackpad llega igual) y pellizcar en
+  // pantallas táctiles. Se registran a mano porque hay que cancelar el zoom de
+  // la página, y React registra la rueda y los toques como pasivos.
+  const acercarActual = useRef(acercar);
+  const diasActuales = useRef(diasVisibles);
+  useLayoutEffect(() => {
+    acercarActual.current = acercar;
+    diasActuales.current = diasVisibles;
+  });
+  useEffect(() => {
+    const caja = desplazable.current;
+    if (!caja) return;
+    const xEnCaja = (clientX: number) => clientX - caja.getBoundingClientRect().left;
+    // Cada paso se pinta antes del siguiente, para que el ancla se mida bien.
+    const aplicar = (cambio: (dias: number) => number, clientX: number) =>
+      flushSync(() => acercarActual.current(cambio, xEnCaja(clientX)));
+
+    const alRodar = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      const desplazamiento = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * caja.clientHeight : e.deltaY;
+      aplicar((dias) => dias * Math.exp(desplazamiento * 0.002), e.clientX);
+    };
+
+    let pellizco: { distancia: number; dias: number } | null = null;
+    const distancia = (t: TouchList) => Math.hypot(t[0]!.clientX - t[1]!.clientX, t[0]!.clientY - t[1]!.clientY);
+    const alTocar = (e: TouchEvent) => {
+      pellizco = e.touches.length === 2 ? { distancia: distancia(e.touches), dias: diasActuales.current } : null;
+    };
+    const alMover = (e: TouchEvent) => {
+      const inicio = pellizco;
+      if (!inicio || e.touches.length !== 2) return;
+      e.preventDefault();
+      const ahora = distancia(e.touches);
+      if (ahora > 0) aplicar(() => (inicio.dias * inicio.distancia) / ahora, (e.touches[0]!.clientX + e.touches[1]!.clientX) / 2);
+    };
+    const alSoltar = (e: TouchEvent) => {
+      if (e.touches.length < 2) pellizco = null;
+    };
+
+    caja.addEventListener("wheel", alRodar, { passive: false });
+    caja.addEventListener("touchstart", alTocar, { passive: true });
+    caja.addEventListener("touchmove", alMover, { passive: false });
+    caja.addEventListener("touchend", alSoltar);
+    caja.addEventListener("touchcancel", alSoltar);
+    return () => {
+      caja.removeEventListener("wheel", alRodar);
+      caja.removeEventListener("touchstart", alTocar);
+      caja.removeEventListener("touchmove", alMover);
+      caja.removeEventListener("touchend", alSoltar);
+      caja.removeEventListener("touchcancel", alSoltar);
+    };
+  }, []);
 
   const textoPago = (estado: EstadoPagoGrupo) =>
     estado.completo ? t("todoPagado") : resaltado ? t("pendiente") : t("pagados", { pagados: estado.pagados, total: estado.total });
@@ -136,17 +203,24 @@ export function Timeline({
     <section className={estilos.seccion} aria-labelledby="titulo-timeline">
       <div className={estilos.cabecera}>
         <h2 id="titulo-timeline">{t("titulo")}</h2>
-        {/* R6: zoom mes, trimestre y año. */}
-        <div className={estilos.zoom} role="group" aria-label={t("zoom")}>
-          {ZOOMS.map((z) => (
-            <button key={z} type="button" aria-pressed={zoom === z} onClick={() => cambiarZoom(z)}>
-              {t(`zooms.${z}`)}
-            </button>
-          ))}
+        <div className={estilos.controlesZoom}>
+          {/* R6c: la pista del zoom libre, según haya ratón o pantalla táctil. */}
+          <span className={estilos.pistaZoom}>
+            <span className={estilos.pistaRaton}>{t("pistaZoomRaton")}</span>
+            <span className={estilos.pistaTactil}>{t("pistaZoomTactil")}</span>
+          </span>
+          {/* R6: zoom mes, trimestre y año. */}
+          <div className={estilos.zoom} role="group" aria-label={t("zoom")}>
+            {ZOOMS.map((z) => (
+              <button key={z} type="button" aria-pressed={diasVisibles === DIAS_VISIBLES[z]} onClick={() => cambiarZoom(z)}>
+                {t(`zooms.${z}`)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className={estilos.marco} style={{ "--dias": eje.dias, "--dias-visibles": DIAS_VISIBLES[zoom] } as CSSProperties}>
+      <div className={estilos.marco} style={{ "--dias": eje.dias, "--dias-visibles": diasVisibles } as CSSProperties}>
         <div ref={desplazable} className={estilos.desplazable} tabIndex={0} role="region" aria-label={t("desplazar")}>
           <div className={estilos.lienzo}>
             {filas.map((fila) => {

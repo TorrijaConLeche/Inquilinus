@@ -23,6 +23,7 @@ Un timeline horizontal donde se ve de un vistazo, sobre un eje de días, el alqu
 - **R5** — **Inquilino**: una línea desde la entrada hasta la salida, con un punto verde en la entrada y uno rojo en la salida, cada uno con su fecha. Sin salida, la línea llega hasta el borde derecho. Si un inquilino tiene varias ocupaciones, se dibuja un tramo por cada una.
 - **R6** — Zoom: mes (rayita por día), trimestre (por semana) y año (por mes). Se desliza en horizontal, también en el móvil. Por defecto se muestra el mes en curso y el anterior.
 - **R6b** — De una vez se ven unos dos meses con el zoom mes, unos seis con trimestre y unos doce con año. El eje va desde el primer mes con datos (o el anterior al actual, si es antes) hasta el último mes con datos (o el actual, si es después); si así no llena lo que se ve de una vez, empieza meses antes. Con trimestre y año, el día 1 de cada mes lleva etiqueta, y el importe y el estado de las chinchetas van en dos líneas y en corto («1/3»).
+- **R6c** — Zoom libre: con **Ctrl + rueda** del ratón, o pellizcando en el trackpad o en la pantalla táctil, se acerca o aleja de forma continua, entre unas dos semanas y unos dos años de una vez, sin mover el día que queda bajo el ratón o entre los dedos. La rueda sola sigue desplazando la página. Las rayitas y el formato corto son los del zoom más cercano: hasta unos cuatro meses de una vez (120 días), los del mes; hasta unos nueve (270 días), los del trimestre; con más, los del año. Junto a los botones de zoom, una pista lo explica.
 
 **Colores**
 
@@ -66,6 +67,7 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 | C14 | Chincheta agrupada (R3b) | Los cobros de A, B y C del 1 de octubre son una chincheta con la suma; si solo A ha pagado, "1/3 pagado" |
 | C15 | Facturas solapadas (R4b) | Dos facturas de luz que se solapan van en dos carriles de la fila Luz |
 | C13 | Color repetido (R7b) | Al crear "Agua", el color de Luz aparece marcado "lo usa Luz" y se puede elegir |
+| C16 | Zoom libre (R6c) | Con 120 días de una vez, rayitas por día; con 121, por semana; con 271, por mes. Nunca menos de 14 ni más de 730 días |
 
 ## Fuera de alcance
 
@@ -78,6 +80,7 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 - [x] Componente de timeline compartido (propietaria e inquilino): en la ficha del inmueble; el enlace del inquilino lo usará en la tarea 6.5
 - [x] Ventanas de detalle de alquiler y de factura (propietaria; las del inquilino, con la tarea 6.5)
 - [x] Lista de movimientos (sustituida por las últimas actividades del histórico, spec 012)
+- [ ] Zoom libre con Ctrl + rueda y pellizcando (R6c, C16)
 - [x] Paleta de colores de gasto (clara y oscura) y color del alquiler
 - [x] Selector de color al crear un tipo de gasto y al editarlo
 - [ ] Tests C1–C12

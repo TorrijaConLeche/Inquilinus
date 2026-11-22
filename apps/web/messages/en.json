@@ -617,6 +617,8 @@
       "trimestre": "Quarter",
       "anio": "Year"
     },
+    "pistaZoomRaton": "Ctrl + scroll to zoom in or out",
+    "pistaZoomTactil": "Pinch to zoom in or out",
     "desplazar": "Timeline: scroll sideways to see other dates",
     "alquiler": "Rent",
     "alquilerDel": "Rent due {fecha}:",

@@ -6,8 +6,10 @@ import {
   ejeTimeline,
   estadoPagoGrupo,
   filasTimeline,
+  limitarDiasVisibles,
   marcasTimeline,
   tramoEnEje,
+  zoomDeDiasVisibles,
 } from '../src/index.ts';
 
 // Spec 006. Datos del caso C4 de la spec 002: A y B todo septiembre, C desde
@@ -51,6 +53,22 @@ describe('rayitas (R1, R6)', () => {
     const marcas = marcasTimeline(anio, 'anio');
     expect(marcas.map((m) => m.fecha)).toEqual(Array.from({ length: 9 }, (_, i) => `2026-0${i + 1}-01`));
     expect(marcas.every((m) => m.larga && m.etiqueta === 'mes')).toBe(true);
+  });
+});
+
+describe('zoom libre (R6c)', () => {
+  it('C16 · zoom libre: rayitas del zoom más cercano y entre 14 y 730 días', () => {
+    expect([61, 120, 121, 183, 270, 271, 365, 730].map(zoomDeDiasVisibles)).toEqual([
+      'mes',
+      'mes',
+      'trimestre',
+      'trimestre',
+      'trimestre',
+      'anio',
+      'anio',
+      'anio',
+    ]);
+    expect([3, 14, 90.5, 730, 2000].map(limitarDiasVisibles)).toEqual([14, 14, 90.5, 730, 730]);
   });
 });
 

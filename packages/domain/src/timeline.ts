@@ -8,6 +8,23 @@ export type ZoomTimeline = 'mes' | 'trimestre' | 'anio';
 /** R6b: cuántos días se ven de una vez con cada zoom (unos 2, 6 y 12 meses). */
 export const DIAS_VISIBLES: Record<ZoomTimeline, number> = { mes: 61, trimestre: 183, anio: 365 };
 
+/** R6c: el zoom libre va de unas dos semanas a unos dos años de una vez. */
+export const DIAS_VISIBLES_MIN = 14;
+export const DIAS_VISIBLES_MAX = 730;
+
+/** R6c: los días que se ven de una vez, dentro de los límites del zoom libre. */
+export function limitarDiasVisibles(dias: number): number {
+  return Math.min(DIAS_VISIBLES_MAX, Math.max(DIAS_VISIBLES_MIN, dias));
+}
+
+/**
+ * R6c: con el zoom libre, las rayitas (y el formato corto) son las del zoom más
+ * cercano: hasta 120 días de una vez, mes; hasta 270, trimestre; si no, año.
+ */
+export function zoomDeDiasVisibles(dias: number): ZoomTimeline {
+  return dias <= 120 ? 'mes' : dias <= 270 ? 'trimestre' : 'anio';
+}
+
 export interface EjeTimeline {
   desde: Fecha;
   hasta: Fecha;
