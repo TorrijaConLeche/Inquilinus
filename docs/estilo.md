@@ -4,7 +4,7 @@ Estado: aprobado
 
 ## Nombre
 
-**Inquilinus** (del latín, "inquilino"). Marca comprobada en OEPM y EUIPO (tarea 1.1). Dominio: `inquilinus.es`; `inquilinus.com` está ocupado y la alternativa se decide en la tarea 6.9 (el dominio se registra al final de la fase 6).
+**Inquilinus** (del latín, "inquilino"). Marca comprobada en OEPM y EUIPO (tarea 1.1). Dominio: `inquilinus.es` (registrado en DonDominio); la dirección de la app es `https://www.inquilinus.es` y `inquilinus.es` redirige a ella. En textos y en el logo la marca se escribe «inquilinus.es». `inquilinus.com` está ocupado y la alternativa se decide en la tarea 6.9.
 
 ## Tono
 

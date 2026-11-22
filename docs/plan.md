@@ -108,8 +108,8 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [ ] **6.6b · Claude** — Avisos de plazos de conservación vencidos (spec 007, R14), con los plazos que fije el asesor · `feat/007-plazos`
 - [ ] **6.7 · Tú** — Revisar con el asesor (junto a 2.9) el contrato de encargo y lo marcado con ⚖️ en `docs/rgpd.md`, y hacer las comprobaciones de «Por comprobar» (bucket, copias de Neon, registros de Vercel, DPA aceptados, doble factor)
 - [x] **6.8 · Claude** — Etiqueta `v0.1.0` (puesta el 21-11-2026; la IA de facturas, los avisos de plazos, la revisión legal y el dominio quedan para después)
-- [ ] **6.9 · Tú** — Registrar el dominio (`inquilinus.es`; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.4)
-- [ ] **6.10 · Claude** — Dominio en Vercel, remitente de los emails y direcciones de Google con el dominio nuevo · `chore/dominio`
+- [ ] **6.9 · Tú** — Registrar el dominio (hecho el 22-11-2026: `inquilinus.es` en DonDominio, apuntando a Vercel; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (SPF, DKIM, DMARC), pedir salir del modo de pruebas de SES y pasar el inicio de sesión con Google a producción. Necesario antes de la beta con otras propietarias (7.4)
+- [ ] **6.10 · Claude** — Dominio en Vercel, remitente de los emails y direcciones de Google con el dominio nuevo · `chore/dominio`. Hecho: dominio en Vercel con `https://www.inquilinus.es` como dirección principal (`inquilinus.es` redirige) y `BETTER_AUTH_URL` en Production. Falta el remitente, cuando SES verifique el dominio (6.9)
 
 ## Fase 7 · Uso real y validación
 
