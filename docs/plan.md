@@ -87,7 +87,7 @@ Depende de: fase 3. **Hecho cuando** gestionas un mes completo de cobros con la 
 
 Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se reparte.
 
-- [ ] **5.1 · Tú** — Activar Claude Haiku 5.5 en Amazon Bedrock en la UE: pedir acceso al modelo, dar al usuario IAM `inquilinus-app` el permiso `bedrock-mantle:CreateInference` y añadir en Vercel `APP_BEDROCK_MODELO` (y `APP_BEDROCK_REGION` si no es Estocolmo). Ver `apps/api/.env.example`
+- [ ] **5.1 · Tú** — Activar Claude Haiku 5.5 en Amazon Bedrock en la UE: pedir acceso al modelo, dar al usuario IAM `inquilinus-app` el permiso `bedrock:InvokeModel` solo para el perfil de la UE y el modelo en regiones `eu-*`, y añadir en Vercel `APP_BEDROCK_MODELO=eu.anthropic.claude-haiku-5-5` (y `APP_BEDROCK_REGION` si no es Estocolmo). Ver `apps/api/.env.example`. Hecho todo salvo Vercel: AWS aún no deja usar los modelos de Anthropic en la cuenta (caso de soporte abierto)
 - [x] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`ExtractorFacturas`) que propone periodo, importe y tipo de gasto · `feat/003-subida-facturas` y `feat/003-extractor`. Desactivado hasta la 5.1; solo funciona en la UE (spec 003, R10b)
 - [x] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [x] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
