@@ -7,7 +7,7 @@
 // - R8: cualquier fallo (rechazo, respuesta cortada o JSON que no encaja) lanza un
 //   error y la factura queda para rellenar a mano. Los errores llevan solo un código:
 //   nunca el contenido de la factura ni la respuesta de la IA (docs/rgpd.md).
-import { AnthropicBedrockMantle } from "@anthropic-ai/bedrock-sdk";
+import { AnthropicBedrock } from "@anthropic-ai/bedrock-sdk";
 import { importeDesdeTexto, type LecturaFactura } from "@inquilinus/domain";
 import { z } from "zod";
 import { LIMITE_LECTURA_MS, type ExtractorFacturas } from "./extractor.ts";
@@ -167,12 +167,18 @@ export interface ConfiguracionBedrock {
   registro?: Registro;
 }
 
+/**
+ * Usa el endpoint `bedrock-runtime` (InvokeModel): en la UE, Claude Haiku 5.5 no se
+ * sirve por `bedrock-mantle` y solo está disponible con el perfil `eu.anthropic.…`.
+ */
 export function crearExtractorBedrockAws(configuracion: ConfiguracionBedrock): ExtractorFacturas {
   comprobarBedrockEnUe(configuracion.region, configuracion.modelo);
-  const cliente = new AnthropicBedrockMantle({
+  const cliente = new AnthropicBedrock({
     awsRegion: configuracion.region,
     awsAccessKey: configuracion.idClave,
-    awsSecretAccessKey: configuracion.claveSecreta,
+    awsSecretKey: configuracion.claveSecreta,
+    // Sin esto, el SDK usaría AWS_BEARER_TOKEN_BEDROCK si existiera en el entorno.
+    apiKey: null,
     // R8: más allá de 60 s la factura se rellena a mano; no tiene sentido esperar más.
     timeout: LIMITE_LECTURA_MS,
     maxRetries: 1,

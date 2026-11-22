@@ -48,7 +48,7 @@ De **los demás** solo ve lo necesario para entender el reparto: su **nombre de 
 
 ## Medidas técnicas
 
-- **Datos en la UE**, comprobado: funciones de Vercel en Fráncfort (`fra1`), base de datos de Neon en Fráncfort (`eu-central-1`), ficheros y emails de AWS en Estocolmo (`eu-north-1`). La IA (Bedrock) aún no está activa (tarea 5.1); cuando se active, la app solo la usa con una región de la UE y el modelo base o el perfil de la UE, nunca el perfil global, y si no se cumple no la activa (spec 003, R10b).
+- **Datos en la UE**, comprobado: funciones de Vercel en Fráncfort (`fra1`), base de datos de Neon en Fráncfort (`eu-central-1`), ficheros y emails de AWS en Estocolmo (`eu-north-1`). La IA (Bedrock) aún no está activa (tarea 5.1); cuando se active, la app solo la usa con una región de la UE y el modelo base o el perfil de la UE, nunca el perfil global, y si no se cumple no la activa (spec 003, R10b). Además, el permiso de IAM del usuario de la app solo deja invocar el modelo con el perfil de la UE y en regiones `eu-*`.
 - **Cifrado** en todas las conexiones (TLS) y en reposo (base de datos y ficheros; ver «Por comprobar» del bucket).
 - **Ficheros privados**: se descargan solo con una URL firmada de 5 minutos, generada tras comprobar permisos. Las subidas sin confirmar se borran al día siguiente (regla de ciclo de vida).
 - **Mínimo privilegio**: el usuario de AWS de la app trabaja solo con los ficheros; comprobado que no puede ni leer la configuración del bucket.
