@@ -27,6 +27,33 @@
 }
 
 /* R6: zoom. */
+.controlesZoom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+/* R6c: la pista del zoom libre: con ratón, Ctrl + rueda; en táctil, pellizcar. */
+.pistaZoom {
+  color: var(--texto-suave);
+  font-size: 0.8125rem;
+}
+
+.pistaTactil {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .pistaRaton {
+    display: none;
+  }
+
+  .pistaTactil {
+    display: inline;
+  }
+}
+
 .zoom {
   display: inline-flex;
 }
@@ -83,10 +110,12 @@
   }
 }
 
-/* R6: se desliza en horizontal, también en el móvil. */
+/* R6: se desliza en horizontal, también en el móvil. R6c: pellizcar hace zoom
+   en el timeline, no en la página. */
 .desplazable {
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
 }
 
 .desplazable:focus-visible {
