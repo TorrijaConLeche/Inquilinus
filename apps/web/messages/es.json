@@ -89,6 +89,7 @@
     "contrasenaLarga": "La contraseña es demasiado larga.",
     "contrasenaIncorrecta": "La contraseña no es correcta.",
     "terminos": "No hay ninguna cuenta con ese Google. Para crearla, regístrate aceptando la política de privacidad y los términos.",
+    "registroCerrado": "De momento Inquilinus está en beta cerrada y solo pueden registrarse personas invitadas.",
     "enlaceNoValido": "Este enlace ya no sirve: se ha usado o ha caducado.",
     "codigoIncorrecto": "El código no es correcto.",
     "sesionCaducada": "Ha pasado demasiado tiempo. Vuelve a entrar con tu email y contraseña.",

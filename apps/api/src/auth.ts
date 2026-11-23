@@ -24,6 +24,7 @@ import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import * as esquema from "./bd/esquema.ts";
 import type { EnviadorCorreo } from "./correo/enviador.ts";
 import { componerCodigo, componerCorreo } from "./correo/plantillas.ts";
+import type { ListaInvitados } from "./invitados.ts";
 import { BLOQUEO_MS, crearLimitador, MAXIMO_FALLOS, type Limitador } from "./limitador.ts";
 import { describirError, type Registro } from "./registro.ts";
 
@@ -44,6 +45,11 @@ export interface ConfigAuth {
   limitador?: Limitador;
   /** Cliente OAuth de Google (tarea 2.2). Sin él, solo email y contraseña. */
   google?: { idCliente: string; secreto: string };
+  /**
+   * R1b: quién puede crear una cuenta nueva. Sin ella, cualquiera (los tests).
+   * En la app siempre se pasa desde REGISTRO_INVITADOS (configuracion.ts).
+   */
+  invitados?: ListaInvitados;
 }
 
 /**
@@ -336,6 +342,18 @@ export function crearAuth(config: ConfigAuth) {
           // vigente de los términos. Con Google desde la pantalla de acceso
           // no llega la versión y la cuenta no se crea: la web lleva al registro.
           before: async (usuario, contexto) => {
+            // R1b: en la beta cerrada, solo los invitados. Va antes que los
+            // términos: a quien no está invitado no se le manda a registrarse.
+            // Es el único sitio donde se crea una cuenta (email o Google) y
+            // ocurre antes de enviar ningún email. Quien ya tiene cuenta no pasa por aquí.
+            // BAD_REQUEST y no FORBIDDEN: Better Auth convierte un 403 al registrarse
+            // en un falso «revisa tu email», y la persona esperaría un email que no llega.
+            if (config.invitados && !config.invitados.permite(usuario.email)) {
+              throw new APIError("BAD_REQUEST", {
+                code: "REGISTRO_CERRADO",
+                message: "De momento solo pueden registrarse personas invitadas.",
+              });
+            }
             const version = await versionTerminosAceptada(usuario, contexto?.path);
             if (version !== VERSION_TERMINOS) {
               throw new APIError("BAD_REQUEST", {

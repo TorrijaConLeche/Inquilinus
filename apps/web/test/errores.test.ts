@@ -29,6 +29,7 @@ describe("claveDeError", () => {
       "PASSWORD_TOO_LONG",
       "INVALID_PASSWORD",
       "TERMINOS_NO_ACEPTADOS",
+      "REGISTRO_CERRADO",
       "INVALID_TOKEN",
       "INVALID_CODE",
       "OTP_HAS_EXPIRED",

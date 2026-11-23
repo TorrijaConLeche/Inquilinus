@@ -12,6 +12,7 @@ const POR_CODIGO: Record<string, ClaveError> = {
   PASSWORD_TOO_LONG: "contrasenaLarga",
   INVALID_PASSWORD: "contrasenaIncorrecta",
   TERMINOS_NO_ACEPTADOS: "terminos",
+  REGISTRO_CERRADO: "registroCerrado",
   INVALID_TOKEN: "enlaceNoValido",
   TOKEN_EXPIRED: "enlaceNoValido",
   INVALID_CODE: "codigoIncorrecto",
@@ -80,6 +81,7 @@ export type ClaveError =
   | "contrasenaLarga"
   | "contrasenaIncorrecta"
   | "terminos"
+  | "registroCerrado"
   | "enlaceNoValido"
   | "codigoIncorrecto"
   | "codigoCaducado"

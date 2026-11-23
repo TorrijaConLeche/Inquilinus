@@ -84,5 +84,5 @@ Remitente `Inquilinus <no-reply@inquilinus.es>`, con el dominio verificado en SE
 - [x] Pantallas de registro, acceso, recuperación y ajustes de cuenta
 - [x] Exportar y borrar cuenta (los ficheros se añaden con S3 en la fase 3)
 - [ ] Textos legales y aceptación versionada (con asesoría): borrador y aceptación versionada hechos; falta la revisión del asesor (tarea 2.9)
-- [ ] Registro por invitación (R1b) con sus tests C14–C14e · `feat/008-registro-invitacion`
+- [x] Registro por invitación (R1b) con sus tests C14–C14e · `feat/008-registro-invitacion`
 - [ ] Tests C1–C13 (hechos: C1–C10c y C12–C12b; faltan C11 con la fase 5 y C13 con los inmuebles en la fase 3)

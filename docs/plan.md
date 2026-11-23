@@ -14,7 +14,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 | 3 · Inmuebles e inquilinos | Tus pisos dados de alta | ✅ Hecha |
 | 4 · Cobros y panel | Un mes de cobros gestionado con la app | ✅ Hecha |
 | 5 · Facturas con IA y reparto | Una factura real leída y repartida | ✅ Hecha a mano (falta la IA: 5.1 y 5.6) |
-| 6 · Timeline y enlace del inquilino | MVP para uso propio: `v0.1.0` | ✅ `v0.1.0` (faltan 6.6b, 6.7, 6.8b y 6.9) |
+| 6 · Timeline y enlace del inquilino | MVP para uso propio: `v0.1.0` | ✅ `v0.1.0` (faltan 6.6b, 6.7 y 6.9) |
 | 7 · Uso real y validación | Beta gratuita con otras propietarias | ⏳ Siguiente |
 | 8 · Planes y pagos | Primera suscripción real | Pendiente |
 
@@ -108,7 +108,7 @@ Depende de: fase 5. **Hecho cuando** tus inquilinos reciben su enlace y ven su t
 - [ ] **6.6b · Claude** — Avisos de plazos de conservación vencidos (spec 007, R14), con los plazos que fije el asesor · `feat/007-plazos`
 - [ ] **6.7 · Tú** — Revisar con el asesor (junto a 2.9) el contrato de encargo y lo marcado con ⚖️ en `docs/rgpd.md`, y hacer las comprobaciones de «Por comprobar» (bucket, copias de Neon, registros de Vercel, DPA aceptados, doble factor)
 - [x] **6.8 · Claude** — Etiqueta `v0.1.0` (puesta el 21-11-2026; la IA de facturas, los avisos de plazos, la revisión legal y el dominio quedan para después)
-- [ ] **6.8b · Claude** — Registro por invitación (spec 008, R1b): solo se registran los emails de `REGISTRO_INVITADOS`. Antes de publicar Google (6.9) · `feat/008-registro-invitacion`
+- [x] **6.8b · Claude** — Registro por invitación (spec 008, R1b): solo se registran los emails de `REGISTRO_INVITADOS`. Antes de publicar Google (6.9) · `feat/008-registro-invitacion`
 - [ ] **6.9 · Tú** — Registrar el dominio (hecho el 22-11-2026: `inquilinus.es` en DonDominio, apuntando a Vercel; `inquilinus.com` está ocupado: decidir alternativa), verificarlo en Amazon SES (hecho el 23-11-2026: DKIM, MAIL FROM `correo.inquilinus.es` con su SPF y DMARC `p=none`), pedir salir del modo de pruebas de SES (concedido el 23-11-2026) y pasar el inicio de sesión con Google a producción (después de la 6.8b, para que publicar Google no abra el registro). Necesario antes de la beta con otras propietarias (7.4)
 - [x] **6.10 · Claude** — Dominio en Vercel, remitente de los emails y direcciones de Google con el dominio nuevo · `chore/dominio`. Hecho: dominio en Vercel con `https://www.inquilinus.es` como dirección principal (`inquilinus.es` redirige) y `BETTER_AUTH_URL` en Production. Remitente `no-reply@inquilinus.es` en Production y Preview (23-11-2026)
 
