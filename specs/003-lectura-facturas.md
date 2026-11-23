@@ -84,7 +84,7 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Validación de fichero (R1) y de confirmación (R9) en `packages/domain`
 - [x] Detección de solapes de periodo (R6) en `packages/domain`
 - [x] Interfaz `ExtractorFacturas`, lectura en paralelo con límite de 60 s y normalización de lo leído
-- [x] Implementación con Bedrock (prompt y salida estructurada). Desactivada hasta la tarea 5.1: se activa con `APP_BEDROCK_MODELO`
+- [x] Implementación con Bedrock (prompt y salida estructurada). Se activa con `APP_BEDROCK_MODELO`; en producción desde la tarea 5.1, con Haiku 4.5 de forma provisional
 - [x] Endpoints de subida, lectura y descarte en `apps/api`
 - [x] Endpoints de edición, confirmación y «Confirmar todas»
 - [x] Subida múltiple y lista por revisar
