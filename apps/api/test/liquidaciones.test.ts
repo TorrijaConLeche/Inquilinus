@@ -192,6 +192,20 @@ describe("Spec 011 · Liquidaciones", () => {
     expect(e.de(tras!, e.b).estado).toBe("pendiente");
   });
 
+  it("C13 · «Marcar pagada» en otra fecha: sus partes con esa fecha; en el futuro, nada", async () => {
+    const e = await escenario();
+    const l = Liquidacion.parse(await (await e.crear([e.luzOctubre, e.luzNoviembre, e.gasOtono])).json());
+    const pagar = (fecha: string) =>
+      pedir(`${e.base}/liquidaciones/${l.id}/pagar`, { cuerpo: { inquilinoId: e.a.id, fecha }, cookie: e.cookie });
+    const futura = await pagar("2026-12-03");
+    expect(futura.status).toBe(400);
+    expect(await error(futura)).toBe("PAGO_FUTURO");
+    expect(e.de((await e.lista())[0]!, e.a).estado).toBe("pendiente");
+    const r = ResultadoPagoLiquidacion.parse(await (await pagar("2026-11-28")).json());
+    expect(r.partes.map((p) => p.pagadoEn)).toEqual(["2026-11-28", "2026-11-28", "2026-11-28"]);
+    expect(e.de((await e.lista())[0]!, e.a).estado).toBe("pagada");
+  });
+
   it("C6 · B paga la luz de octubre por separado: parcial, le faltan 60 €", async () => {
     const e = await escenario();
     await e.crear([e.luzOctubre, e.luzNoviembre, e.gasOtono]);

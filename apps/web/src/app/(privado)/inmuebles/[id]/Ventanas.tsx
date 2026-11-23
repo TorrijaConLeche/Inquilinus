@@ -13,6 +13,7 @@ import type { ClaveError } from "../../../../lib/errores";
 import { formatoFecha, formatoMes } from "../../../../lib/fechas";
 import cobros from "./cobros/cobros.module.css";
 import propias from "./detalle.module.css";
+import { FormularioFechaPago } from "./FechaPago";
 import { LineaLiquidacion } from "./LineaLiquidacion";
 
 /** Lo que se abre en una ventana de detalle (spec 006, R11 y R12; spec 011, R14; spec 012, R8). */
@@ -96,7 +97,7 @@ function useCarga<T>(ruta: string, datos: DatosTimeline) {
   return { resultado, recargar: () => setVersion((v) => v + 1) };
 }
 
-/** Marca un cobro o una parte como pagado hoy, o pendiente, y recarga la ventana y la página. */
+/** Marca un cobro o una parte como pagado (en una fecha) o pendiente, y recarga la ventana y la página. */
 function usePago(recargar: () => void) {
   const router = useRouter();
   const [enviando, setEnviando] = useState(false);
@@ -106,9 +107,13 @@ function usePago(recargar: () => void) {
     setError(null);
     const r = await pedirApi(ruta, { metodo: "PATCH", cuerpo: { pagadoEn } });
     setEnviando(false);
-    if (!r.ok) return setError(r.error);
+    if (!r.ok) {
+      setError(r.error);
+      return false;
+    }
     recargar();
     router.refresh();
+    return true;
   };
   return { enviando, error, pagar };
 }
@@ -145,6 +150,41 @@ function EstadoPago({
         </>
       )}
     </span>
+  );
+}
+
+/** Spec 009, R9: cambiar la fecha de algo ya pagado, debajo de su línea. */
+function CambiarFechaPago({
+  pagadoEn,
+  hoy,
+  enviando,
+  alGuardar,
+}: {
+  pagadoEn: string | null;
+  hoy: string;
+  enviando: boolean;
+  alGuardar: (fecha: string) => Promise<boolean>;
+}) {
+  const t = useTranslations("Cobros");
+  const [abierto, setAbierto] = useState(false);
+  if (!pagadoEn) return null;
+  return abierto ? (
+    <FormularioFechaPago
+      inicial={pagadoEn}
+      hoy={hoy}
+      textoBoton={t("guardar")}
+      enviando={enviando}
+      // El error de la API sale encima de la lista, como el de marcar pagado.
+      error={null}
+      alGuardar={(fecha) => void alGuardar(fecha).then((ok) => ok && setAbierto(false))}
+      alCancelar={() => setAbierto(false)}
+    />
+  ) : (
+    <div className={propias.acciones}>
+      <button type="button" className={formulario.botonEnlace} onClick={() => setAbierto(true)}>
+        {t("cambiarFechaPago")}
+      </button>
+    </div>
   );
 }
 
@@ -264,6 +304,14 @@ function DesgloseMes({
                   <span className={propias.suave}>{t("sinCobro")}</span>
                 )}
               </div>
+              {l.cobro && (
+                <CambiarFechaPago
+                  pagadoEn={l.cobro.pagadoEn}
+                  hoy={hoy}
+                  enviando={enviando}
+                  alGuardar={(fecha) => pagar(`/inmuebles/${inmuebleId}/cobros/${l.cobro!.id}`, fecha)}
+                />
+              )}
             </li>
           );
         })}
@@ -385,6 +433,12 @@ export function VentanaFactura({
                       alDeshacer={() => void pagar(`/inmuebles/${inmuebleId}/partes/${p.id}`, null)}
                     />
                   </div>
+                  <CambiarFechaPago
+                    pagadoEn={p.pagadoEn}
+                    hoy={hoy}
+                    enviando={enviando}
+                    alGuardar={(fecha) => pagar(`/inmuebles/${inmuebleId}/partes/${p.id}`, fecha)}
+                  />
                 </li>
               ))}
             </ul>

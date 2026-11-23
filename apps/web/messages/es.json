@@ -476,6 +476,7 @@
     "sinCobros": "No hay cobros este mes.",
     "todoPagado": "Todo pagado",
     "deshacerTodoPagado": "Deshacer «Todo pagado»",
+    "enOtraFecha": "En otra fecha",
     "generar": "Generar los que faltan",
     "generarExplicacion": "Crea los cobros de este mes de quienes vivieron aquí y aún no lo tienen.",
     "generados": "{n, plural, one {Se ha creado # cobro.} other {Se han creado # cobros.}}",

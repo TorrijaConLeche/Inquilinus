@@ -22,8 +22,8 @@ Saber de un vistazo qué hay pendiente de cobro, en qué casa y de quién, y mar
 - **R6** — Selector de mes; por defecto, el mes en curso.
 - **R7** — Arriba, destacados, los pendientes de meses anteriores al mes en curso de ese inmueble, cada uno con su mes (los del mes elegido no se repiten aquí).
 - **R8** — Para el mes elegido, por cada inquilino: su cobro de alquiler y sus partes de gastos, cada uno pagado (con fecha) o pendiente. Una parte de gasto pertenece al mes en que se reparte la factura (no al de su periodo); si está en una liquidación, al mes en que se crea la liquidación (spec 011, R11).
-- **R9** — **Un toque** marca un concepto como pagado con la fecha de hoy. La fecha se puede cambiar y el marcado se puede deshacer.
-- **R10** — Botón **"Todo pagado"** por inquilino y mes: marca como pagados, con la fecha de hoy, su alquiler y todas sus partes de gastos pendientes de ese mes. Se puede deshacer.
+- **R9** — **Un toque** marca un concepto como pagado con la fecha de hoy. La fecha se puede cambiar después ("Cambiar fecha de pago") allí donde se marca: cobros de alquiler, partes de gastos, partes de una liquidación y ventanas del timeline. El marcado se puede deshacer. La fecha nunca es posterior a hoy (spec 005, R7).
+- **R10** — Botón **"Todo pagado"** por inquilino y mes: marca como pagados, con la fecha de hoy, su alquiler y todas sus partes de gastos pendientes de ese mes. Al lado, **"En otra fecha"** hace lo mismo con la fecha que se elija (no posterior a hoy). Se puede deshacer.
 - **R11** — Al pie, los totales del mes del inmueble (cobrado y pendiente) y, aparte, lo que asume la propietaria por habitaciones vacías o días sin ocupar.
 - **R12** — Los cobros quitados (spec 005, R11) no aparecen ni cuentan en ningún total. En la pantalla de cobros del inmueble se listan aparte, plegados, para poder restaurarlos.
 - **R13** — En la pantalla de cobros del inmueble también se hace lo demás de la spec 005: generar los cobros que falten del mes (R5), añadir uno a mano (R10b), cambiar su importe, moverlo, quitarlo y recalcular los desactualizados (R6b). Hasta la fase 5 solo hay cobros de alquiler; las partes de gastos se añaden con la tarea 5.4.
@@ -42,6 +42,8 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 | C6 | Mes del gasto (R8) | La luz de B (periodo de septiembre, repartida el 3 de octubre) aparece en octubre |
 | C7 | Cobro quitado (R12) | Si se quita el cobro de septiembre de A, el pendiente total baja a 530 € |
 | C8 | Aviso de revisión (R4) | Con una factura propuesta sin confirmar, aparece el aviso en el panel |
+| C9 | Cambiar la fecha (R9) | La luz de B, pagada el 2026-10-20, pasa a pagada el 2026-10-15; con el 2026-10-21, error de validación |
+| C10 | Todo pagado en otra fecha (R10) | A, en octubre, con el 2026-10-18: alquiler y partes pagados el 2026-10-18; con el 2026-10-21, error y nada marcado |
 
 ## Fuera de alcance
 
@@ -55,3 +57,4 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 - [x] Pantalla de cobros del inmueble con selector de mes
 - [x] Marcar pagado, "Todo pagado" y deshacer
 - [x] Tests C1–C8 (C6, el mes del gasto, es el C15 de la spec 001)
+- [x] Cambiar la fecha de pago en partes, liquidaciones y ventanas del timeline; "Todo pagado" en otra fecha (C9, C10)
