@@ -45,6 +45,8 @@ const hijo = spawn(process.execPath, [next, "dev", "--port", "3000", ...process.
     ...process.env,
     DATABASE_URL: DATABASE_URL_PREVIEW,
     BETTER_AUTH_URL: "http://localhost:3000",
+    // Spec 008, R1b: en local, registro libre salvo que el .env diga otra cosa.
+    REGISTRO_INVITADOS: process.env.REGISTRO_INVITADOS ?? "*",
     NEXT_TELEMETRY_DISABLED: "1",
   },
   stdio: "inherit",

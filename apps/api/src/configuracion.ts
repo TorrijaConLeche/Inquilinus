@@ -6,6 +6,7 @@ import { crearAuth } from "./auth.ts";
 import { comprobadorBaseDatos, crearBaseDatos } from "./bd/cliente.ts";
 import { crearEnviadorSes } from "./correo/enviador.ts";
 import { crearExtractorBedrockAws, ErrorLectura } from "./extractor-bedrock.ts";
+import { listaInvitados } from "./invitados.ts";
 import { crearLimitador } from "./limitador.ts";
 import { crearRegistro, type Registro } from "./registro.ts";
 
@@ -102,6 +103,8 @@ export function dependenciasDesdeEntorno(
     urlBase: urlPublica(entorno, opciones.urlPorDefecto),
     rutaBase: `${opciones.rutaBase}/auth`,
     origenesConfiables: origenesVercel(entorno),
+    // Spec 008, R1b: sin la variable, nadie se registra; con "*", cualquiera.
+    invitados: listaInvitados(entorno["REGISTRO_INVITADOS"]),
     // Google es opcional: sin sus dos variables, solo email y contraseña.
     ...(entorno["GOOGLE_CLIENT_ID"] && entorno["GOOGLE_CLIENT_SECRET"]
       ? { google: { idCliente: entorno["GOOGLE_CLIENT_ID"], secreto: entorno["GOOGLE_CLIENT_SECRET"] } }

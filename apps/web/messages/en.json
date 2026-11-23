@@ -89,6 +89,7 @@
     "contrasenaLarga": "The password is too long.",
     "contrasenaIncorrecta": "The password is not correct.",
     "terminos": "There's no account for that Google account. To create one, sign up accepting the privacy policy and the terms.",
+    "registroCerrado": "Inquilinus is in a closed beta for now, and only invited people can sign up.",
     "enlaceNoValido": "This link no longer works: it has been used or has expired.",
     "codigoIncorrecto": "The code is not correct.",
     "sesionCaducada": "Too much time has passed. Sign in again with your email and password.",
