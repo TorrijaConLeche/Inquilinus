@@ -80,7 +80,7 @@ Con los datos del caso C4 de la spec 002 (modo entero; A en H1 y B en H2 todo se
 - [x] Componente de timeline compartido (propietaria e inquilino): en la ficha del inmueble; el enlace del inquilino lo usará en la tarea 6.5
 - [x] Ventanas de detalle de alquiler y de factura (propietaria; las del inquilino, con la tarea 6.5)
 - [x] Lista de movimientos (sustituida por las últimas actividades del histórico, spec 012)
-- [ ] Zoom libre con Ctrl + rueda y pellizcando (R6c, C16)
+- [x] Zoom libre con Ctrl + rueda y pellizcando (R6c, C16)
 - [x] Paleta de colores de gasto (clara y oscura) y color del alquiler
 - [x] Selector de color al crear un tipo de gasto y al editarlo
 - [ ] Tests C1–C12
