@@ -34,7 +34,7 @@ export interface ConfigAuth {
   registro: Registro;
   /** Clave para firmar cookies y tokens (BETTER_AUTH_SECRET). */
   secreto: string;
-  /** URL pública de la app, sin barra final (por ejemplo, https://inquilinus.vercel.app). */
+  /** URL pública de la app, sin barra final (por ejemplo, https://www.inquilinus.es). */
   urlBase: string;
   /** Ruta donde se monta Better Auth (por ejemplo, /api/auth). */
   rutaBase: string;
