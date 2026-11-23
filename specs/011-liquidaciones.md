@@ -73,4 +73,4 @@ Piso Centro con A y B todo el periodo. Facturas repartidas: luz de octubre 40 â‚
 - [x] Panel y cobros del inmueble agrupados y desplegables
 - [x] Liquidaciones en el timeline (tarea 6.3) y en el enlace del inquilino (tarea 6.5)
 - [x] Tests C1â€“C12 (C9 con el enlace del inquilino, tarea 6.5)
-- [ ] "En otra fecha" al marcar pagada (C13)
+- [x] "En otra fecha" al marcar pagada (C13)

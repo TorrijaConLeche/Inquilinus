@@ -57,4 +57,4 @@ Hoy es el 2026-10-20. Piso Centro: A con alquiler de octubre de 500 € pendient
 - [x] Pantalla de cobros del inmueble con selector de mes
 - [x] Marcar pagado, "Todo pagado" y deshacer
 - [x] Tests C1–C8 (C6, el mes del gasto, es el C15 de la spec 001)
-- [ ] Cambiar la fecha de pago en partes, liquidaciones y ventanas del timeline; "Todo pagado" en otra fecha (C9, C10)
+- [x] Cambiar la fecha de pago en partes, liquidaciones y ventanas del timeline; "Todo pagado" en otra fecha (C9, C10)
