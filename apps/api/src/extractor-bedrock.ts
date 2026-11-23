@@ -27,7 +27,7 @@ export interface PeticionLectura {
       ];
     },
   ];
-  output_config: { effort: "low"; format: { type: "json_schema"; schema: Record<string, unknown> } };
+  output_config: { effort?: "low"; format: { type: "json_schema"; schema: Record<string, unknown> } };
 }
 
 /** Lo que se usa de la respuesta de la IA. */
@@ -84,6 +84,14 @@ const Salida = z.object({
   tipoGasto: z.string().nullable(),
 });
 
+/**
+ * R10b: Claude Haiku 4.5 (el modelo provisional mientras AWS no habilite Haiku 5.5)
+ * no admite el nivel de esfuerzo y responde con un 400 si se le pide.
+ */
+export function admiteEsfuerzo(modelo: string): boolean {
+  return !modelo.includes("claude-haiku-4-5");
+}
+
 /** R10: la petición lleva el PDF y los nombres de los tipos de gasto; nada más. */
 export function peticionLectura(modelo: string, pdf: Uint8Array, tiposGasto: string[]): PeticionLectura {
   return {
@@ -102,7 +110,10 @@ export function peticionLectura(modelo: string, pdf: Uint8Array, tiposGasto: str
         ],
       },
     ],
-    output_config: { effort: "low", format: { type: "json_schema", schema: ESQUEMA } },
+    output_config: {
+      ...(admiteEsfuerzo(modelo) ? { effort: "low" as const } : {}),
+      format: { type: "json_schema", schema: ESQUEMA },
+    },
   };
 }
 
@@ -151,12 +162,13 @@ export function crearExtractorBedrock(opciones: {
 
 /**
  * R10b: solo regiones de la UE y modelos con el identificador base (`anthropic.…`)
- * o el perfil de inferencia de la UE (`eu.anthropic.…`). El perfil global o los de
+ * o el perfil de inferencia de la UE (`eu.anthropic.…`), con o sin versión al final
+ * (`…-v1:0`). El perfil global o los de
  * otras zonas (`global.`, `us.`…) podrían procesar la factura fuera de la UE.
  */
 export function comprobarBedrockEnUe(region: string, modelo: string): void {
   if (!/^eu-[a-z]+-\d$/.test(region)) throw new ErrorLectura("BEDROCK_REGION_FUERA_DE_LA_UE");
-  if (!/^(eu\.)?anthropic\.[a-z0-9.-]+$/.test(modelo)) throw new ErrorLectura("BEDROCK_MODELO_FUERA_DE_LA_UE");
+  if (!/^(eu\.)?anthropic\.[a-z0-9.-]+(:\d+)?$/.test(modelo)) throw new ErrorLectura("BEDROCK_MODELO_FUERA_DE_LA_UE");
 }
 
 export interface ConfiguracionBedrock {
@@ -170,6 +182,7 @@ export interface ConfiguracionBedrock {
 /**
  * Usa el endpoint `bedrock-runtime` (InvokeModel): en la UE, Claude Haiku 5.5 no se
  * sirve por `bedrock-mantle` y solo está disponible con el perfil `eu.anthropic.…`.
+ * Lo mismo vale para Claude Haiku 4.5, el modelo provisional.
  */
 export function crearExtractorBedrockAws(configuracion: ConfiguracionBedrock): ExtractorFacturas {
   comprobarBedrockEnUe(configuracion.region, configuracion.modelo);

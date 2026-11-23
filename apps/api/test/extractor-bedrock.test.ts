@@ -4,6 +4,7 @@ import { dependenciasDesdeEntorno } from "../src/configuracion.ts";
 import {
   comprobarBedrockEnUe,
   crearExtractorBedrock,
+  peticionLectura,
   ErrorLectura,
   lecturaDesdeRespuesta,
   type PeticionLectura,
@@ -70,6 +71,7 @@ describe("Spec 003 · Extractor con Bedrock", () => {
     // Sin parámetros de muestreo (Claude Haiku 5.5 los rechaza) y con salida estructurada.
     expect(Object.keys(p).sort()).toEqual(["max_tokens", "messages", "model", "output_config", "system"]);
     expect(p.output_config.format.type).toBe("json_schema");
+    expect(p.output_config.effort).toBe("low");
   });
 
   it("C23 · si la IA rechaza, corta la respuesta o devuelve algo que no encaja, falla con un código y sin datos (R8)", async () => {
@@ -120,5 +122,19 @@ describe("Spec 003 · Extractor con Bedrock", () => {
     );
     expect(fuera.extractor).toBeUndefined();
     expect(lineas.join()).toContain("BEDROCK_REGION_FUERA_DE_LA_UE");
+  });
+
+  it("C24b · el modelo provisional Haiku 4.5 se admite y su petición va sin nivel de esfuerzo (R10b)", () => {
+    const provisional = "eu.anthropic.claude-haiku-4-5-20251001-v1:0";
+    expect(() => comprobarBedrockEnUe("eu-north-1", provisional)).not.toThrow();
+    expect(() => comprobarBedrockEnUe("eu-north-1", "anthropic.claude-haiku-4-5-20251001-v1:0")).not.toThrow();
+    expect(() => comprobarBedrockEnUe("eu-north-1", "global.anthropic.claude-haiku-4-5-20251001-v1:0")).toThrow(
+      "BEDROCK_MODELO_FUERA_DE_LA_UE",
+    );
+
+    const conHaiku45 = peticionLectura(provisional, pdf, ["Luz"]);
+    expect(conHaiku45.output_config).not.toHaveProperty("effort");
+    expect(conHaiku45.output_config.format.type).toBe("json_schema");
+    expect(peticionLectura(MODELO, pdf, ["Luz"]).output_config.effort).toBe("low");
   });
 });
