@@ -117,12 +117,14 @@ Pendiente: probar a fondo Homming y RentPackage para ver hasta dónde llega su g
 
 Freemium con precio fijo por cuenta (spec 010):
 
-- **Starter** (gratis): 1 inmueble y 2 facturas leídas por IA al mes.
-- **Advanced:** 4,99 €/mes o 49,90 €/año con IVA incluido; hasta 10 inmuebles y sin límite práctico de IA.
+- **Starter** (gratis): 1 inmueble y 5 facturas leídas por IA al mes (a revisar según la retención).
+- **Plus:** 4,99 €/mes o 49,90 €/año con IVA incluido; hasta 3 inmuebles y sin límite práctico de IA.
+- **Advanced:** 9,99 €/mes o 99,90 €/año con IVA incluido; hasta 10 inmuebles y sin límite práctico de IA.
+- **Advanced de cortesía:** sin pago, para las propietarias de la beta.
 
-Si una usuaria de Advanced deja de pagar, pasa a Starter: no se borra nada, pero solo un inmueble sigue activo (lo elige una sola vez y no puede cambiarlo) y el resto quedan bloqueados hasta que vuelva a pagar.
+Si una usuaria deja de pagar, pasa a Starter (y si baja de Advanced a Plus, a 3 inmuebles): no se borra nada, pero solo siguen activos los inmuebles que permite el plan (los elige una sola vez y no puede cambiarlos) y el resto quedan bloqueados hasta que suba de plan.
 
-Solo en España al principio. Cobro con **Paddle** como vendedor oficial: gestiona el IVA y factura a las clientas, así que no hace falta programa de facturación propio. Si la app crece mucho, se valorará Stripe. Margen aproximado: 3,39 € por suscripción mensual y 38 € por anual. Para cobrar hace falta darse de alta como autónoma o crear una sociedad (a confirmar con un gestor).
+Solo en España al principio. Cobro con **Paddle** como vendedor oficial: gestiona el IVA y factura a las clientas, así que no hace falta programa de facturación propio. Si la app crece mucho, se valorará Stripe. Margen aproximado tras el IVA y la comisión de Paddle: en Plus, 3,37 € por suscripción mensual y 38 € por anual; en Advanced, 7,26 € y 77 €. Para cobrar hace falta darse de alta como autónoma o crear una sociedad (a confirmar con un gestor).
 
 ## Viabilidad
 
