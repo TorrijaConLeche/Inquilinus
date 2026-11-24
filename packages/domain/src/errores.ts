@@ -19,7 +19,8 @@ export type CodigoError =
   | 'MES_FUTURO'
   | 'PAGO_FUTURO'
   | 'RENTA_OBLIGATORIA'
-  | 'DEMASIADAS_FACTURAS';
+  | 'DEMASIADAS_FACTURAS'
+  | 'ELECCION_INVALIDA';
 
 /** Error de datos de entrada. Los cálculos nunca devuelven un resultado parcial. */
 export class ErrorValidacion extends Error {
