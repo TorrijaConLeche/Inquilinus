@@ -10,7 +10,9 @@ import {
   type ListaInmuebles,
   type Panel,
   type RespuestaError,
+  type RespuestaLimiteInmuebles,
 } from "@inquilinus/contracts";
+import { altaDeInmueble, LIMITES, planesSuperiores, type Cortesias } from "@inquilinus/domain";
 import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
 import { borrarInmueble } from "../archivo.ts";
@@ -19,6 +21,7 @@ import type { ConexionBd } from "../bd/cliente.ts";
 import { vigilarCalculos } from "../cobros.ts";
 import { resumenDelPanel } from "../panel.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
+import { inmueblesSinArchivar, planDeCuenta } from "../planes.ts";
 import {
   borrarHabitacionSuya,
   cambiarPrecio,
@@ -40,9 +43,11 @@ interface Opciones {
   almacen: Almacen | undefined;
   /** Reloj, para fijar el mes actual en los tests. */
   ahora: () => Date;
+  /** Spec 010, R15: Advanced de cortesía. */
+  cortesias: Cortesias;
 }
 
-export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen, ahora }: Opciones) {
+export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen, ahora, cortesias }: Opciones) {
   const mesActual = () => mesEnMadrid(ahora());
   const hoy = () => hoyEnMadrid(ahora());
 
@@ -81,7 +86,18 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
 
   app.post("/inmuebles", async (c) => {
     const alta = await leer(c, AltaInmueble);
-    const id = await crearInmueble(bd, c.get("usuarioId"), alta, mesActual());
+    // Spec 010, R1: por encima del límite del plan no se crea; se dice el paso siguiente.
+    // (Dos altas a la vez podrían pasarlo por uno; la web no deja pulsar dos veces.)
+    const usuarioId = c.get("usuarioId");
+    const plan = await planDeCuenta(bd, usuarioId, cortesias, hoy());
+    const paso = altaDeInmueble(plan, await inmueblesSinArchivar(bd, usuarioId));
+    if (paso !== "permitida") {
+      return c.json<RespuestaLimiteInmuebles>(
+        { error: "LIMITE_INMUEBLES", plan, limite: LIMITES[plan].inmueblesActivos, siguiente: paso, planes: planesSuperiores(plan) },
+        403,
+      );
+    }
+    const id = await crearInmueble(bd, usuarioId, alta, mesActual());
     return detalle(c, id, 201);
   });
 

@@ -117,6 +117,8 @@ export const ResultadoSubidaFacturas = z
     lote: z.uuid(),
     facturas: z.array(Factura),
     rechazadas: z.array(z.object({ nombre: z.string(), error: z.string() })),
+    /** Spec 003, R15: cuántas quedan para rellenar a mano por haber agotado las lecturas con IA del plan. */
+    sinIaPorLimite: z.number().int().min(0),
   })
   .meta({ id: 'ResultadoSubidaFacturas' });
 export type ResultadoSubidaFacturas = z.infer<typeof ResultadoSubidaFacturas>;

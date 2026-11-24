@@ -10,6 +10,7 @@ import { crearAuth } from "../src/auth.ts";
 import * as t from "../src/bd/esquema.ts";
 import type { Correo } from "../src/correo/enviador.ts";
 import { crearRegistro } from "../src/registro.ts";
+import { cortesiaPara } from "./cortesia.ts";
 
 const URL_BASE = "http://localhost:3000";
 const CONTRASENA = "una frase larga y segura";
@@ -29,7 +30,7 @@ beforeAll(async () => {
     urlBase: URL_BASE,
     rutaBase: "/api/auth",
   });
-  app = crearApp({ auth, bd, registro, ahora: () => new Date("2026-11-15T12:00:00Z") }, { rutaBase: "/api" });
+  app = crearApp({ auth, bd, registro, ahora: () => new Date("2026-11-15T12:00:00Z"), cortesias: cortesiaPara("inquilinos") }, { rutaBase: "/api" });
 }, 30_000);
 
 type Opciones = { metodo?: string; cuerpo?: unknown; cookie?: string; origen?: string };

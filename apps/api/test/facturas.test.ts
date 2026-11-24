@@ -243,6 +243,27 @@ describe("Spec 003 · Lectura con IA (simulada)", () => {
   });
 });
 
+describe("Spec 003 · Lecturas del plan (R15)", () => {
+  it("C19 · lote de 7 en Starter sin lecturas usadas: se leen con IA las 5 primeras", async () => {
+    const e = await escenario();
+    // Siete PDF distintos que se leen igual; se suben en el orden 1 a 7.
+    const r = await e.subir(
+      [1, 2, 3, 4, 5, 6, 7].map((n) => ({ nombre: `${n}.pdf`, contenido: pdf(`luz-septiembre
+${n}`) })),
+    );
+    expect(r.facturas.map((f) => [f.nombreFichero, f.estado])).toEqual([
+      ["1.pdf", "propuesta"],
+      ["2.pdf", "propuesta"],
+      ["3.pdf", "propuesta"],
+      ["4.pdf", "propuesta"],
+      ["5.pdf", "propuesta"],
+      ["6.pdf", "subida"],
+      ["7.pdf", "subida"],
+    ]);
+    expect(r.sinIaPorLimite).toBe(2);
+  });
+});
+
 describe("Spec 003 · Sin IA y descartar (R8b, R16)", () => {
   it("C20 · sin IA activada, las facturas quedan subidas y vacías para rellenar a mano", async () => {
     const e = await escenario();

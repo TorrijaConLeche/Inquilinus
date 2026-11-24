@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { ZodOpenApiPathsObject } from 'zod-openapi';
 import { RespuestaError } from './comunes.ts';
+import { RespuestaLimiteInmuebles } from './planes.ts';
 
 // Inmuebles, habitaciones e historial de precios (spec 007).
 // Importes en céntimos enteros; meses como `YYYY-MM`.
@@ -153,7 +154,12 @@ export const rutasInmuebles = {
       summary: 'Alta del inmueble con sus habitaciones (spec 007, R1)',
       tags: ['Inmuebles'],
       requestBody: cuerpo(AltaInmueble),
-      responses: { '201': json(Inmueble, 'Creado'), '400': errores['400'], '401': errores['401'] },
+      responses: {
+        '201': json(Inmueble, 'Creado'),
+        '400': errores['400'],
+        '401': errores['401'],
+        '403': json(RespuestaLimiteInmuebles, 'Límite de inmuebles del plan (spec 010, R1)'),
+      },
     },
   },
   '/inmuebles/{idInmueble}': {
