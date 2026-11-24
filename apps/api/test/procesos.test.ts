@@ -182,7 +182,10 @@ describe("Spec 005 · Proceso diario", () => {
     await bd.update(t.ocupacion).set({ salida: null }).where(eq(t.ocupacion.inquilinoId, archivado.a.id));
 
     const bloqueado = await escenario();
-    await bd.update(t.inmueble).set({ bloqueado: true }).where(eq(t.inmueble.id, bloqueado.id));
+    // Otro inmueble más antiguo de la misma cuenta: en Starter sigue activo ese y este
+    // queda bloqueado, y el proceso lo bloquea antes de generar (spec 010, R10).
+    const [{ usuarioId }] = (await bd.select({ usuarioId: t.inmueble.usuarioId }).from(t.inmueble).where(eq(t.inmueble.id, bloqueado.id))) as [{ usuarioId: string }];
+    await bd.insert(t.inmueble).values({ usuarioId, nombre: "Casa del pueblo", modalidad: "entero", creadoEn: new Date("2020-01-01") });
 
     await proceso("2026-10-01");
     const enBd = async (inmuebleId: string) =>
@@ -193,6 +196,8 @@ describe("Spec 005 · Proceso diario", () => {
         .where(eq(t.inquilino.inmuebleId, inmuebleId));
     expect(await enBd(archivado.id)).toEqual([]);
     expect(await enBd(bloqueado.id)).toEqual([]);
+    const [fila] = await bd.select({ estaBloqueado: t.inmueble.bloqueado }).from(t.inmueble).where(eq(t.inmueble.id, bloqueado.id));
+    expect(fila?.estaBloqueado).toBe(true);
   });
 
   it("un inmueble que no se puede calcular no para a los demás, y el registro no lleva datos personales (R8b)", async () => {

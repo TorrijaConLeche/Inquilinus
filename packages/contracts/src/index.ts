@@ -91,7 +91,7 @@ export {
   ResultadoSubidaFacturas,
   rutasFacturas,
 } from './facturas.ts';
-export { Plan, RespuestaLimiteInmuebles } from './planes.ts';
+export { EleccionInmuebles, EstadoPlan, Plan, RespuestaLimiteInmuebles, rutasPlanes } from './planes.ts';
 export { EdicionParte, ParteGasto, ParteReparto, RepartoFactura, ResumenReparto } from './repartos.ts';
 export {
   EdicionLiquidacion,

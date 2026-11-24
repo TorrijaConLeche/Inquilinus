@@ -24,6 +24,7 @@ import { registrarRutasHistorico } from "./rutas/historico.ts";
 import { registrarRutasInmuebles } from "./rutas/inmuebles.ts";
 import { registrarRutasInquilinos } from "./rutas/inquilinos.ts";
 import { registrarRutasLiquidaciones } from "./rutas/liquidaciones.ts";
+import { registrarRutasPlanes } from "./rutas/planes.ts";
 import { registrarRutasProcesos } from "./rutas/procesos.ts";
 import { registrarRutasPublico } from "./rutas/publico.ts";
 import { registrarRutasTimeline } from "./rutas/timeline.ts";
@@ -124,6 +125,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
       secretoCron: dependencias.secretoCron,
       ahora: dependencias.ahora ?? (() => new Date()),
       registro,
+      cortesias: dependencias.cortesias ?? new Map(),
     });
   }
   if (auth) {
@@ -157,6 +159,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     const ahora = dependencias.ahora ?? (() => new Date());
     const cortesias = dependencias.cortesias ?? new Map();
     registrarRutasInmuebles(app, { auth, bd, almacen: dependencias.almacen, ahora, cortesias });
+    registrarRutasPlanes(app, { auth, bd, ahora, cortesias });
     registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasCobros(app, { bd, ahora });

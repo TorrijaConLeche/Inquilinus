@@ -22,6 +22,7 @@ import { vigilarCalculos } from "../cobros.ts";
 import { resumenDelPanel } from "../panel.ts";
 import { hoyEnMadrid, mesEnMadrid } from "../fechas.ts";
 import { inmueblesSinArchivar, planDeCuenta } from "../planes.ts";
+import { sincronizarInmuebles } from "../bloqueo.ts";
 import {
   borrarHabitacionSuya,
   cambiarPrecio,
@@ -69,6 +70,13 @@ export function registrarRutasInmuebles(app: Hono<Entorno>, { auth, bd, almacen,
     const s = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!s) return c.json<RespuestaError>({ error: "sin-sesion" }, 401);
     c.set("usuarioId", s.user.id);
+    // Spec 010, R10–R11: antes de nada, los inmuebles activos con el plan de hoy.
+    // R10b: en un inmueble bloqueado no se puede entrar (ni verlo, ni editarlo, ni marcar pagos).
+    const { bloqueados } = await sincronizarInmuebles(bd, s.user.id, cortesias, hoy());
+    const inmuebleId = /\/inmuebles\/([^/]+)/.exec(c.req.path)?.[1];
+    if (inmuebleId && bloqueados.includes(inmuebleId)) {
+      return c.json<RespuestaError>({ error: "INMUEBLE_BLOQUEADO" }, 403);
+    }
     await next();
   }
 

@@ -1,5 +1,6 @@
 // Spec 010: plan de cada cuenta y contador mensual de facturas leídas con IA.
 import {
+  cortesiaVigente,
   lecturasIaDisponibles,
   planEfectivo,
   type Cortesias,
@@ -18,21 +19,40 @@ import * as t from "./bd/esquema.ts";
  */
 const ESTADOS_VIGENTES = new Set(["active", "trialing", "past_due"]);
 
-/** R3b y R15: el mayor entre el plan pagado vigente y el Advanced de cortesía. */
-export async function planDeCuenta(
+/**
+ * R3b y R15: el mayor entre el plan pagado vigente y el Advanced de cortesía.
+ * `cortesiaHasta` solo viene con la cortesía vigente: su último día, o `null` si no caduca.
+ */
+export async function planYCortesia(
   bd: ConexionBd,
   usuarioId: string,
   cortesias: Cortesias,
   hoy: Fecha,
-): Promise<Plan> {
+): Promise<{ plan: Plan; cortesiaHasta?: Fecha | null }> {
   const [fila] = await bd
     .select({ email: t.usuario.email, plan: t.suscripcion.plan, estado: t.suscripcion.estado })
     .from(t.usuario)
     .leftJoin(t.suscripcion, eq(t.suscripcion.usuarioId, t.usuario.id))
     .where(eq(t.usuario.id, usuarioId));
-  if (!fila) return "starter";
+  if (!fila) return { plan: "starter" };
   const pagado = fila.plan && fila.estado && ESTADOS_VIGENTES.has(fila.estado) ? fila.plan : null;
-  return planEfectivo(pagado, cortesias.get(fila.email.trim().toLowerCase()), hoy);
+  const hasta = cortesias.get(fila.email.trim().toLowerCase());
+  const plan = planEfectivo(pagado, hasta, hoy);
+  return cortesiaVigente(hasta, hoy) ? { plan, cortesiaHasta: hasta ?? null } : { plan };
+}
+
+/** R3b y R15: solo el plan. */
+export async function planDeCuenta(bd: ConexionBd, usuarioId: string, cortesias: Cortesias, hoy: Fecha): Promise<Plan> {
+  return (await planYCortesia(bd, usuarioId, cortesias, hoy)).plan;
+}
+
+/** R2: facturas leídas con IA en un mes. */
+export async function facturasLeidasEnElMes(bd: ConexionBd, usuarioId: string, mes: Mes): Promise<number> {
+  const [fila] = await bd
+    .select({ n: t.usoIa.facturasLeidas })
+    .from(t.usoIa)
+    .where(and(eq(t.usoIa.usuarioId, usuarioId), eq(t.usoIa.mes, mes)));
+  return fila?.n ?? 0;
 }
 
 /** R1: los inmuebles que cuentan para el límite del plan (todos menos los archivados). */

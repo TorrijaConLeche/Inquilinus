@@ -1,6 +1,7 @@
 // Spec 010 · Límites del plan en la API: alta de inmuebles, lecturas con IA y Advanced de cortesía.
 import { PGlite } from "@electric-sql/pglite";
 import {
+  EstadoPlan,
   Inmueble,
   PermisosSubida,
   RespuestaLimiteInmuebles,
@@ -89,8 +90,11 @@ async function cuenta(prefijo = "planes") {
 const ALTA = { nombre: "Piso", modalidad: "entero", habitaciones: [{ nombre: "Todo", precioMensual: 80_000 }] };
 const altaInmueble = (app: App, cookie: string) => pedir(app, "/inmuebles", ALTA, cookie);
 
-async function pagado(usuarioId: string, plan: "advanced", estado = "active") {
-  await bd.insert(t.suscripcion).values({ usuarioId, plan, periodicidad: "mensual", estado });
+async function pagado(usuarioId: string, plan: "plus" | "advanced", estado = "active") {
+  await bd
+    .insert(t.suscripcion)
+    .values({ usuarioId, plan, periodicidad: "mensual", estado })
+    .onConflictDoUpdate({ target: t.suscripcion.usuarioId, set: { plan, estado } });
 }
 
 async function leidasEsteMes(usuarioId: string, mes = "2026-11") {
@@ -267,5 +271,154 @@ describe("Spec 010 · Lecturas con IA del mes (R2, R3)", () => {
     expect((await subir(app, b.cookie, b.inmuebleId, ["luz"])).facturas[0]!.estado).toBe("propuesta");
     expect(await leidasEsteMes(a.usuarioId)).toBe(5);
     expect(await leidasEsteMes(b.usuarioId)).toBe(1);
+  });
+});
+
+// --- Bajada de plan y bloqueo (R10–R11) ---------------------------------------
+
+function ver(app: App, ruta: string, cookie: string, metodo = "GET") {
+  return app.request(`${URL_BASE}/api${ruta}`, { method: metodo, headers: { origin: URL_BASE, cookie } });
+}
+const estado = async (app: App, cookie: string) => EstadoPlan.parse(await (await ver(app, "/cuenta/plan", cookie)).json());
+const elegir = (app: App, cookie: string, inmuebles: string[]) => pedir(app, "/cuenta/inmuebles-activos", { inmuebles }, cookie);
+
+/** Cuenta en Advanced con `n` inmuebles; devuelve sus ids de más antiguo a más nuevo. */
+async function conInmuebles(n: number) {
+  const app = appCon();
+  const c = await cuenta();
+  await pagado(c.usuarioId, "advanced");
+  const ids: string[] = [];
+  for (let i = 0; i < n; i++) ids.push(Inmueble.parse(await (await altaInmueble(app, c.cookie)).json()).id);
+  return { ...c, app, ids };
+}
+
+describe("Spec 010 · Bajada de plan y bloqueo (R10–R11)", () => {
+  it("C10 · bajada a Starter con 3 inmuebles: el más antiguo activo; en los otros no se puede entrar", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(3);
+    const [centro, atico, playa] = ids as [string, string, string];
+    await pagado(usuarioId, "advanced", "canceled");
+    expect(await estado(app, cookie)).toMatchObject({
+      plan: "starter",
+      inmuebles: { activos: [centro], bloqueados: [atico, playa] },
+      puedeElegir: true,
+    });
+    expect((await ver(app, `/inmuebles/${centro}`, cookie)).status).toBe(200);
+    for (const ruta of [`/inmuebles/${atico}`, `/inmuebles/${atico}/inquilinos`, `/inmuebles/${playa}/cobros?mes=2026-11`]) {
+      const r = await ver(app, ruta, cookie);
+      expect(r.status).toBe(403);
+      expect(await r.json()).toEqual({ error: "INMUEBLE_BLOQUEADO" });
+    }
+    expect((await pedir(app, `/inmuebles/${atico}/habitaciones`, { nombre: "H2", precioMensual: 1 }, cookie)).status).toBe(403);
+    // La lista los enseña con el candado.
+    const lista = (await (await ver(app, "/inmuebles", cookie)).json()) as { inmuebles: { id: string; bloqueado: boolean }[] };
+    expect(Object.fromEntries(lista.inmuebles.map((i) => [i.id, i.bloqueado]))).toEqual({
+      [centro]: false,
+      [atico]: true,
+      [playa]: true,
+    });
+  });
+
+  it("C13 · los inmuebles activos se eligen una sola vez con cada plan", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(3);
+    const [centro, atico, playa] = ids as [string, string, string];
+    await pagado(usuarioId, "advanced", "canceled");
+    const r = await elegir(app, cookie, [playa]);
+    expect(r.status).toBe(200);
+    expect(EstadoPlan.parse(await r.json())).toMatchObject({
+      inmuebles: { activos: [playa], bloqueados: [centro, atico] },
+      puedeElegir: false,
+    });
+    expect((await ver(app, `/inmuebles/${playa}`, cookie)).status).toBe(200);
+    expect((await ver(app, `/inmuebles/${centro}`, cookie)).status).toBe(403);
+    const otra = await elegir(app, cookie, [centro]);
+    expect(otra.status).toBe(400);
+    expect(await otra.json()).toEqual({ error: "ELECCION_NO_DISPONIBLE" });
+
+    // Vuelve a Advanced y baja otra vez: el más antiguo hasta que elija, y puede elegir de nuevo.
+    await pagado(usuarioId, "advanced");
+    expect((await estado(app, cookie)).inmuebles.bloqueados).toEqual([]);
+    await pagado(usuarioId, "advanced", "canceled");
+    expect(await estado(app, cookie)).toMatchObject({ inmuebles: { activos: [centro] }, puedeElegir: true });
+    expect((await elegir(app, cookie, [atico])).status).toBe(200);
+  });
+
+  it("una elección que no cuadra con el plan o con otra cuenta no vale", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(3);
+    const ajena = await conInmuebles(1);
+    await pagado(usuarioId, "advanced", "canceled");
+    for (const mala of [[ids[0]!, ids[1]!], [ajena.ids[0]!]]) {
+      const r = await elegir(app, cookie, mala);
+      expect(r.status).toBe(400);
+      expect(await r.json()).toEqual({ error: "ELECCION_INVALIDA" });
+    }
+    // Sin nada que elegir (todo cabe en el plan), no hay elección.
+    expect(await (await elegir(app, ajena.cookie, [ajena.ids[0]!])).json()).toEqual({ error: "ELECCION_NO_DISPONIBLE" });
+    expect((await estado(app, cookie)).puedeElegir).toBe(true);
+  });
+
+  it("C16 · la exportación incluye los inmuebles bloqueados (R10f)", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(3);
+    await pagado(usuarioId, "advanced", "canceled");
+    expect((await estado(app, cookie)).inmuebles.bloqueados).toHaveLength(2);
+    const r = await ver(app, "/cuenta/exportacion", cookie);
+    expect(r.status).toBe(200);
+    const { tablas } = (await r.json()) as { tablas: Record<string, { id: string }[]> };
+    expect(tablas["inmueble"]!.map((i) => i.id).sort()).toEqual([...ids].sort());
+  });
+
+  it("C17 · volver a Advanced desbloquea los tres", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(3);
+    await pagado(usuarioId, "advanced", "canceled");
+    expect((await estado(app, cookie)).inmuebles.bloqueados).toHaveLength(2);
+    await pagado(usuarioId, "advanced");
+    expect(await estado(app, cookie)).toMatchObject({ plan: "advanced", inmuebles: { activos: ids, bloqueados: [] } });
+    for (const id of ids) expect((await ver(app, `/inmuebles/${id}`, cookie)).status).toBe(200);
+  });
+
+  it("C20 · de Advanced a Plus con 5 inmuebles: los 3 más antiguos hasta que elija 3", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(5);
+    const [a, b, c, d, e] = ids as [string, string, string, string, string];
+    await pagado(usuarioId, "plus");
+    expect(await estado(app, cookie)).toMatchObject({
+      plan: "plus",
+      limites: { inmuebles: 3 },
+      inmuebles: { activos: [a, b, c], bloqueados: [d, e] },
+      puedeElegir: true,
+    });
+    expect(await (await elegir(app, cookie, [e, b, d])).json()).toMatchObject({
+      inmuebles: { activos: [b, d, e], bloqueados: [a, c] },
+    });
+  });
+
+  it("C21 · de Starter a Plus con 5: sigue el que estaba activo y los 2 más antiguos; puede elegir otra vez", async () => {
+    const { app, cookie, usuarioId, ids } = await conInmuebles(5);
+    const [a, b, , , e] = ids as [string, string, string, string, string];
+    await pagado(usuarioId, "advanced", "canceled");
+    await elegir(app, cookie, [e]);
+    await pagado(usuarioId, "plus");
+    expect(await estado(app, cookie)).toMatchObject({ inmuebles: { activos: [a, b, e] }, puedeElegir: true });
+  });
+
+  it("el estado del plan dice la cortesía, su aviso de fin y las lecturas con IA del mes (R15c)", async () => {
+    const { email, cookie, usuarioId } = await cuenta("cortesia");
+    const app = appCon(leerCortesias(`${email}:2026-11-20`).cortesias);
+    await bd.insert(t.usoIa).values({ usuarioId, mes: "2026-11", facturasLeidas: 7 });
+    expect(await estado(app, cookie)).toEqual({
+      plan: "advanced",
+      cortesia: { hasta: "2026-11-20", avisarFin: true },
+      limites: { inmuebles: 10, facturasIaAlMes: 100 },
+      lecturasIa: { usadas: 7, disponibles: 93 },
+      inmuebles: { activos: [], bloqueados: [] },
+      puedeElegir: false,
+    });
+    expect((await estado(appCon(), cookie)).cortesia).toBeNull();
+  });
+
+  it("aislamiento (spec 008, R13): cada cuenta ve solo su plan; sin sesión, 401", async () => {
+    const a = await conInmuebles(2);
+    const b = await cuenta();
+    expect((await estado(a.app, b.cookie)).inmuebles).toEqual({ activos: [], bloqueados: [] });
+    expect((await ver(a.app, "/cuenta/plan", "")).status).toBe(401);
+    expect((await elegir(a.app, "", [a.ids[0]!])).status).toBe(401);
   });
 });

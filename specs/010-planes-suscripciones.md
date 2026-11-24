@@ -108,8 +108,8 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 - [x] Contador mensual de facturas por IA y reparto dentro de un lote (spec 003, R15)
 - [x] Plan de cada cuenta en la API, con el Advanced de cortesía de `PLAN_CORTESIA`
 - [x] Límite de inmuebles al crear uno (R1) en la API
-- [ ] Mensajes del límite en la web (R1, R2) y plan en los ajustes con el aviso de fin de la cortesía (R15c)
-- [ ] Bajada de plan con elección de inmuebles activos y bloqueo
+- [x] Bajada de plan con elección de inmuebles activos y bloqueo en la API (R10–R11)
+- [ ] Web: mensajes del límite (R1, R2), plan en los ajustes con el aviso de fin de la cortesía (R15c), candado en los inmuebles bloqueados y pantalla para elegir los activos (R10c)
 - [ ] Checkout y portal de cliente de Paddle; webhooks con verificación de firma
 - [ ] Cambio entre Plus y Advanced desde los ajustes
 - [ ] Sección 8 de los términos con los tres planes (con los textos definitivos, tarea 8.2 del plan)
