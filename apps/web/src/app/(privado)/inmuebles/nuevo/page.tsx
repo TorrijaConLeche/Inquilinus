@@ -1,6 +1,7 @@
 import { hoyEnMadrid, mesEnMadrid } from "@inquilinus/api";
 import { altaDeInmueble } from "@inquilinus/domain";
 import { getTranslations } from "next-intl/server";
+import formulario from "../../../../componentes/formulario.module.css";
 import { Planes } from "../../../../componentes/Planes";
 import { CORREO_SOPORTE } from "../../../../lib/soporte";
 import { planDe, usuarioActual } from "../../../../servidor/api";
@@ -40,7 +41,16 @@ export default async function NuevoInmueble() {
             <>
               <p>{tp("limiteMaximo", { n: plan.limites.inmuebles })}</p>
               {CORREO_SOPORTE && (
-                <p>{tp("soporte", { correo: CORREO_SOPORTE })}</p>
+                <p>
+                  {tp.rich("soporte", {
+                    correo: CORREO_SOPORTE,
+                    enlace: (texto) => (
+                      <a href={`mailto:${CORREO_SOPORTE}`} className={formulario.enlace}>
+                        {texto}
+                      </a>
+                    ),
+                  })}
+                </p>
               )}
             </>
           )}

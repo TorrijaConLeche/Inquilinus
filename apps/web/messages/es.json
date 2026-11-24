@@ -861,7 +861,7 @@
     "limiteTexto": "Tu plan {plan} admite {n, plural, one {# inmueble} other {# inmuebles}} y ya {n, plural, one {lo tienes} other {los tienes}}. Los archivados no cuentan.",
     "limiteSubir": "Para añadir más, pasa a un plan con más inmuebles.",
     "limiteMaximo": "Has llegado al máximo de {n} inmuebles.",
-    "soporte": "Si necesitas más, escríbenos a {correo}."
+    "soporte": "Si necesitas más, escríbenos a <enlace>{correo}</enlace>."
   },
   "Elegir": {
     "titulo": "Elige tus inmuebles activos",

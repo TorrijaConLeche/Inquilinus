@@ -861,7 +861,7 @@
     "limiteTexto": "Your {plan} plan allows {n, plural, one {# property} other {# properties}} and you already have {n, plural, one {it} other {them}}. Archived properties don't count.",
     "limiteSubir": "To add more, move to a plan with more properties.",
     "limiteMaximo": "You've reached the maximum of {n} properties.",
-    "soporte": "If you need more, write to us at {correo}."
+    "soporte": "If you need more, write to us at <enlace>{correo}</enlace>."
   },
   "Elegir": {
     "titulo": "Choose your active properties",
