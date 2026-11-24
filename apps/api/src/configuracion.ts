@@ -1,5 +1,6 @@
 // Monta las dependencias de la API a partir de las variables de entorno.
 // Lo usan el servidor local (src/servidor.ts) y la web en Vercel (/api).
+import { leerCortesias } from "@inquilinus/domain";
 import { crearAlmacenS3 } from "./almacen.ts";
 import type { Dependencias } from "./app.ts";
 import { crearAuth } from "./auth.ts";
@@ -53,6 +54,10 @@ export function dependenciasDesdeEntorno(
 
   const bd = crearBaseDatos(url);
   const dependencias: Dependencias = { registro, bd, comprobarBaseDatos: comprobadorBaseDatos(bd) };
+  // Advanced de cortesía (spec 010, R15). Las entradas mal escritas se cuentan, sin el email.
+  const { cortesias, erroneas } = leerCortesias(entorno["PLAN_CORTESIA"]);
+  dependencias.cortesias = cortesias;
+  if (erroneas > 0) registro.aviso("plan_cortesia_erronea", { fallidos: erroneas });
   // Cron de Vercel (spec 005, R8b): Vercel manda este secreto en cada llamada.
   if (entorno["CRON_SECRET"]) dependencias.secretoCron = entorno["CRON_SECRET"];
 

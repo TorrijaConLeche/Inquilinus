@@ -4,7 +4,7 @@ import {
   type RespuestaError,
   type RespuestaSalud,
 } from "@inquilinus/contracts";
-import { ErrorValidacion } from "@inquilinus/domain";
+import { ErrorValidacion, type Cortesias } from "@inquilinus/domain";
 import { Hono, type Context } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
@@ -53,6 +53,8 @@ export interface Dependencias {
   secretoCron?: string;
   /** Lectura de facturas con IA (spec 003). Sin él, se rellenan a mano (R8b). */
   extractor?: ExtractorFacturas;
+  /** Advanced de cortesía (spec 010, R15), leído de PLAN_CORTESIA. Sin él, nadie lo tiene. */
+  cortesias?: Cortesias;
 }
 
 export interface Opciones {
@@ -153,7 +155,8 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     for (const ruta of ["/cuenta/*", "/inmuebles", "/inmuebles/*"]) app.use(ruta, soloMismoOrigen);
 
     const ahora = dependencias.ahora ?? (() => new Date());
-    registrarRutasInmuebles(app, { auth, bd, almacen: dependencias.almacen, ahora });
+    const cortesias = dependencias.cortesias ?? new Map();
+    registrarRutasInmuebles(app, { auth, bd, almacen: dependencias.almacen, ahora, cortesias });
     registrarRutasInquilinos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasDocumentos(app, { bd, almacen: dependencias.almacen, ahora });
     registrarRutasCobros(app, { bd, ahora });
@@ -161,7 +164,7 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasTimeline(app, { bd });
     registrarRutasHistorico(app, { bd });
     registrarRutasEnlaces(app, { bd });
-    registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora });
+    registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora, cortesias });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);

@@ -98,6 +98,13 @@ Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proc
 - Google no funciona en las previsualizaciones de Vercel: su dirección cambia en cada rama y Google solo acepta direcciones registradas. Se prueba en local y en producción.
 - `src/configuracion.ts` monta todo desde las variables de entorno (`.env.example`). Sin alguna de ellas, la API funciona pero sin cuentas.
 
+## Planes (spec 010)
+
+`src/planes.ts` calcula el plan de cada cuenta: el mayor entre la suscripción de Paddle en vigor (`active`, `trialing` o `past_due`) y el Advanced de cortesía de `PLAN_CORTESIA` (R3b, R15). Con él:
+
+- `POST /inmuebles` responde `403 LIMITE_INMUEBLES` por encima del límite, con el plan, el límite y los planes a los que se puede subir (R1). Los archivados no cuentan.
+- Al registrar un lote de facturas, solo se leen con IA las que quedan en el mes (hora de Madrid), las primeras en orden de subida; `sinIaPorLimite` dice cuántas quedan para rellenar a mano (spec 003, R15). El contador (`uso_ia`) suma de una vez y devuelve lo que sobra, así que dos lotes a la vez no pasan del límite; las lecturas fallidas se devuelven (R2).
+
 ## Lectura de facturas (spec 003)
 
 `src/extractor.ts` define `ExtractorFacturas`: recibe solo el PDF y los nombres de los tipos de gasto del inmueble (R10) y devuelve lo que ha leído. `src/facturas.ts` lee las facturas de un lote en paralelo con un límite de 60 s y deja solo lo que se ha leído bien (`normalizarLectura` en el dominio). `src/extractor-bedrock.ts` lo implementa con Claude en Amazon Bedrock, solo en la UE (R10b; de momento con Haiku 4.5, provisional). Sin `APP_BEDROCK_MODELO` no hay extractor en `dependenciasDesdeEntorno` y las facturas quedan en `subida`, para rellenarlas a mano (R8b). Los tests usan uno simulado.

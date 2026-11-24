@@ -22,7 +22,7 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 **Límites**
 
 - **R1** — No se puede crear un inmueble por encima del límite del plan. La app explica el límite y ofrece el paso siguiente: en Starter, pasar a Plus o a Advanced; en Plus, pasar a Advanced; en Advanced, escribir a soporte. Los inmuebles archivados no cuentan.
-- **R2** — Al agotar las facturas por IA del mes, la factura se sigue subiendo y se rellena a mano (spec 003, R8). Nunca se bloquea el uso de la app.
+- **R2** — Al agotar las facturas por IA del mes, la factura se sigue subiendo y se rellena a mano (spec 003, R8). Nunca se bloquea el uso de la app. Una factura solo gasta del límite si la IA llega a leerla: si la lectura falla, se rellena a mano y no cuenta.
 - **R3** — El contador de facturas por IA se reinicia el día 1 de cada mes, en hora de Madrid.
 - **R3b** — El plan de una cuenta es el mayor entre el de su suscripción de pago vigente y el de cortesía vigente (R15). Sin ninguno de los dos, Starter.
 
@@ -91,6 +91,7 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 | C23 | Fin de la cortesía (R15b, R15c) | Con `:2027-06-30`: el 16 de junio el panel avisa; el 30 a las 23:59 (Madrid) sigue en Advanced; el 1 de julio pasa a Starter con la elección de R10 |
 | C24 | Cortesía y suscripción a la vez (R3b, R15d) | Cortesía vigente y Plus pagado: Advanced; al acabar la cortesía, Plus |
 | C25 | Entrada mal escrita (R15) | `ana@ejemplo.es:2027-02-30` se ignora; el registro avisa sin el email |
+| C26 | Lectura fallida (R2) | Starter con 4 leídas este mes; la IA falla con la quinta | La quinta queda para rellenar a mano y sigue quedando 1 lectura disponible |
 
 ## Fuera de alcance
 
@@ -104,10 +105,12 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 ## Tareas
 
 - [x] Límites de los tres planes, elección de inmuebles activos y lectura de `PLAN_CORTESIA` en `packages/domain`
-- [ ] Contador mensual de facturas por IA
-- [ ] Advanced de cortesía con `PLAN_CORTESIA`
+- [x] Contador mensual de facturas por IA y reparto dentro de un lote (spec 003, R15)
+- [x] Plan de cada cuenta en la API, con el Advanced de cortesía de `PLAN_CORTESIA`
+- [x] Límite de inmuebles al crear uno (R1) en la API
+- [ ] Mensajes del límite en la web (R1, R2) y plan en los ajustes con el aviso de fin de la cortesía (R15c)
 - [ ] Bajada de plan con elección de inmuebles activos y bloqueo
 - [ ] Checkout y portal de cliente de Paddle; webhooks con verificación de firma
 - [ ] Cambio entre Plus y Advanced desde los ajustes
 - [ ] Sección 8 de los términos con los tres planes (con los textos definitivos, tarea 8.2 del plan)
-- [ ] Tests C1–C25
+- [ ] Tests C1–C26

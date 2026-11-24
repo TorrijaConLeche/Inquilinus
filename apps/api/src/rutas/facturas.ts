@@ -18,6 +18,7 @@ import {
   type RespuestaError,
   type ResultadoSubidaFacturas,
 } from "@inquilinus/contracts";
+import { mesDeUsoIa, type Cortesias } from "@inquilinus/domain";
 import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
@@ -35,15 +36,23 @@ import {
   verFactura,
 } from "../facturas.ts";
 import { hoyEnMadrid } from "../fechas.ts";
+import { cupoIa, planDeCuenta } from "../planes.ts";
 import { deshacerReparto, marcarParte, recalcularReparto, verReparto } from "../repartos.ts";
 import { esSuyo } from "../inmuebles.ts";
 import { ids, leer, noEncontrado, type EntornoSesion } from "./comunes.ts";
 
 export function registrarRutasFacturas(
   app: Hono<EntornoSesion>,
-  opciones: { bd: ConexionBd; almacen: Almacen | undefined; extractor: ExtractorFacturas | undefined; ahora: () => Date },
+  opciones: {
+    bd: ConexionBd;
+    almacen: Almacen | undefined;
+    extractor: ExtractorFacturas | undefined;
+    ahora: () => Date;
+    /** Spec 010, R15: Advanced de cortesía. */
+    cortesias: Cortesias;
+  },
 ) {
-  const { bd, almacen, extractor, ahora } = opciones;
+  const { bd, almacen, extractor, ahora, cortesias } = opciones;
 
   const delInmueble = async (c: Context<EntornoSesion>, ...otros: string[]) => {
     const valores = ids(c, "idInmueble", ...otros);
@@ -73,7 +82,12 @@ export function registrarRutasFacturas(
     const v = await delInmueble(c);
     if (!v) return noEncontrado(c);
     const { subidas } = await leer(c, NuevasFacturas);
-    const resultado = await crearFacturas(bd, almacen, extractor, { usuarioId: c.get("usuarioId"), inmuebleId: v[0]!, subidas });
+    const usuarioId = c.get("usuarioId");
+    const instante = ahora();
+    // Spec 010, R2 y R3: las lecturas con IA del plan en el mes en curso (hora de Madrid).
+    const plan = await planDeCuenta(bd, usuarioId, cortesias, hoyEnMadrid(instante));
+    const cupo = cupoIa(bd, usuarioId, plan, mesDeUsoIa(instante));
+    const resultado = await crearFacturas(bd, almacen, extractor, { usuarioId, inmuebleId: v[0]!, subidas, cupoIa: cupo });
     return c.json<ResultadoSubidaFacturas>(resultado, 201);
   });
 

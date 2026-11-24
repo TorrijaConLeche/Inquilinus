@@ -19,7 +19,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 - **R6** — Al confirmar, si ya existe otra factura del mismo tipo de gasto e inmueble cuyo periodo se solapa (al menos un día en común), el sistema avisará y mostrará esa factura. La usuaria decide si continúa o cancela.
 - **R7** — Se guardarán tanto los valores propuestos por la IA como los confirmados, para medir el acierto de la IA.
 - **R8** — Si la IA falla o tarda más de 60 s, la usuaria podrá rellenar los campos a mano. El PDF se conserva igualmente.
-- **R8b** — Mientras la lectura con IA no esté activada (tarea 5.1 del plan), las facturas quedan en estado `subida`, por revisar, para rellenarlas a mano. Lo mismo pasará con las que superen las lecturas del plan (R15), que se aplican con la tarea 8.6.
+- **R8b** — Mientras la lectura con IA no esté activada (tarea 5.1 del plan), las facturas quedan en estado `subida`, por revisar, para rellenarlas a mano. Lo mismo pasa con las que superan las lecturas del plan (R15).
 - **R9** — Validaciones al confirmar: fin igual o posterior a inicio; importe entero en céntimos mayor que cero.
 - **R10** — A la IA solo se envía el PDF y la lista de nombres de tipos de gasto del inmueble, sin ningún otro dato del inmueble ni de los inquilinos. El PDF se guarda en el bucket privado (ver `docs/rgpd.md`).
 - **R10b** — La lectura se hace con Claude en Amazon Bedrock **dentro de la UE**: región europea y modelo con su identificador base o con el perfil de inferencia de la UE, a través del endpoint `bedrock-runtime` (Claude Haiku 5.5 no se sirve por el endpoint `bedrock-mantle` en las regiones de la UE; en ellas se usa con el perfil `eu.anthropic.claude-haiku-5-5`). Mientras AWS no habilite Claude Haiku 5.5 en la cuenta, se usa **de forma provisional Claude Haiku 4.5** con el perfil `eu.anthropic.claude-haiku-4-5-20251001-v1:0`; los identificadores con versión al final (`…-v1:0`) también se admiten. El nivel de esfuerzo bajo se pide solo a los modelos que lo admiten: Haiku 4.5 no lo admite y su petición va sin él. Con una región o un perfil de fuera (por ejemplo, el global), la lectura con IA no se activa y las facturas quedan para rellenar a mano (R8b). La IA devuelve el importe tal como está escrito y la app lo pasa a céntimos; lo que no se entiende sin ambigüedad se queda vacío (R4).
@@ -90,7 +90,7 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Subida múltiple y lista por revisar
 - [x] Edición, confirmación y "Confirmar todas" en la web, con tipo nuevo al momento
 - [x] Solapes dentro del lote (R14, R14b)
-- [ ] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
+- [x] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
 - [x] Modelo provisional Claude Haiku 4.5 mientras AWS no habilite Haiku 5.5 (R10b, C24b)
-- [ ] Tests C1–C24b (hechos todos salvo C19, que llega con los planes, tarea 8.6)
+- [x] Tests C1–C24b
 - [ ] Evaluación con PDF reales
