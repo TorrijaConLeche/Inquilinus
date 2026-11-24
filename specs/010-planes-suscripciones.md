@@ -103,7 +103,7 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 
 ## Tareas
 
-- [ ] Límites de los tres planes en `packages/domain` (hechos con dos planes; falta Plus y elegir varios inmuebles activos)
+- [x] Límites de los tres planes, elección de inmuebles activos y lectura de `PLAN_CORTESIA` en `packages/domain`
 - [ ] Contador mensual de facturas por IA
 - [ ] Advanced de cortesía con `PLAN_CORTESIA`
 - [ ] Bajada de plan con elección de inmuebles activos y bloqueo
