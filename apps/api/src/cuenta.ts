@@ -76,6 +76,7 @@ export async function exportarDatos(bd: Bd, usuarioId: string): Promise<Exportac
   await de(t.sesion, t.sesion.usuarioId, [usuarioId]);
   await de(t.fichero, t.fichero.usuarioId, [usuarioId]);
   await de(t.suscripcion, t.suscripcion.usuarioId, [usuarioId]);
+  await de(t.eleccionInmuebles, t.eleccionInmuebles.usuarioId, [usuarioId]);
   await de(t.usoIa, t.usoIa.usuarioId, [usuarioId]);
 
   const inmuebles = ids(await de(t.inmueble, t.inmueble.usuarioId, [usuarioId]));

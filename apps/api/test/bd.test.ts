@@ -69,6 +69,7 @@ describe("migraciones", () => {
         "cobro_alquiler",
         "doble_factor",
         "documento",
+        "eleccion_inmuebles",
         "enlace_inquilino",
         "evento_pago",
         "factura",

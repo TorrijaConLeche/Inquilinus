@@ -103,6 +103,7 @@ Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proc
 `src/planes.ts` calcula el plan de cada cuenta: el mayor entre la suscripción de Paddle en vigor (`active`, `trialing` o `past_due`) y el Advanced de cortesía de `PLAN_CORTESIA` (R3b, R15). Con él:
 
 - `POST /inmuebles` responde `403 LIMITE_INMUEBLES` por encima del límite, con el plan, el límite y los planes a los que se puede subir (R1). Los archivados no cuentan.
+- Bajada de plan (R10–R11, `src/bloqueo.ts`): al entrar en `/inmuebles` o `/panel` y en el proceso diario se recalcula qué inmuebles siguen activos y se guarda en `inmueble.bloqueado` (con eso, el panel, los cobros automáticos y el enlace del inquilino ya los tratan como bloqueados). Todo lo que cuelga de `/inmuebles/:id` responde `403 INMUEBLE_BLOQUEADO` si está bloqueado. `GET /cuenta/plan` da el plan, la cortesía, los límites, las lecturas del mes y los inmuebles activos y bloqueados; `POST /cuenta/inmuebles-activos` guarda la elección, una vez con cada plan (`eleccion_inmuebles`).
 - Al registrar un lote de facturas, solo se leen con IA las que quedan en el mes (hora de Madrid), las primeras en orden de subida; `sinIaPorLimite` dice cuántas quedan para rellenar a mano (spec 003, R15). El contador (`uso_ia`) suma de una vez y devuelve lo que sobra, así que dos lotes a la vez no pasan del límite; las lecturas fallidas se devuelven (R2).
 
 ## Lectura de facturas (spec 003)

@@ -14,6 +14,9 @@ import type { Correo } from "../src/correo/enviador.ts";
 import { crearRegistro } from "../src/registro.ts";
 import { cortesiaPara } from "./cortesia.ts";
 
+/** Advanced de cortesía para todas las cuentas; un test la quita para bloquear inmuebles. */
+const cortesias = cortesiaPara("panel") as Map<string, string | null>;
+
 const URL_BASE = "http://localhost:3000";
 const CONTRASENA = "una frase larga y segura";
 
@@ -34,7 +37,7 @@ beforeAll(async () => {
     rutaBase: "/api/auth",
   });
   // Hoy es el 2026-10-20, como en la spec.
-  app = crearApp({ auth, bd, registro, ahora: () => new Date("2026-10-20T12:00:00Z"), cortesias: cortesiaPara("panel") }, { rutaBase: "/api" });
+  app = crearApp({ auth, bd, registro, ahora: () => new Date("2026-10-20T12:00:00Z"), cortesias }, { rutaBase: "/api" });
 }, 30_000);
 
 function pedir(ruta: string, { metodo, cuerpo, cookie }: { metodo?: string; cuerpo?: unknown; cookie?: string } = {}) {
@@ -142,7 +145,8 @@ describe("Spec 009 · Panel principal", () => {
     const otro = await inmueble(e.cookie, "Casa vieja", 30_000, "D");
     await otro.generar("2026-10");
     await bd.update(t.inmueble).set({ archivado: true }).where(eq(t.inmueble.id, otro.id));
-    await bd.update(t.inmueble).set({ bloqueado: true }).where(eq(t.inmueble.id, e.atico.id));
+    // Se acaba la cortesía: en Starter sigue activo el más antiguo y el Ático queda bloqueado (spec 010, R10).
+    cortesias.delete(`panel${contador}@ejemplo.test`);
     const p = await e.panel();
     expect(p.inmuebles.map((i) => i.nombre)).toEqual(["Piso Centro"]);
     expect(p.totalPendiente).toBe(100_000);

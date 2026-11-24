@@ -10,6 +10,7 @@ import { rutasPublico } from './publico.ts';
 import { rutasHistorico } from './historico.ts';
 import { rutasTimeline } from './timeline.ts';
 import { rutasPanel } from './panel.ts';
+import { rutasPlanes } from './planes.ts';
 import { rutasInmuebles } from './inmuebles.ts';
 import { rutasInquilinos } from './inquilinos.ts';
 import { rutasSalud } from './salud.ts';
@@ -28,6 +29,7 @@ export function generarOpenApi() {
     paths: {
       ...rutasSalud,
       ...rutasCuenta,
+      ...rutasPlanes,
       ...rutasInmuebles,
       ...rutasInquilinos,
       ...rutasDocumentos,

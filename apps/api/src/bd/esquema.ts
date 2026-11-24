@@ -54,7 +54,7 @@ export const estadoFactura = pgEnum("estado_factura", [
   "repartida",
 ]);
 export const origenCobro = pgEnum("origen_cobro", ["auto", "manual"]);
-export const plan = pgEnum("plan", ["starter", "advanced"]);
+export const plan = pgEnum("plan", ["starter", "plus", "advanced"]);
 export const periodicidad = pgEnum("periodicidad", ["mensual", "anual"]);
 export const tipoDocumento = pgEnum("tipo_documento", ["contrato", "justificante_fianza"]);
 
@@ -509,9 +509,23 @@ export const suscripcion = pgTable("suscripcion", {
   paddleSuscripcionId: text().unique(),
   periodoFin: momento(),
   cancelaAlFinal: boolean().notNull().default(false),
-  inmuebleActivoId: uuid().references(() => inmueble.id, { onDelete: "set null" }),
-  /** Vacío = aún no elegido; la elección es única mientras siga en Starter. */
-  activoElegidoEn: momento(),
+  ...marcas,
+});
+
+/**
+ * Spec 010, R10–R11: plan con el que se calcularon los inmuebles activos (los de
+ * `bloqueado = false`) y, si la usuaria ya los eligió con ese plan, cuándo (R10c).
+ * Al cambiar el plan, la elección se vacía y puede volver a elegir.
+ */
+export const eleccionInmuebles = pgTable("eleccion_inmuebles", {
+  id: id(),
+  usuarioId: uuid()
+    .notNull()
+    .unique()
+    .references(() => usuario.id, { onDelete: "cascade" }),
+  plan: plan().notNull(),
+  /** Vacío = aún no ha elegido con este plan. */
+  elegidoEn: momento(),
   ...marcas,
 });
 

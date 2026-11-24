@@ -1,9 +1,11 @@
 // Procesos programados que lanza el cron de Vercel (spec 005, R8 y R8b).
 // Vercel llama con GET y la cabecera `Authorization: Bearer <CRON_SECRET>`.
 import type { RespuestaError } from "@inquilinus/contracts";
+import type { Cortesias } from "@inquilinus/domain";
 import type { Hono } from "hono";
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { ConexionBd } from "../bd/cliente.ts";
+import { sincronizarTodas } from "../bloqueo.ts";
 import { generarCobrosDelDia } from "../cobros.ts";
 import { hoyEnMadrid } from "../fechas.ts";
 import type { Registro } from "../registro.ts";
@@ -17,7 +19,7 @@ function mismoSecreto(recibido: string, esperado: string): boolean {
 
 export function registrarRutasProcesos(
   app: Hono<EntornoSesion>,
-  opciones: { bd: ConexionBd; secretoCron: string | undefined; ahora: () => Date; registro: Registro },
+  opciones: { bd: ConexionBd; secretoCron: string | undefined; ahora: () => Date; registro: Registro; cortesias: Cortesias },
 ) {
   app.get("/procesos/cobros-diarios", async (c) => {
     // R8b: sin secreto configurado, el proceso está desactivado.
@@ -27,7 +29,11 @@ export function registrarRutasProcesos(
       return c.json<RespuestaError>({ error: "no-autorizado" }, 401);
     }
 
-    const resumen = await generarCobrosDelDia(opciones.bd, hoyEnMadrid(opciones.ahora()));
+    const hoy = hoyEnMadrid(opciones.ahora());
+    // Spec 010, R10–R11: primero, los inmuebles bloqueados con el plan de hoy (por ejemplo,
+    // al acabar una cortesía), que no generan cobros (R10b).
+    await sincronizarTodas(opciones.bd, opciones.cortesias, hoy, opciones.registro);
+    const resumen = await generarCobrosDelDia(opciones.bd, hoy);
     const idPeticion = c.get("idPeticion");
     for (const codigo of resumen.fallos) opciones.registro.aviso("cobro_diario_fallido", { idPeticion, codigo });
     opciones.registro.info("cobros_diarios", {
