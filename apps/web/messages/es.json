@@ -140,7 +140,11 @@
     "facturaNoRepartida": "Solo se pueden agrupar facturas confirmadas y repartidas.",
     "facturaEnLiquidacion": "Alguna de esas facturas ya está en otra liquidación.",
     "liquidacionVacia": "Una liquidación no se puede quedar sin facturas. Si ya no la necesitas, bórrala.",
-    "enlaceExistente": "Este inquilino ya tiene un enlace. Si necesitas otro, regéneralo."
+    "enlaceExistente": "Este inquilino ya tiene un enlace. Si necesitas otro, regéneralo.",
+    "limiteInmuebles": "Has llegado al límite de inmuebles de tu plan.",
+    "inmuebleBloqueado": "Este inmueble está bloqueado por tu plan.",
+    "eleccionInvalida": "Elige exactamente tantos inmuebles como admite tu plan.",
+    "eleccionNoDisponible": "Ya elegiste tus inmuebles activos con este plan."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -179,7 +183,9 @@
     "pagadaEl": "pagada el {fecha}",
     "pendienteParte": "pendiente",
     "verCalculo": "Ver el cálculo",
-    "verPdf": "Ver PDF"
+    "verPdf": "Ver PDF",
+    "verInmueblesBloqueados": "Ver mis inmuebles",
+    "avisoFinCortesia": "Tu Advanced de cortesía termina el {fecha}. Después pasarás a Starter salvo que te suscribas a un plan."
   },
   "Ajustes": {
     "titulo": "Ajustes",
@@ -271,7 +277,12 @@
     "verArchivados": "{n, plural, one {Ver el inmueble archivado} other {Ver los # inmuebles archivados}}",
     "ocultarArchivados": "Ocultar los archivados",
     "archivados": "Archivados",
-    "vacioConArchivados": "No tienes inmuebles activos"
+    "vacioConArchivados": "No tienes inmuebles activos",
+    "bloqueado": "Bloqueado",
+    "avisoBloqueados": "{n, plural, one {# inmueble está bloqueado} other {# inmuebles están bloqueados}} por tu plan: no puedes entrar en {n, plural, one {él} other {ellos}} hasta que subas de plan. No se ha borrado nada.",
+    "puedesElegir": "Elige qué inmuebles siguen activos",
+    "entradaBloqueada": "Ese inmueble está bloqueado por tu plan.",
+    "eleccionGuardada": "Elección guardada."
   },
   "Asistente": {
     "titulo": "Nuevo inmueble",
@@ -574,7 +585,8 @@
     "deshacer": "Deshacer confirmación",
     "deshacerSinPagos": "¿Deshacer la confirmación? Se borrará su reparto y la factura volverá a «Por revisar».",
     "deshacerConPagos": "¿Deshacer la confirmación? Se borrará su reparto, también las partes que ya están cobradas (esos cobros se pierden), y la factura volverá a «Por revisar».",
-    "enLiquidacion": "En «{nombre}»"
+    "enLiquidacion": "En «{nombre}»",
+    "sinIaPorLimite": "{n, plural, one {# factura se queda} other {# facturas se quedan}} para rellenar a mano: has agotado las lecturas con IA de tu plan este mes."
   },
   "Liquidaciones": {
     "estados": {
@@ -821,5 +833,46 @@
     "fianzaDevuelta": "Devuelta el {fecha}: {importe}",
     "pie": "Solo tú ves esta página. Si algo no cuadra, habla con quien te alquila.",
     "tu": "tú"
+  },
+  "Plan": {
+    "titulo": "Tu plan",
+    "nombres": {
+      "starter": "Starter",
+      "plus": "Plus",
+      "advanced": "Advanced"
+    },
+    "actual": "Tienes el plan {plan}.",
+    "cortesiaHasta": "Tienes Advanced de cortesía hasta el {fecha}.",
+    "cortesiaSinFin": "Tienes Advanced de cortesía, sin fecha de fin.",
+    "inmuebles": "Inmuebles activos: {activos} de {limite}",
+    "lecturas": "Facturas leídas con IA este mes: {usadas} de {limite}",
+    "bloqueados": "{n, plural, one {# inmueble bloqueado} other {# inmuebles bloqueados}}",
+    "elegir": "Elegir mis inmuebles activos",
+    "planes": "Planes",
+    "gratis": "Gratis",
+    "precio": "{mensual} al mes o {anual} al año, IVA incluido",
+    "limiteInmuebles": "{n, plural, one {# inmueble} other {Hasta # inmuebles}}",
+    "iaStarter": "{n} facturas leídas con IA al mes",
+    "iaSinLimite": "Lectura de facturas con IA sin límite práctico",
+    "tuPlan": "Tu plan",
+    "muyPronto": "Muy pronto podrás suscribirte desde aquí.",
+    "verPlanes": "Ver los planes",
+    "limiteTitulo": "Has llegado al límite de tu plan",
+    "limiteTexto": "Tu plan {plan} admite {n, plural, one {# inmueble} other {# inmuebles}} y ya {n, plural, one {lo tienes} other {los tienes}}. Los archivados no cuentan.",
+    "limiteSubir": "Para añadir más, pasa a un plan con más inmuebles.",
+    "limiteMaximo": "Has llegado al máximo de {n} inmuebles.",
+    "soporte": "Si necesitas más, escríbenos a {correo}."
+  },
+  "Elegir": {
+    "titulo": "Elige tus inmuebles activos",
+    "explicacion": "Tu plan {plan} admite {n, plural, one {# inmueble activo} other {# inmuebles activos}}. Elige {n, plural, one {cuál sigue activo} other {cuáles siguen activos}}; los demás quedan bloqueados, sin borrar nada.",
+    "unaVez": "Solo puedes elegir una vez mientras sigas en este plan. Para cambiarlo, tendrás que subir de plan.",
+    "provisional": "Hasta que elijas, siguen activos los más antiguos.",
+    "contador": "{n} de {limite} elegidos",
+    "confirmar": "Confirmar mi elección",
+    "guardando": "Guardando…",
+    "noDisponible": "Ahora no hay nada que elegir: ya elegiste con este plan o todos tus inmuebles caben en él.",
+    "volver": "Volver a mis inmuebles",
+    "inmuebles": "Inmuebles"
   }
 }

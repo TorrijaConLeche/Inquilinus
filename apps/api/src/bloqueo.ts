@@ -4,9 +4,13 @@
 // webhook de Paddle), así que se recalcula al entrar en sus inmuebles y en el
 // proceso diario, y se guarda en `inmueble.bloqueado`. Con eso, el panel, los
 // cobros automáticos y el enlace del inquilino ya saben qué está bloqueado.
+import type { EstadoPlan } from "@inquilinus/contracts";
 import {
+  avisarFinDeCortesia,
   inmueblesActivos,
+  lecturasIaDisponibles,
   LIMITES,
+  mesDeUsoIa,
   puedeElegirInmueblesActivos,
   validarEleccion,
   type Cortesias,
@@ -19,7 +23,8 @@ import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { ErrorPeticion } from "./errores.ts";
 import { describirError, type Registro } from "./registro.ts";
-import { planDeCuenta } from "./planes.ts";
+import { hoyEnMadrid } from "./fechas.ts";
+import { facturasLeidasEnElMes, planDeCuenta, planYCortesia } from "./planes.ts";
 
 export interface EstadoInmuebles {
   plan: Plan;
@@ -134,6 +139,33 @@ export async function elegirInmueblesActivos(
     db.update(t.inmueble).set({ bloqueado: true }).where(and(suyos, notInArray(t.inmueble.id, elegidos))),
   ]);
   return sincronizarInmuebles(bd, usuarioId, cortesias, ahora.hoy);
+}
+
+/**
+ * Spec 010: el plan con su cortesía (R15c), los límites, las lecturas con IA del mes y los
+ * inmuebles activos y bloqueados. Sin `inmuebles`, antes los recalcula.
+ */
+export async function estadoDelPlan(
+  bd: ConexionBd,
+  usuarioId: string,
+  cortesias: Cortesias,
+  instante: Date,
+  inmuebles?: EstadoInmuebles,
+): Promise<EstadoPlan> {
+  const hoy = hoyEnMadrid(instante);
+  const [{ plan, cortesiaHasta }, usadas, estado] = await Promise.all([
+    planYCortesia(bd, usuarioId, cortesias, hoy),
+    facturasLeidasEnElMes(bd, usuarioId, mesDeUsoIa(instante)),
+    inmuebles ?? sincronizarInmuebles(bd, usuarioId, cortesias, hoy),
+  ]);
+  return {
+    plan,
+    cortesia: cortesiaHasta === undefined ? null : { hasta: cortesiaHasta, avisarFin: avisarFinDeCortesia(cortesiaHasta, hoy) },
+    limites: { inmuebles: LIMITES[plan].inmueblesActivos, facturasIaAlMes: LIMITES[plan].facturasIaAlMes },
+    lecturasIa: { usadas, disponibles: lecturasIaDisponibles(plan, usadas) },
+    inmuebles: { activos: estado.activos, bloqueados: estado.bloqueados },
+    puedeElegir: estado.puedeElegir,
+  };
 }
 
 /** Proceso diario: recalcula los inmuebles de todas las cuentas antes de generar los cobros. */

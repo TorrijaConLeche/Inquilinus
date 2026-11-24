@@ -4,7 +4,7 @@ import { NombreGasto, PuntoColor } from "../../../componentes/ColorGasto";
 import formulario from "../../../componentes/formulario.module.css";
 import { formatoEuros } from "../../../lib/dinero";
 import { formatoFecha, formatoMes } from "../../../lib/fechas";
-import { panelDe, usuarioActual } from "../../../servidor/api";
+import { panelDe, planDe, usuarioActual } from "../../../servidor/api";
 import estilos from "../privado.module.css";
 import propias from "./panel.module.css";
 
@@ -21,7 +21,9 @@ export default async function PanelPrincipal() {
   const t = await getTranslations("Panel");
   const idioma = await getLocale();
   const usuario = await usuarioActual();
-  const panel = usuario ? await panelDe(usuario) : null;
+  const [panel, plan] = usuario ? await Promise.all([panelDe(usuario), planDe(usuario)]) : [null, null];
+  // Spec 010, R15c: en los 14 días anteriores al fin de la cortesía.
+  const finCortesia = plan?.cortesia?.avisarFin ? plan.cortesia.hasta : null;
   const euros = (centimos: number) => formatoEuros(centimos, idioma);
   const saludo = usuario?.nombre ? t("saludoNombre", { nombre: usuario.nombre }) : t("saludo");
 
@@ -43,7 +45,8 @@ export default async function PanelPrincipal() {
   }
 
   const { avisos } = panel;
-  const hayAvisos = avisos.desactualizados.length > 0 || avisos.porRevisar.length > 0 || avisos.bloqueados > 0;
+  const hayAvisos =
+    avisos.desactualizados.length > 0 || avisos.porRevisar.length > 0 || avisos.bloqueados > 0 || finCortesia !== null;
 
   return (
     <>
@@ -80,7 +83,20 @@ export default async function PanelPrincipal() {
                 </Link>
               </li>
             ))}
-            {avisos.bloqueados > 0 && <li>{t("avisoBloqueados", { n: avisos.bloqueados })}</li>}
+            {avisos.bloqueados > 0 && (
+              <li>
+                <Link href="/inmuebles" className={formulario.enlace}>
+                  {t("avisoBloqueados", { n: avisos.bloqueados })}
+                </Link>
+              </li>
+            )}
+            {finCortesia && (
+              <li>
+                <Link href="/ajustes#plan" className={formulario.enlace}>
+                  {t("avisoFinCortesia", { fecha: formatoFecha(finCortesia, idioma) })}
+                </Link>
+              </li>
+            )}
           </ul>
         </section>
       )}

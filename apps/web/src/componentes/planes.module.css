@@ -1,0 +1,65 @@
+/* Los tres planes (spec 010): uno debajo de otro en el móvil, en fila si cabe. */
+
+.planes {
+  display: grid;
+  gap: 12px;
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-control);
+}
+
+.planActual {
+  composes: plan;
+  border-color: var(--primario);
+  background: var(--primario-suave);
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.etiqueta {
+  padding: 2px 10px;
+  border-radius: var(--radio-control);
+  background: var(--primario);
+  color: var(--sobre-primario);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.precio {
+  font-size: 0.9375rem;
+}
+
+.limites {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.pronto {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}

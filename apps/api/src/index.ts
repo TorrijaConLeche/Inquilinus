@@ -9,6 +9,7 @@ export { listarInmuebles, verInmueble } from "./inmuebles.ts";
 export { listarInquilinos, listarTiposGasto } from "./inquilinos.ts";
 export { cobrosDelMes } from "./cobros.ts";
 export { resumenDelPanel } from "./panel.ts";
+export { estadoDelPlan, sincronizarInmuebles, type EstadoInmuebles } from "./bloqueo.ts";
 export type { ExtractorFacturas } from "./extractor.ts";
 export { listarFacturas } from "./facturas.ts";
 export { listarLiquidaciones } from "./liquidaciones.ts";

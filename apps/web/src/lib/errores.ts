@@ -71,6 +71,11 @@ const POR_CODIGO: Record<string, ClaveError> = {
   LIQUIDACION_VACIA: "liquidacionVacia",
   // Enlaces (spec 004).
   ENLACE_EXISTENTE: "enlaceExistente",
+  // Planes (spec 010).
+  LIMITE_INMUEBLES: "limiteInmuebles",
+  INMUEBLE_BLOQUEADO: "inmuebleBloqueado",
+  ELECCION_INVALIDA: "eleccionInvalida",
+  ELECCION_NO_DISPONIBLE: "eleccionNoDisponible",
 };
 
 export type ClaveError =
@@ -131,6 +136,10 @@ export type ClaveError =
   | "facturaEnLiquidacion"
   | "liquidacionVacia"
   | "enlaceExistente"
+  | "limiteInmuebles"
+  | "inmuebleBloqueado"
+  | "eleccionInvalida"
+  | "eleccionNoDisponible"
   | "generico";
 
 /** Acepta el código tal cual llega (`account_not_linked` en la URL tras Google, por ejemplo). */
