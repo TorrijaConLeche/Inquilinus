@@ -100,7 +100,7 @@ Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proc
 
 ## Lectura de facturas (spec 003)
 
-`src/extractor.ts` define `ExtractorFacturas`: recibe solo el PDF y los nombres de los tipos de gasto del inmueble (R10) y devuelve lo que ha leído. `src/facturas.ts` lee las facturas de un lote en paralelo con un límite de 60 s y deja solo lo que se ha leído bien (`normalizarLectura` en el dominio). La implementación con Amazon Bedrock llega tras la tarea 5.1; hasta entonces no hay extractor en `dependenciasDesdeEntorno` y las facturas quedan en `subida`, para rellenarlas a mano (R8b). Los tests usan uno simulado.
+`src/extractor.ts` define `ExtractorFacturas`: recibe solo el PDF y los nombres de los tipos de gasto del inmueble (R10) y devuelve lo que ha leído. `src/facturas.ts` lee las facturas de un lote en paralelo con un límite de 60 s y deja solo lo que se ha leído bien (`normalizarLectura` en el dominio). `src/extractor-bedrock.ts` lo implementa con Claude en Amazon Bedrock, solo en la UE (R10b; de momento con Haiku 4.5, provisional). Sin `APP_BEDROCK_MODELO` no hay extractor en `dependenciasDesdeEntorno` y las facturas quedan en `subida`, para rellenarlas a mano (R8b). Los tests usan uno simulado.
 
 ## Ficheros (spec 007, R6b y R6c)
 
@@ -113,5 +113,5 @@ Bucket privado de S3 en Estocolmo (`APP_S3_BUCKET`; uno para producción y otro,
 
 Configuración de cada bucket (en la consola de AWS; el usuario de la app no tiene permiso para cambiarla):
 
-- **CORS**: `POST` desde la URL de la app (en el de previsualizaciones, también `http://localhost:3000` y `https://*.vercel.app`).
+- **CORS**: `POST` desde la URL de la app: en el de producción, solo `https://www.inquilinus.es`; en el de previsualizaciones, `http://localhost:3000` y `https://*.vercel.app`.
 - **Ciclo de vida**: regla `borrar-subidas-pendientes` que borra lo que hay en `pendientes/` al día siguiente (subidas que no se llegaron a confirmar).

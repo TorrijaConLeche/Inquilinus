@@ -13,7 +13,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 | 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | ✅ Hecha (falta la revisión legal, 2.9) |
 | 3 · Inmuebles e inquilinos | Tus pisos dados de alta | ✅ Hecha |
 | 4 · Cobros y panel | Un mes de cobros gestionado con la app | ✅ Hecha |
-| 5 · Facturas con IA y reparto | Una factura real leída y repartida | ✅ Hecha a mano (falta la IA: 5.1 y 5.6) |
+| 5 · Facturas con IA y reparto | Una factura real leída y repartida | ✅ Hecha, con la IA activada (falta la evaluación 5.6) |
 | 6 · Timeline y enlace del inquilino | MVP para uso propio: `v0.1.0` | ✅ `v0.1.0` (faltan 6.6b y 6.7) |
 | 7 · Uso real y validación | Beta gratuita con otras propietarias | ⏳ Siguiente |
 | 8 · Planes y pagos | Primera suscripción real | Pendiente |
@@ -87,8 +87,8 @@ Depende de: fase 3. **Hecho cuando** gestionas un mes completo de cobros con la 
 
 Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se reparte.
 
-- [ ] **5.1 · Tú** — Activar Claude Haiku 5.5 en Amazon Bedrock en la UE: pedir acceso al modelo, dar al usuario IAM `inquilinus-app` el permiso `bedrock:InvokeModel` solo para el perfil de la UE y el modelo en regiones `eu-*`, y añadir en Vercel `APP_BEDROCK_MODELO=eu.anthropic.claude-haiku-5-5` (y `APP_BEDROCK_REGION` si no es Estocolmo). Ver `apps/api/.env.example`. Haiku 5.5 sigue bloqueado en la cuenta, así que de forma provisional se usa Claude Haiku 4.5 (spec 003, R10b): el permiso de IAM ya lo incluye y lee bien una factura de prueba. Falta añadir en Vercel (Production y Preview) `APP_BEDROCK_MODELO=eu.anthropic.claude-haiku-4-5-20251001-v1:0`
-- [x] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`ExtractorFacturas`) que propone periodo, importe y tipo de gasto · `feat/003-subida-facturas` y `feat/003-extractor`. Desactivado hasta la 5.1; solo funciona en la UE (spec 003, R10b)
+- [x] **5.1 · Tú** — Activar Claude Haiku 5.5 en Amazon Bedrock en la UE: pedir acceso al modelo, dar al usuario IAM `inquilinus-app` el permiso `bedrock:InvokeModel` solo para el perfil de la UE y el modelo en regiones `eu-*`, y añadir en Vercel `APP_BEDROCK_MODELO=eu.anthropic.claude-haiku-5-5` (y `APP_BEDROCK_REGION` si no es Estocolmo). Ver `apps/api/.env.example`. Haiku 5.5 sigue bloqueado en la cuenta, así que de forma provisional se usa Claude Haiku 4.5 (spec 003, R10b): el permiso de IAM lo incluye y en Vercel (Production y Preview) está `APP_BEDROCK_MODELO=eu.anthropic.claude-haiku-4-5-20251001-v1:0`. El CORS del bucket de producción admite solo `https://www.inquilinus.es`. Comprobado en producción con dos facturas reales (23-11-2026). Cuando AWS habilite Haiku 5.5, basta con cambiar la variable
+- [x] **5.2 · Claude** — Subida múltiple (hasta 20 PDF) a S3 y extractor con Bedrock (`ExtractorFacturas`) que propone periodo, importe y tipo de gasto · `feat/003-subida-facturas` y `feat/003-extractor`. Activado con la 5.1; solo funciona en la UE (spec 003, R10b)
 - [x] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [x] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
 - [x] **5.5 · Claude** — Liquidaciones: dominio, API, propuesta al confirmar un lote y vista agrupada en el panel y en los cobros del inmueble (spec 011) · `feat/011-liquidaciones`
