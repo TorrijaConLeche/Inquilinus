@@ -119,7 +119,7 @@ Depende de: fase 6.
 - [ ] **7.1 · Tú** — Usar la app unos meses con tus inmuebles y anotar lo que molesta
 - [ ] **7.2 · Claude** — Corregir y mejorar a partir de lo anotado (specs nuevas o actualizadas)
 - [ ] **7.3 · Claude** — Publicar en la app el contrato de encargo revisado por el asesor: anexo de los términos y versión nueva que las usuarias aceptan. Antes de la beta · `feat/contrato-encargo`
-- [ ] **7.4 · Tú** — Beta gratuita con propietarias cercanas (plan Advanced sin coste)
+- [ ] **7.4 · Tú** — Beta gratuita con propietarias cercanas (Advanced de cortesía, spec 010, R15)
 
 ## Fase 8 · Planes y pagos (spec 010)
 
@@ -130,7 +130,7 @@ Depende de: fase 7 y de tener resuelta la parte fiscal. **Hecho cuando** llega l
 - [ ] **8.3 · Claude** — Página pública de precios · `feat/010-precios`
 - [ ] **8.4 · Tú** — Crear la cuenta de Paddle y superar su revisión
 - [ ] **8.5 · Claude** — Checkout, portal de cliente y webhooks de Paddle · `feat/010-paddle`
-- [ ] **8.6 · Claude** — Límites del plan en la app, bajada de plan y bloqueo de inmuebles · `feat/010-limites`
+- [ ] **8.6 · Claude** — Límites de los tres planes (Starter, Plus y Advanced), Advanced de cortesía, bajada de plan y bloqueo de inmuebles · `feat/010-limites`
 - [ ] **8.7 · Claude** — Vercel Pro (uso comercial) y revisión de costes · `chore/vercel-pro`
 
 ## Después del MVP

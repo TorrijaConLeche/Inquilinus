@@ -60,7 +60,7 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 | C16 | Más de 20 PDF (R1) | Lote de 21 PDF | Se rechaza la subida antes de llamar a la IA |
 | C17 | Confirmar todas (R13) | Lote de 3; una sin importe | Se confirman 2; la tercera sigue por revisar |
 | C18 | Duplicado dentro del lote (R14) | La luz de octubre dos veces en el mismo lote | Aviso de solape entre ambas |
-| C19 | Límite de IA en un lote (R15) | Plan Starter sin lecturas usadas; lote de 5 | Se leen con IA las 2 primeras; las otras 3 quedan para rellenar a mano |
+| C19 | Límite de IA en un lote (R15) | Plan Starter sin lecturas usadas; lote de 7 | Se leen con IA las 5 primeras; las otras 2 quedan para rellenar a mano |
 | C20 | Sin IA activada (R8b) | No hay extractor; lote de 2 PDF | Dos facturas en estado `subida`, por revisar, con los campos vacíos |
 | C21 | Descartar (R16) | Factura por revisar descartada | Ya no existe ni ella ni su PDF |
 | C22 | Lo que llega a la IA (R10) | Se lee un PDF de un inmueble con tipos "Luz" y "Agua" | La petición lleva solo el PDF y `["Luz","Agua"]` |
