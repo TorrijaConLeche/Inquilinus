@@ -1,0 +1,141 @@
+/* Página pública de precios (spec 010, R16). */
+
+.pagina {
+  min-height: 100dvh;
+  padding: 32px 16px 64px;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.marca {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primario);
+  text-decoration: none;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.lema {
+  margin: 0 0 8px;
+  color: var(--texto-suave);
+  font-size: 1.0625rem;
+}
+
+.planes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan {
+  display: grid;
+  grid-template-rows: auto auto auto auto 1fr auto;
+  gap: 8px;
+  padding: 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.planDestacado {
+  composes: plan;
+  border-color: var(--primario);
+  box-shadow: 0 0 0 1px var(--primario);
+}
+
+.nombre {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.para {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.precio {
+  margin: 8px 0 0;
+  color: var(--texto-suave);
+}
+
+.cifra {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.anual {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--texto-suave);
+}
+
+.incluye {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+}
+
+.accion {
+  margin-top: 8px;
+}
+
+.accion > * {
+  width: 100%;
+}
+
+.nota {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.preguntas {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 24px;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+}
+
+.preguntas h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.pregunta h3 {
+  margin: 0 0 4px;
+  font-size: 1.0625rem;
+}
+
+.pregunta p {
+  margin: 0;
+  color: var(--texto-suave);
+  line-height: 1.5;
+}
+
+.pie {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 0.9375rem;
+}

@@ -35,6 +35,12 @@ export default async function Inicio({ searchParams }: { searchParams: Promise<{
             </>
           )}
         </div>
+        {/* Spec 010, R16d */}
+        <p className={estilos.precios}>
+          <Link href="/precios" className={formulario.enlace}>
+            {t("verPrecios")}
+          </Link>
+        </p>
       </section>
     </main>
   );

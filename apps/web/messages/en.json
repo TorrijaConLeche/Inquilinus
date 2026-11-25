@@ -15,7 +15,8 @@
     "entrar": "Sign in",
     "crearCuenta": "Create account",
     "irPanel": "Go to my dashboard",
-    "cuentaBorrada": "Your account and all its data have been deleted. Thank you for using Inquilinus."
+    "cuentaBorrada": "Your account and all its data have been deleted. Thank you for using Inquilinus.",
+    "verPrecios": "See pricing"
   },
   "Registro": {
     "titulo": "Create your account",
@@ -861,7 +862,8 @@
     "limiteTexto": "Your {plan} plan allows {n, plural, one {# property} other {# properties}} and you already have {n, plural, one {it} other {them}}. Archived properties don't count.",
     "limiteSubir": "To add more, move to a plan with more properties.",
     "limiteMaximo": "You've reached the maximum of {n} properties.",
-    "soporte": "If you need more, write to us at <enlace>{correo}</enlace>."
+    "soporte": "If you need more, write to us at <enlace>{correo}</enlace>.",
+    "verPrecios": "See pricing and what each plan includes"
   },
   "Elegir": {
     "titulo": "Choose your active properties",
@@ -874,5 +876,44 @@
     "noDisponible": "There's nothing to choose right now: you've already chosen on this plan or all your properties fit in it.",
     "volver": "Back to my properties",
     "inmuebles": "Properties"
+  },
+  "Precios": {
+    "marca": "Inquilinus",
+    "titulo": "Pricing",
+    "lema": "Start free with one property. Move to Plus or Advanced when you have more.",
+    "para": {
+      "starter": "To try the app with your home.",
+      "plus": "For a handful of properties.",
+      "advanced": "For managing up to 10."
+    },
+    "alMes": "a month",
+    "anual": "or {anual} a year ({meses, plural, one {# month free} other {# months free}})",
+    "siempreGratis": "No card and no end date",
+    "todoLoDemas": "Everything else included: rent payments, bill splitting, timeline and a link for your tenants",
+    "empezarGratis": "Start for free",
+    "irPanel": "Go to my dashboard",
+    "muyPronto": "Coming soon",
+    "iva": "Prices include VAT. For now, Spain only.",
+    "preguntasTitulo": "Frequently asked questions",
+    "preguntas": {
+      "limite": {
+        "pregunta": "What happens if I reach my plan's limit?",
+        "respuesta": "The app is never blocked. If you reach the maximum number of properties, you'll need a bigger plan to add another. If you use up the month's AI readings, bills can still be uploaded and you fill them in by hand; on the 1st you get them all back."
+      },
+      "cancelar": {
+        "pregunta": "What if I cancel or downgrade?",
+        "respuesta": "Your plan stays active until the end of the paid period. After that nothing is deleted: you choose which properties stay active on the new plan and the rest are locked until you upgrade again. You can always download all your data."
+      },
+      "factura": {
+        "pregunta": "Do I get an invoice?",
+        "respuesta": "Yes, every payment comes with an invoice showing the VAT. If you need it in a company's name or with your tax ID, you can say so at checkout."
+      },
+      "donde": {
+        "pregunta": "Where can I subscribe from?",
+        "respuesta": "For now, only from Spain."
+      }
+    },
+    "terminos": "Terms of use",
+    "privacidad": "Privacy policy"
   }
 }

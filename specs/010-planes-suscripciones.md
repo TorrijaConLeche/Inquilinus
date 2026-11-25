@@ -62,6 +62,13 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 - **R15c** — En los ajustes se ve "Advanced de cortesía" y, si tiene fecha de fin, hasta cuándo. En los 14 días anteriores al fin, el panel lo avisa con la opción de suscribirse.
 - **R15d** — La cortesía no pasa por Paddle. Con cortesía vigente, la usuaria puede suscribirse igualmente: el cobro empieza el día que se suscribe, y la app se lo dice antes de pagar.
 
+**Página pública de precios**
+
+- **R16** — Hay una página pública de precios en `/precios`, sin sesión, en español e inglés. Muestra los tres planes y, de cada uno: el precio con IVA incluido, mensual y anual (el anual sale a 2 meses gratis); los inmuebles activos y las facturas leídas con IA; y que todo lo demás va incluido en los tres. Debajo, respuestas breves: qué pasa al llegar al límite (R1, R2), al cancelar o bajar de plan (R8, R10: no se borra nada), quién emite la factura (R12) y que de momento solo se vende en España (R7).
+- **R16b** — El botón de Starter lleva a crear la cuenta. Los de Plus y Advanced dicen «Muy pronto» hasta que llegue el pago (tarea 8.5 del plan).
+- **R16c** — Los precios y los límites salen del mismo sitio que usa la app (`packages/domain`), nunca escritos a mano en la página.
+- **R16d** — Se enlaza desde la portada y desde «Tu plan» en los ajustes.
+
 ## Casos de prueba
 
 | # | Caso | Resultado esperado |
@@ -92,6 +99,7 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 | C24 | Cortesía y suscripción a la vez (R3b, R15d) | Cortesía vigente y Plus pagado: Advanced; al acabar la cortesía, Plus |
 | C25 | Entrada mal escrita (R15) | `ana@ejemplo.es:2027-02-30` se ignora; el registro avisa sin el email |
 | C26 | Lectura fallida (R2) | Starter con 4 leídas este mes; la IA falla con la quinta | La quinta queda para rellenar a mano y sigue quedando 1 lectura disponible |
+| C27 | Página de precios sin sesión (R16, R16c) | Responde sin sesión y muestra 4,99 € / 49,90 € y 9,99 € / 99,90 €, iguales que en la app |
 
 ## Fuera de alcance
 
@@ -114,4 +122,5 @@ El límite de 5 facturas con IA de Starter es una prueba: si no mejora la retenc
 - [ ] Checkout y portal de cliente de Paddle; webhooks con verificación de firma
 - [ ] Cambio entre Plus y Advanced desde los ajustes
 - [ ] Sección 8 de los términos con los tres planes (con los textos definitivos, tarea 8.2 del plan)
-- [ ] Tests C1–C26
+- [x] Página pública de precios (R16–R16d)
+- [ ] Tests C1–C27
