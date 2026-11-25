@@ -131,7 +131,8 @@ Depende de: fase 7 y de tener resuelta la parte fiscal. **Hecho cuando** llega l
 - [ ] **8.4 · Tú** — Crear la cuenta de Paddle y superar su revisión
 - [ ] **8.5 · Claude** — Checkout, portal de cliente y webhooks de Paddle · `feat/010-paddle`
 - [x] **8.6 · Claude** — Límites de los tres planes (Starter, Plus y Advanced), Advanced de cortesía, bajada de plan y bloqueo de inmuebles · `feat/010-limites`
-- [ ] **8.7 · Claude** — Vercel Pro (uso comercial) y revisión de costes · `chore/vercel-pro`
+- [x] **8.7a · Claude** — Revisión de costes y guía de operación: `docs/operacion.md` · `docs/operacion`
+- [ ] **8.7b · Tú** — Pasar Vercel a Pro (uso comercial) antes del primer cobro
 
 ## Después del MVP
 

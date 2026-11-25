@@ -77,8 +77,9 @@ De **los demás** solo ve lo necesario para entender el reparto: su **nombre de 
 | --- | --- | --- | --- | --- |
 | Vercel | Servir la web y la API | Todo lo que pasa por la app, en tránsito; registros de peticiones | Funciones en Fráncfort | DPA |
 | Neon | Base de datos y sus copias | Todos los datos de la app | Fráncfort | DPA |
-| AWS | Ficheros (S3) y emails de la cuenta (SES); IA (Bedrock) cuando se active | PDF subidos; email de la propietaria; PDF de facturas para la IA | Estocolmo; Bedrock con el perfil EU | DPA; Bedrock no entrena con los datos |
+| AWS | Ficheros (S3), emails de la cuenta (SES) e IA (Bedrock) | PDF subidos; email de la propietaria; PDF de facturas para la IA | Estocolmo; Bedrock con el perfil EU | DPA; Bedrock no entrena con los datos |
 | Google | Inicio de sesión con Google, si la propietaria lo elige | Email y nombre de la propietaria | Su cuenta de Google | Responsable propio de su servicio de acceso ⚖️ |
+| ImprovMX | Recibir los correos a soporte@inquilinus.es y reenviarlos a la titular | Lo que escriba quien contacta: su email, su nombre y el mensaje | Por comprobar | Por comprobar ⚖️ |
 | Paddle | Cobro de suscripciones como vendedor oficial (fase 8, aún no activo) | Datos de pago de la propietaria | Reino Unido y otros | Responsable propio; la app no guarda datos de tarjeta ⚖️ |
 
 Vercel, Neon y AWS son empresas estadounidenses con los datos alojados en la UE. Las garantías ante un acceso desde fuera de la UE (cláusulas contractuales tipo o Marco de Privacidad de Datos UE-EE. UU.) se comprueban al aceptar cada DPA ⚖️. GitHub guarda el código, que no lleva datos personales (los tests usan datos inventados): no es subencargado.
@@ -139,3 +140,4 @@ Vercel, Neon y AWS son empresas estadounidenses con los datos alojados en la UE.
 - [ ] **Vercel**: cuánto tiempo guarda los registros de peticiones en el plan actual.
 - [ ] **DPA aceptados** de Vercel, Neon y AWS, con sus garantías de transferencia; guardar una copia o el enlace de cada uno.
 - [ ] **Doble factor** activado en las cuentas de Vercel, Neon, AWS, GitHub y Google Cloud.
+- [ ] **ImprovMX** (soporte@inquilinus.es, desde el 25-11-2026): quién es su dueño ahora (lo compraron), dónde trata los correos, si tiene DPA y cuánto los guarda. Si no encaja, pasar a un buzón en la UE (Zoho UE o DonDominio).
