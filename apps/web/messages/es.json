@@ -15,7 +15,8 @@
     "entrar": "Entrar",
     "crearCuenta": "Crear cuenta",
     "irPanel": "Ir a mi panel",
-    "cuentaBorrada": "Tu cuenta y todos sus datos se han borrado. Gracias por haber usado Inquilinus."
+    "cuentaBorrada": "Tu cuenta y todos sus datos se han borrado. Gracias por haber usado Inquilinus.",
+    "verPrecios": "Ver precios"
   },
   "Registro": {
     "titulo": "Crea tu cuenta",
@@ -861,7 +862,8 @@
     "limiteTexto": "Tu plan {plan} admite {n, plural, one {# inmueble} other {# inmuebles}} y ya {n, plural, one {lo tienes} other {los tienes}}. Los archivados no cuentan.",
     "limiteSubir": "Para añadir más, pasa a un plan con más inmuebles.",
     "limiteMaximo": "Has llegado al máximo de {n} inmuebles.",
-    "soporte": "Si necesitas más, escríbenos a <enlace>{correo}</enlace>."
+    "soporte": "Si necesitas más, escríbenos a <enlace>{correo}</enlace>.",
+    "verPrecios": "Ver los precios y qué incluye cada plan"
   },
   "Elegir": {
     "titulo": "Elige tus inmuebles activos",
@@ -874,5 +876,44 @@
     "noDisponible": "Ahora no hay nada que elegir: ya elegiste con este plan o todos tus inmuebles caben en él.",
     "volver": "Volver a mis inmuebles",
     "inmuebles": "Inmuebles"
+  },
+  "Precios": {
+    "marca": "Inquilinus",
+    "titulo": "Precios",
+    "lema": "Empieza gratis con un inmueble. Pasa a Plus o a Advanced cuando tengas más.",
+    "para": {
+      "starter": "Para probar la app con tu piso.",
+      "plus": "Para quien tiene unos pocos pisos.",
+      "advanced": "Para quien gestiona hasta 10."
+    },
+    "alMes": "al mes",
+    "anual": "o {anual} al año ({meses, plural, one {# mes gratis} other {# meses gratis}})",
+    "siempreGratis": "Sin tarjeta y sin fecha de fin",
+    "todoLoDemas": "Todo lo demás incluido: cobros, reparto de facturas, timeline y enlace para tus inquilinos",
+    "empezarGratis": "Empezar gratis",
+    "irPanel": "Ir a mi panel",
+    "muyPronto": "Muy pronto",
+    "iva": "Precios con IVA incluido. De momento, solo para España.",
+    "preguntasTitulo": "Preguntas frecuentes",
+    "preguntas": {
+      "limite": {
+        "pregunta": "¿Qué pasa si llego al límite de mi plan?",
+        "respuesta": "Nunca se bloquea la app. Si llegas al máximo de inmuebles, para añadir otro tendrás que pasar a un plan mayor. Si agotas las lecturas con IA del mes, las facturas se siguen subiendo y las rellenas a mano; el día 1 vuelves a tenerlas todas."
+      },
+      "cancelar": {
+        "pregunta": "¿Y si cancelo o bajo de plan?",
+        "respuesta": "Tu plan sigue hasta el final del periodo pagado. Después no se borra nada: eliges qué inmuebles siguen activos según el nuevo plan y los demás quedan bloqueados hasta que vuelvas a subir. Siempre puedes descargar todos tus datos."
+      },
+      "factura": {
+        "pregunta": "¿Recibo factura?",
+        "respuesta": "Sí, con cada cobro recibes una factura con el IVA desglosado. Si la necesitas a nombre de una empresa o con tu NIF, lo indicas al pagar."
+      },
+      "donde": {
+        "pregunta": "¿Desde dónde se puede contratar?",
+        "respuesta": "De momento, solo desde España."
+      }
+    },
+    "terminos": "Términos de uso",
+    "privacidad": "Política de privacidad"
   }
 }

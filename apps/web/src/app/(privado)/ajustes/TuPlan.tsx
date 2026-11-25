@@ -40,6 +40,12 @@ export async function TuPlan({ estado }: { estado: EstadoPlan }) {
       )}
       <h3>{t("planes")}</h3>
       <Planes actual={estado.plan} />
+      {/* Spec 010, R16d */}
+      <p>
+        <Link href="/precios" className={formulario.enlace}>
+          {t("verPrecios")}
+        </Link>
+      </p>
     </section>
   );
 }
