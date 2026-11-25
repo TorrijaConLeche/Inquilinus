@@ -28,7 +28,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 
 **Subida múltiple**
 
-- **R12** — Las facturas de un lote se leen en paralelo y de forma independiente: si una falla, las demás siguen (R8).
+- **R12** — Las facturas de un lote se leen de forma independiente, **como mucho 3 a la vez**: si una falla, las demás siguen (R8). Si Bedrock frena por exceso de peticiones, se espera y se reintenta, sin pasar de los 60 s de esa factura (R8). Si el lote lleva más de **2 minutos** leyendo, las facturas que aún no han empezado quedan para rellenar a mano y no gastan del límite del plan (spec 010, R2).
 - **R13** — Tras la subida, las facturas aparecen en una lista **por revisar**. Se pueden confirmar una a una o con **"Confirmar todas"**, que confirma las que están completas y deja en la lista las que tienen algún campo vacío. Al terminar, la app propone agrupar las confirmadas en una liquidación (spec 011).
 - **R14** — El aviso de solapes (R6) también compara las facturas del mismo lote entre sí.
 - **R14b** — Para el aviso de solapes cuentan las facturas ya confirmadas del inmueble y las del mismo lote que tengan tipo y periodo. Con **"Confirmar todas"**, las que se solapan con otra se quedan por revisar con su aviso (como las incompletas), y la usuaria las confirma una a una si quiere continuar.
@@ -68,6 +68,9 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 | C23 | Respuesta inservible (R8) | La IA rechaza, corta la respuesta o devuelve un JSON que no encaja | Falla con un código, sin datos de la factura en el registro; la factura queda para rellenar a mano |
 | C24 | Solo en la UE (R10b) | Región `us-east-1` o modelo `global.…` | La lectura con IA no se activa y se avisa con el motivo |
 | C24b | Modelo provisional (R10b) | Modelo `eu.anthropic.claude-haiku-4-5-20251001-v1:0` en `eu-north-1` | La lectura con IA se activa y la petición va sin nivel de esfuerzo; con Haiku 5.5 se pide esfuerzo bajo |
+| C25 | Bedrock frena (R12) | La IA responde «demasiadas peticiones» a la primera y bien a la segunda | La factura se lee con IA |
+| C26 | Lote de 6 (R12) | Seis facturas | Nunca hay más de 3 lecturas a la vez y las 6 se leen |
+| C27 | Lote que tarda demasiado (R12) | Las lecturas tardan tanto que pasan los 2 minutos | Las que no han empezado quedan para rellenar a mano y su lectura se devuelve al límite del plan |
 
 **Evaluación de la IA** (aparte de los tests): con 15-20 PDF reales de distintos tipos y compañías, la IA debe acertar periodo e importe en al menos el 90 % de los casos.
 
@@ -84,7 +87,7 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 
 - [x] Validación de fichero (R1) y de confirmación (R9) en `packages/domain`
 - [x] Detección de solapes de periodo (R6) en `packages/domain`
-- [x] Interfaz `ExtractorFacturas`, lectura en paralelo con límite de 60 s y normalización de lo leído
+- [x] Interfaz `ExtractorFacturas`, lectura de 3 en 3 con reintentos si Bedrock frena, límite de 60 s por factura y de 2 minutos por lote (R12), y normalización de lo leído
 - [x] Implementación con Bedrock (prompt y salida estructurada). Se activa con `APP_BEDROCK_MODELO`; en producción desde la tarea 5.1, con Haiku 4.5 de forma provisional
 - [x] Endpoints de subida, lectura y descarte en `apps/api`
 - [x] Endpoints de edición, confirmación y «Confirmar todas»
@@ -93,5 +96,5 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Solapes dentro del lote (R14, R14b)
 - [x] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
 - [x] Modelo provisional Claude Haiku 4.5 mientras AWS no habilite Haiku 5.5 (R10b, C24b)
-- [x] Tests C1–C24b
+- [x] Tests C1–C27
 - [x] Evaluación con PDF reales: 16 facturas (9 de luz, 5 de gas y 2 de agua) con Haiku 4.5, periodo, importe y tipo bien en 16 de 16 en dos pasadas, tras aclarar el periodo y el importe (R2b). Se repite con `pnpm --filter @inquilinus/api evaluar:lectura <carpeta>` (`apps/api/evaluacion/`)

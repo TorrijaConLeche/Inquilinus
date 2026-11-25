@@ -194,7 +194,8 @@ export function crearExtractorBedrockAws(configuracion: ConfiguracionBedrock): E
     apiKey: null,
     // R8: más allá de 60 s la factura se rellena a mano; no tiene sentido esperar más.
     timeout: LIMITE_LECTURA_MS,
-    maxRetries: 1,
+    // Los reintentos los lleva leerConReintentos (R12), sin pasar de los 60 s.
+    maxRetries: 0,
   });
   return crearExtractorBedrock({
     modelo: configuracion.modelo,

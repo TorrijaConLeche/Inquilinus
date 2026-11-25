@@ -21,7 +21,7 @@ import type { ConexionBd } from "./bd/cliente.ts";
 import * as t from "./bd/esquema.ts";
 import { prepararSubida, SEGUNDOS_PERMISO } from "./documentos.ts";
 import { ErrorPeticion } from "./errores.ts";
-import { leerConLimite, type ExtractorFacturas } from "./extractor.ts";
+import { AJUSTES_LECTURA, leerConReintentos, leerEnTandas, type AjustesLectura, type ExtractorFacturas } from "./extractor.ts";
 import type { CupoIa } from "./planes.ts";
 import { crearReparto, resumenesDeReparto } from "./repartos.ts";
 
@@ -117,7 +117,7 @@ interface Aceptada {
 /**
  * R1, R8, R8b y R12: registra un lote de PDF ya subidos. Cada uno se comprueba
  * por separado (un fichero no válido no afecta al resto), se mueve a su sitio
- * definitivo y queda por revisar. Si hay extractor, los lee todos a la vez; si
+ * definitivo y queda por revisar. Si hay extractor, los lee de 3 en 3 (R12); si
  * falla o tarda más de 60 s, esa factura queda para rellenar a mano.
  * R15: solo se leen con IA tantas como queden en el plan este mes, las primeras
  * en orden de subida; las demás quedan para rellenar a mano.
@@ -127,6 +127,7 @@ export async function crearFacturas(
   almacen: Almacen,
   extractor: ExtractorFacturas | undefined,
   datos: { usuarioId: string; inmuebleId: string; subidas: { subidaId: string; nombre: string }[]; cupoIa: CupoIa },
+  ajustes: AjustesLectura = AJUSTES_LECTURA,
 ): Promise<{ lote: string; facturas: Factura[]; rechazadas: { nombre: string; error: string }[]; sinIaPorLimite: number }> {
   validarTamanoLote(datos.subidas.length);
   const lote = crypto.randomUUID();
@@ -184,7 +185,7 @@ export async function crearFacturas(
     });
   }
 
-  // R2, R8 y R12: lectura en paralelo; una que falla no para a las demás.
+  // R2, R8 y R12: lectura de 3 en 3; una que falla no para a las demás.
   let sinIaPorLimite = 0;
   const concedidas = extractor && aceptadas.length > 0 ? await datos.cupoIa.reservar(aceptadas.length) : 0;
   if (extractor) sinIaPorLimite = aceptadas.length - concedidas;
@@ -195,10 +196,12 @@ export async function crearFacturas(
       .where(and(eq(t.tipoGasto.inmuebleId, datos.inmuebleId), eq(t.tipoGasto.archivado, false)));
     const nombresTipos = tipos.map((tg) => tg.nombre);
     let fallidas = 0;
-    await Promise.all(
-      aceptadas.slice(0, concedidas).map(async ({ facturaId, contenido }) => {
+    const sinEmpezar = await leerEnTandas(
+      aceptadas.slice(0, concedidas),
+      async ({ facturaId, contenido }) => {
         try {
-          const propuesta = normalizarLectura(await leerConLimite(extractor, contenido, nombresTipos), tipos);
+          const lectura = await leerConReintentos(extractor, contenido, nombresTipos, { esperaBaseMs: ajustes.esperaBaseMs });
+          const propuesta = normalizarLectura(lectura, tipos);
           await bd
             .update(t.factura)
             .set({
@@ -215,10 +218,12 @@ export async function crearFacturas(
           fallidas++;
           await bd.update(t.factura).set({ estado: "error_extraccion", actualizadoEn: new Date() }).where(eq(t.factura.id, facturaId));
         }
-      }),
+      },
+      ajustes,
     );
-    // Spec 010, R2: una lectura fallida no gasta del límite.
-    await datos.cupoIa.devolver(fallidas);
+    // Spec 010, R2 y R12: ni una lectura fallida ni una que no llegó a empezar gastan del límite.
+    // Las que no empezaron siguen en `subida`, para rellenarlas a mano.
+    await datos.cupoIa.devolver(fallidas + sinEmpezar.length);
   }
 
   const facturas =

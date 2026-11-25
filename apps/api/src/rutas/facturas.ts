@@ -22,7 +22,7 @@ import { mesDeUsoIa, type Cortesias } from "@inquilinus/domain";
 import type { Context, Hono } from "hono";
 import type { Almacen } from "../almacen.ts";
 import type { ConexionBd } from "../bd/cliente.ts";
-import type { ExtractorFacturas } from "../extractor.ts";
+import { AJUSTES_LECTURA, type AjustesLectura, type ExtractorFacturas } from "../extractor.ts";
 import {
   confirmarFactura,
   confirmarTodas,
@@ -50,9 +50,12 @@ export function registrarRutasFacturas(
     ahora: () => Date;
     /** Spec 010, R15: Advanced de cortesía. */
     cortesias: Cortesias;
+    /** R12: lecturas a la vez y topes (solo los cambian los tests). */
+    lectura?: Partial<AjustesLectura>;
   },
 ) {
   const { bd, almacen, extractor, ahora, cortesias } = opciones;
+  const ajustesLectura = { ...AJUSTES_LECTURA, ...opciones.lectura };
 
   const delInmueble = async (c: Context<EntornoSesion>, ...otros: string[]) => {
     const valores = ids(c, "idInmueble", ...otros);
@@ -87,7 +90,7 @@ export function registrarRutasFacturas(
     // Spec 010, R2 y R3: las lecturas con IA del plan en el mes en curso (hora de Madrid).
     const plan = await planDeCuenta(bd, usuarioId, cortesias, hoyEnMadrid(instante));
     const cupo = cupoIa(bd, usuarioId, plan, mesDeUsoIa(instante));
-    const resultado = await crearFacturas(bd, almacen, extractor, { usuarioId, inmuebleId: v[0]!, subidas, cupoIa: cupo });
+    const resultado = await crearFacturas(bd, almacen, extractor, { usuarioId, inmuebleId: v[0]!, subidas, cupoIa: cupo }, ajustesLectura);
     return c.json<ResultadoSubidaFacturas>(resultado, 201);
   });
 
