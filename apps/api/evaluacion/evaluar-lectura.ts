@@ -1,6 +1,11 @@
 // Spec 003 · Evaluación de la IA con PDF reales (tarea 5.6 del plan).
 //
-//   pnpm --filter @inquilinus/api evaluar:lectura <carpeta> [modelo]
+//   pnpm --filter @inquilinus/api evaluar:lectura <carpeta> [modelo] [--lote]
+//
+// Sin --lote, lee las facturas una a una y, si Bedrock frena por cuota, espera 20 s y
+// reintenta: mide solo la calidad de la lectura. Con --lote, las lee todas como un solo
+// lote, igual que la app (R12: 3 a la vez, reintentos dentro de los 60 s y tope de
+// 2 minutos), y además mide el tiempo del lote.
 //
 // La carpeta (fuera del repositorio) tiene los PDF y `esperado.csv`, separado por
 // punto y coma: fichero;inicio;fin;importe;tipo. Fechas DD/MM/AAAA o AAAA-MM-DD;
@@ -15,7 +20,7 @@ import { normalizarLectura, type LecturaFactura } from "@inquilinus/domain";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { crearExtractorBedrockAws } from "../src/extractor-bedrock.ts";
-import { leerConLimite } from "../src/extractor.ts";
+import { AJUSTES_LECTURA, leerConLimite, leerConReintentos, leerEnTandas } from "../src/extractor.ts";
 
 const MODELO_POR_DEFECTO = "eu.anthropic.claude-haiku-4-5-20251001-v1:0";
 /** Spec 003: periodo e importe bien en al menos el 90 % de las facturas. */
@@ -89,8 +94,11 @@ function fallos(esperado: Esperado, leido: { inicio: string | null; fin: string 
   return lista;
 }
 
-const [carpeta, modelo = MODELO_POR_DEFECTO] = process.argv.slice(2);
-if (!carpeta) throw new Error("Uso: evaluar:lectura <carpeta> [modelo]");
+const argumentos = process.argv.slice(2);
+const comoLote = argumentos.includes("--lote");
+const [carpetaIndicada, modelo = MODELO_POR_DEFECTO] = argumentos.filter((a) => a !== "--lote");
+if (!carpetaIndicada) throw new Error("Uso: evaluar:lectura <carpeta> [modelo] [--lote]");
+const carpeta: string = carpetaIndicada;
 const entorno = process.env;
 const extractor = crearExtractorBedrockAws({
   region: entorno["APP_BEDROCK_REGION"] ?? entorno["APP_AWS_REGION"] ?? "",
@@ -111,43 +119,75 @@ function texto(bytes: Uint8Array): string {
 const esperados = leerEsperado(texto(await readFile(join(carpeta, "esperado.csv"))));
 const tipos = [...new Set(esperados.map((e) => e.tipo))];
 const tiposConId = tipos.map((nombre, i) => ({ id: String(i), nombre }));
-console.log(`Modelo: ${modelo} · ${esperados.length} facturas · tipos: ${tipos.join(", ")}\n`);
+console.log(
+  `Modelo: ${modelo} · ${esperados.length} facturas · tipos: ${tipos.join(", ")}` +
+    (comoLote ? ` · como un lote (${AJUSTES_LECTURA.aLaVez} a la vez)` : "") +
+    "\n",
+);
+
+interface Resultado {
+  leido: { inicio: string | null; fin: string | null; importe: number | null; tipo: string | null };
+  error: string | null;
+  segundos: number;
+}
+const vacio = { inicio: null, fin: null, importe: null, tipo: null };
+let reintentosScript = 0;
+
+/** Una lectura uno a uno: si Bedrock frena, espera 20 s y reintenta (hasta 5 veces). */
+async function leerUnaAUna(pdf: Uint8Array): Promise<LecturaFactura> {
+  for (let intento = 1; ; intento++) {
+    try {
+      return await leerConLimite(extractor, pdf, tipos);
+    } catch (e) {
+      if ((e as { codigo?: string }).codigo !== "HTTP_429" || intento >= 6) throw e;
+      reintentosScript++;
+      await new Promise((r) => setTimeout(r, 20_000));
+    }
+  }
+}
+
+async function evaluar(esperado: Esperado): Promise<Resultado> {
+  const inicioMs = performance.now();
+  try {
+    const pdf = await readFile(join(carpeta, esperado.fichero));
+    const lectura = comoLote ? await leerConReintentos(extractor, pdf, tipos) : await leerUnaAUna(pdf);
+    const propuesta = normalizarLectura(lectura, tiposConId);
+    return {
+      leido: {
+        inicio: propuesta.inicio,
+        fin: propuesta.fin,
+        importe: propuesta.importe,
+        tipo: propuesta.tipoGastoId === null ? null : tipos[Number(propuesta.tipoGastoId)]!,
+      },
+      error: null,
+      segundos: (performance.now() - inicioMs) / 1000,
+    };
+  } catch (e) {
+    // Solo el código o el tipo del error: el mensaje podría llevar texto de la factura.
+    const error = (e as { codigo?: string }).codigo ?? (e instanceof Error ? (e.message === "LECTURA_LENTA" ? e.message : e.name) : "DESCONOCIDO");
+    return { leido: vacio, error, segundos: (performance.now() - inicioMs) / 1000 };
+  }
+}
+
+const resultados = new Map<Esperado, Resultado>();
+const inicioLote = performance.now();
+let sinEmpezar: Esperado[] = [];
+if (comoLote) {
+  sinEmpezar = await leerEnTandas(esperados, async (e) => void resultados.set(e, await evaluar(e)), AJUSTES_LECTURA);
+} else {
+  for (const e of esperados) resultados.set(e, await evaluar(e));
+}
+const segundosLote = (performance.now() - inicioLote) / 1000;
 
 const filas: string[] = ["fichero;ok_periodo;ok_importe;ok_tipo;inicio_leido;fin_leido;importe_leido;tipo_leido;fallos"];
 let periodoBien = 0;
 let importeBien = 0;
 let ambosBien = 0;
 let tipoBien = 0;
-let reintentos = 0;
+let errores = 0;
 for (const esperado of esperados) {
-  let leido = { inicio: null as string | null, fin: null as string | null, importe: null as number | null, tipo: null as string | null };
-  let error: string | null = null;
-  const inicioMs = performance.now();
-  try {
-    const pdf = await readFile(join(carpeta, esperado.fichero));
-    // Si Bedrock frena por cuota (429), se espera y se reintenta: aquí se mide la lectura, no la cuota.
-    let lectura: LecturaFactura | undefined;
-    for (let intento = 1; !lectura; intento++) {
-      try {
-        lectura = await leerConLimite(extractor, pdf, tipos);
-      } catch (e) {
-        if ((e as { codigo?: string }).codigo !== "HTTP_429" || intento >= 6) throw e;
-        reintentos++;
-        await new Promise((r) => setTimeout(r, 20_000));
-      }
-    }
-    const propuesta = normalizarLectura(lectura, tiposConId);
-    leido = {
-      inicio: propuesta.inicio,
-      fin: propuesta.fin,
-      importe: propuesta.importe,
-      tipo: propuesta.tipoGastoId === null ? null : tipos[Number(propuesta.tipoGastoId)]!,
-    };
-  } catch (e) {
-    // Solo el código o el tipo del error: el mensaje podría llevar texto de la factura.
-    error = (e as { codigo?: string }).codigo ?? (e instanceof Error ? e.name : "DESCONOCIDO");
-  }
-  const segundos = ((performance.now() - inicioMs) / 1000).toFixed(1);
+  const r = resultados.get(esperado) ?? { leido: vacio, error: "sin empezar: tope del lote", segundos: 0 };
+  const { leido, error } = r;
   const okPeriodo = leido.inicio === esperado.inicio && leido.fin === esperado.fin;
   const okImporte = leido.importe === esperado.importe;
   const okTipo = leido.tipo?.toLocaleLowerCase("es") === esperado.tipo.toLocaleLowerCase("es");
@@ -155,10 +195,11 @@ for (const esperado of esperados) {
   importeBien += Number(okImporte);
   ambosBien += Number(okPeriodo && okImporte);
   tipoBien += Number(okTipo);
+  errores += Number(error !== null);
   const problemas = error ? [`error de lectura (${error})`] : fallos(esperado, leido);
   const marca = (ok: boolean) => (ok ? "✓" : "✗");
   console.log(
-    `${esperado.fichero.padEnd(14)} periodo ${marca(okPeriodo)}  importe ${marca(okImporte)}  tipo ${marca(okTipo)}  ${segundos} s` +
+    `${esperado.fichero.padEnd(14)} periodo ${marca(okPeriodo)}  importe ${marca(okImporte)}  tipo ${marca(okTipo)}  ${r.segundos.toFixed(1)} s` +
       (problemas.length ? `  · ${problemas.join(", ")}` : ""),
   );
   filas.push(
@@ -168,7 +209,10 @@ for (const esperado of esperados) {
 
 const total = esperados.length;
 const pct = (n: number) => `${n}/${total} (${Math.round((n / total) * 100)} %)`;
-if (reintentos > 0) console.log(`\nBedrock frenó por cuota ${reintentos} veces (HTTP 429); se reintentó tras 20 s.`);
+if (reintentosScript > 0) console.log(`\nBedrock frenó por cuota ${reintentosScript} veces (HTTP 429); se reintentó tras 20 s.`);
+if (comoLote) {
+  console.log(`\nLote: ${segundosLote.toFixed(1)} s en total · errores de lectura: ${errores} · sin empezar por el tope: ${sinEmpezar.length}`);
+}
 console.log(`\nPeriodo: ${pct(periodoBien)} · Importe: ${pct(importeBien)} · Tipo: ${pct(tipoBien)}`);
 console.log(`Periodo e importe a la vez: ${pct(ambosBien)} → ${ambosBien / total >= OBJETIVO ? "SUPERA" : "NO LLEGA A"} el 90 % de la spec 003`);
 await writeFile(join(carpeta, "resultado.csv"), filas.join("\r\n") + "\r\n", "utf8");

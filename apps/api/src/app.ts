@@ -10,7 +10,7 @@ import { deleteCookie } from "hono/cookie";
 import { matchedRoutes } from "hono/route";
 import type { Almacen } from "./almacen.ts";
 import type { Auth } from "./auth.ts";
-import type { ExtractorFacturas } from "./extractor.ts";
+import type { AjustesLectura, ExtractorFacturas } from "./extractor.ts";
 import type { ConexionBd } from "./bd/cliente.ts";
 import { borrarCuenta, exportarDatos } from "./cuenta.ts";
 import { ErrorPeticion } from "./inmuebles.ts";
@@ -56,6 +56,8 @@ export interface Dependencias {
   extractor?: ExtractorFacturas;
   /** Advanced de cortesía (spec 010, R15), leído de PLAN_CORTESIA. Sin él, nadie lo tiene. */
   cortesias?: Cortesias;
+  /** Spec 003, R12: lecturas a la vez y topes del lote. Solo los cambian los tests. */
+  lecturaIa?: Partial<AjustesLectura>;
 }
 
 export interface Opciones {
@@ -167,7 +169,14 @@ export function crearApp(dependencias: Dependencias = {}, opciones: Opciones = {
     registrarRutasTimeline(app, { bd });
     registrarRutasHistorico(app, { bd });
     registrarRutasEnlaces(app, { bd });
-    registrarRutasFacturas(app, { bd, almacen: dependencias.almacen, extractor: dependencias.extractor, ahora, cortesias });
+    registrarRutasFacturas(app, {
+      bd,
+      almacen: dependencias.almacen,
+      extractor: dependencias.extractor,
+      ahora,
+      cortesias,
+      ...(dependencias.lecturaIa && { lectura: dependencias.lecturaIa }),
+    });
 
     app.get("/cuenta/exportacion", async (c) => {
       const sesion = await sesionDe(c);
