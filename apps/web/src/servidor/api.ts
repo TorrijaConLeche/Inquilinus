@@ -5,6 +5,7 @@ import {
   crearApp,
   datosTimeline,
   dependenciasDesdeEntorno,
+  estadoDelPlan,
   hoyEnMadrid,
   listarHistorico,
   listarFacturas,
@@ -15,12 +16,14 @@ import {
   mesEnMadrid,
   metodoDobleFactor,
   resumenDelPanel,
+  sincronizarInmuebles,
   verInmueble,
   vistaInquilino,
   type MetodoDobleFactor,
 } from "@inquilinus/api";
-import type { CobrosDelMes, DatosTimeline, VistaInquilino, Factura, FiltrosHistorico, Historico, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
+import type { CobrosDelMes, DatosTimeline, EstadoPlan, VistaInquilino, Factura, FiltrosHistorico, Historico, Inmueble, Inquilino, Liquidacion, Panel, ResumenInmueble, TipoGasto } from "@inquilinus/contracts";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 const dependencias = dependenciasDesdeEntorno(process.env, {
   rutaBase: "/api",
@@ -28,6 +31,24 @@ const dependencias = dependenciasDesdeEntorno(process.env, {
 });
 
 export const api = crearApp(dependencias, { rutaBase: "/api" });
+
+/** Advanced de cortesía (spec 010, R15), leído de PLAN_CORTESIA. */
+const cortesias = dependencias.cortesias ?? new Map<string, string | null>();
+
+/**
+ * Spec 010, R10–R11: recalcula los inmuebles activos con el plan de hoy, igual que la API
+ * al entrar en /inmuebles. Las páginas leen la base directamente y tienen que hacerlo también.
+ */
+async function sincronizar(usuario: UsuarioSesion) {
+  if (!dependencias.bd) return null;
+  return sincronizarInmuebles(dependencias.bd, usuario.id, cortesias, hoyEnMadrid());
+}
+
+/** Plan de la cuenta, límites, lecturas con IA del mes e inmuebles bloqueados (spec 010). */
+export async function planDe(usuario: UsuarioSesion): Promise<EstadoPlan | null> {
+  if (!dependencias.bd) return null;
+  return estadoDelPlan(dependencias.bd, usuario.id, cortesias, new Date());
+}
 
 /** ¿Funciona Google aquí? En las previsualizaciones de Vercel no (su dirección cambia). */
 export const googleDisponible =
@@ -65,16 +86,18 @@ export async function metodoDobleFactorDe(usuario: UsuarioSesion): Promise<Metod
   return metodoDobleFactor(dependencias.bd, usuario);
 }
 
-/** Inmuebles del usuario (spec 007), consultados directamente sin pasar por HTTP. */
 /** Inmuebles del usuario; con `archivados`, también los archivados (spec 007, R11c). */
 export async function inmueblesDe(usuario: UsuarioSesion, { archivados = false } = {}): Promise<ResumenInmueble[]> {
   if (!dependencias.bd) return [];
+  await sincronizar(usuario);
   return listarInmuebles(dependencias.bd, usuario.id, { archivados });
 }
 
 /** Detalle de un inmueble del usuario, o null si no es suyo o no existe. */
 export async function inmuebleDe(usuario: UsuarioSesion, inmuebleId: string): Promise<Inmueble | null> {
   if (!dependencias.bd || !/^[0-9a-f-]{36}$/i.test(inmuebleId)) return null;
+  // Spec 010, R10b: en un inmueble bloqueado no se entra; vuelve a la lista con el aviso.
+  if ((await sincronizar(usuario))?.bloqueados.includes(inmuebleId)) redirect("/inmuebles?bloqueado=1");
   return verInmueble(dependencias.bd, usuario.id, inmuebleId, mesEnMadrid());
 }
 
@@ -131,6 +154,7 @@ export async function cobrosDe(
 /** Panel principal del usuario (spec 009, R1–R5b). */
 export async function panelDe(usuario: UsuarioSesion): Promise<Panel | null> {
   if (!dependencias.bd) return null;
+  await sincronizar(usuario);
   return resumenDelPanel(dependencias.bd, usuario.id, hoyEnMadrid());
 }
 

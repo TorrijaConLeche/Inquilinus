@@ -130,7 +130,7 @@ Depende de: fase 7 y de tener resuelta la parte fiscal. **Hecho cuando** llega l
 - [ ] **8.3 · Claude** — Página pública de precios · `feat/010-precios`
 - [ ] **8.4 · Tú** — Crear la cuenta de Paddle y superar su revisión
 - [ ] **8.5 · Claude** — Checkout, portal de cliente y webhooks de Paddle · `feat/010-paddle`
-- [ ] **8.6 · Claude** — Límites de los tres planes (Starter, Plus y Advanced), Advanced de cortesía, bajada de plan y bloqueo de inmuebles · `feat/010-limites`
+- [x] **8.6 · Claude** — Límites de los tres planes (Starter, Plus y Advanced), Advanced de cortesía, bajada de plan y bloqueo de inmuebles · `feat/010-limites`
 - [ ] **8.7 · Claude** — Vercel Pro (uso comercial) y revisión de costes · `chore/vercel-pro`
 
 ## Después del MVP

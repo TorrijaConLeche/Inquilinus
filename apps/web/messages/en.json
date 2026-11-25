@@ -140,7 +140,11 @@
     "facturaNoRepartida": "Only confirmed and split bills can be grouped.",
     "facturaEnLiquidacion": "One of those bills is already in another settlement.",
     "liquidacionVacia": "A settlement can't be left without bills. If you no longer need it, delete it.",
-    "enlaceExistente": "This tenant already has a link. If you need another, regenerate it."
+    "enlaceExistente": "This tenant already has a link. If you need another, regenerate it.",
+    "limiteInmuebles": "You've reached your plan's property limit.",
+    "inmuebleBloqueado": "This property is locked by your plan.",
+    "eleccionInvalida": "Choose exactly as many properties as your plan allows.",
+    "eleccionNoDisponible": "You've already chosen your active properties on this plan."
   },
   "Privado": {
     "marca": "Inquilinus",
@@ -179,7 +183,9 @@
     "pagadaEl": "paid on {fecha}",
     "pendienteParte": "pending",
     "verCalculo": "See the calculation",
-    "verPdf": "View PDF"
+    "verPdf": "View PDF",
+    "verInmueblesBloqueados": "See my properties",
+    "avisoFinCortesia": "Your complimentary Advanced ends on {fecha}. After that you'll move to Starter unless you subscribe to a plan."
   },
   "Ajustes": {
     "titulo": "Settings",
@@ -271,7 +277,12 @@
     "verArchivados": "{n, plural, one {Show the archived property} other {Show the # archived properties}}",
     "ocultarArchivados": "Hide archived",
     "archivados": "Archived",
-    "vacioConArchivados": "You have no active properties"
+    "vacioConArchivados": "You have no active properties",
+    "bloqueado": "Locked",
+    "avisoBloqueados": "{n, plural, one {# property is locked} other {# properties are locked}} by your plan: you can't open {n, plural, one {it} other {them}} until you upgrade. Nothing has been deleted.",
+    "puedesElegir": "Choose which properties stay active",
+    "entradaBloqueada": "That property is locked by your plan.",
+    "eleccionGuardada": "Choice saved."
   },
   "Asistente": {
     "titulo": "New property",
@@ -574,7 +585,8 @@
     "deshacer": "Undo confirmation",
     "deshacerSinPagos": "Undo the confirmation? Its split will be deleted and the bill will go back to “To review”.",
     "deshacerConPagos": "Undo the confirmation? Its split will be deleted, including shares already collected (those payments are lost), and the bill will go back to “To review”.",
-    "enLiquidacion": "In “{nombre}”"
+    "enLiquidacion": "In “{nombre}”",
+    "sinIaPorLimite": "{n, plural, one {# bill is} other {# bills are}} left for you to fill in by hand: you've used up your plan's AI readings for this month."
   },
   "Liquidaciones": {
     "estados": {
@@ -821,5 +833,46 @@
     "fianzaDevuelta": "Returned on {fecha}: {importe}",
     "pie": "Only you can see this page. If something doesn't add up, talk to your landlord.",
     "tu": "you"
+  },
+  "Plan": {
+    "titulo": "Your plan",
+    "nombres": {
+      "starter": "Starter",
+      "plus": "Plus",
+      "advanced": "Advanced"
+    },
+    "actual": "You're on the {plan} plan.",
+    "cortesiaHasta": "You have complimentary Advanced until {fecha}.",
+    "cortesiaSinFin": "You have complimentary Advanced, with no end date.",
+    "inmuebles": "Active properties: {activos} of {limite}",
+    "lecturas": "Bills read with AI this month: {usadas} of {limite}",
+    "bloqueados": "{n, plural, one {# locked property} other {# locked properties}}",
+    "elegir": "Choose my active properties",
+    "planes": "Plans",
+    "gratis": "Free",
+    "precio": "{mensual} a month or {anual} a year, VAT included",
+    "limiteInmuebles": "{n, plural, one {# property} other {Up to # properties}}",
+    "iaStarter": "{n} bills read with AI a month",
+    "iaSinLimite": "AI bill reading with no practical limit",
+    "tuPlan": "Your plan",
+    "muyPronto": "Soon you'll be able to subscribe from here.",
+    "verPlanes": "See the plans",
+    "limiteTitulo": "You've reached your plan's limit",
+    "limiteTexto": "Your {plan} plan allows {n, plural, one {# property} other {# properties}} and you already have {n, plural, one {it} other {them}}. Archived properties don't count.",
+    "limiteSubir": "To add more, move to a plan with more properties.",
+    "limiteMaximo": "You've reached the maximum of {n} properties.",
+    "soporte": "If you need more, write to us at <enlace>{correo}</enlace>."
+  },
+  "Elegir": {
+    "titulo": "Choose your active properties",
+    "explicacion": "Your {plan} plan allows {n, plural, one {# active property} other {# active properties}}. Choose which {n, plural, one {one stays} other {ones stay}} active; the rest are locked, and nothing is deleted.",
+    "unaVez": "You can only choose once while you stay on this plan. To change it, you'll need to upgrade.",
+    "provisional": "Until you choose, the oldest ones stay active.",
+    "contador": "{n} of {limite} chosen",
+    "confirmar": "Confirm my choice",
+    "guardando": "Saving…",
+    "noDisponible": "There's nothing to choose right now: you've already chosen on this plan or all your properties fit in it.",
+    "volver": "Back to my properties",
+    "inmuebles": "Properties"
   }
 }

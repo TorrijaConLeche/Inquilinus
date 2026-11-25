@@ -196,3 +196,29 @@
   font-size: 1rem;
   color: var(--texto-suave);
 }
+
+/* --- Bloqueados por el plan (spec 010, R10b) -------------------------------- */
+
+.tituloTarjeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.bloqueado {
+  composes: seccion from "../privado.module.css";
+  color: var(--texto-suave);
+  background: var(--fondo);
+}
+
+.candado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-control);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

@@ -2,12 +2,13 @@ import { esIdioma, IDIOMA_POR_DEFECTO } from "@inquilinus/contracts/idiomas";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { COOKIE_TEMA, esTema } from "../../../lib/preferencias";
-import { metodoDobleFactorDe, tieneContrasena, usuarioActual } from "../../../servidor/api";
+import { metodoDobleFactorDe, planDe, tieneContrasena, usuarioActual } from "../../../servidor/api";
 import estilos from "../privado.module.css";
 import { DobleFactor } from "./DobleFactor";
 import { Preferencias } from "./Preferencias";
 import { Sesiones } from "./Sesiones";
 import { TusDatos } from "./TusDatos";
+import { TuPlan } from "./TuPlan";
 
 export async function generateMetadata() {
   const t = await getTranslations("Ajustes");
@@ -23,6 +24,7 @@ export default async function Ajustes() {
     cookies(),
   ]);
   const tema = almacen.get(COOKIE_TEMA)?.value;
+  const plan = usuario ? await planDe(usuario) : null;
   return (
     <>
       <h1 className={estilos.titulo}>{t("titulo")}</h1>
@@ -33,6 +35,7 @@ export default async function Ajustes() {
         {usuario?.nombre && <p className={estilos.suave}>{usuario.nombre}</p>}
       </section>
 
+      {plan && <TuPlan estado={plan} />}
       <Preferencias idioma={esIdioma(locale) ? locale : IDIOMA_POR_DEFECTO} tema={esTema(tema) ? tema : "sistema"} />
       <DobleFactor metodo={usuario ? await metodoDobleFactorDe(usuario) : null} conContrasena={conContrasena} />
       <Sesiones />

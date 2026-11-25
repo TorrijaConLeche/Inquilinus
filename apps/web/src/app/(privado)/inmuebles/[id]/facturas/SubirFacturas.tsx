@@ -1,6 +1,7 @@
 "use client";
 import type { PermisosSubida, ResultadoSubidaFacturas } from "@inquilinus/contracts";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ChangeEvent } from "react";
 import { Aviso } from "../../../../../componentes/Aviso";
@@ -24,7 +25,8 @@ export function SubirFacturas({ inmuebleId }: { inmuebleId: string }) {
   const selector = useRef<HTMLInputElement>(null);
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState<ClaveError | null>(null);
-  const [resultado, setResultado] = useState<{ subidas: number; rechazadas: string[] } | null>(null);
+  const tp = useTranslations("Plan");
+  const [resultado, setResultado] = useState<{ subidas: number; rechazadas: string[]; sinIa?: number } | null>(null);
   const base = `/inmuebles/${inmuebleId}/facturas`;
 
   const subir = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +65,7 @@ export function SubirFacturas({ inmuebleId }: { inmuebleId: string }) {
     setResultado({
       subidas: registro.datos.facturas.length,
       rechazadas: [...descartados, ...fallidos, ...registro.datos.rechazadas.map((r) => r.nombre)],
+      sinIa: registro.datos.sinIaPorLimite,
     });
     router.refresh();
   };
@@ -78,6 +81,15 @@ export function SubirFacturas({ inmuebleId }: { inmuebleId: string }) {
       </div>
       {error && <Aviso tipo="error">{te(error)}</Aviso>}
       {resultado && resultado.subidas > 0 && <Aviso tipo="exito">{t("subidas", { n: resultado.subidas })}</Aviso>}
+      {/* Spec 003, R15 y spec 010, R2 */}
+      {resultado?.sinIa ? (
+        <Aviso tipo="info">
+          {t("sinIaPorLimite", { n: resultado.sinIa })}{" "}
+          <Link href="/ajustes#plan" className={formulario.enlace}>
+            {tp("verPlanes")}
+          </Link>
+        </Aviso>
+      ) : null}
       {resultado && resultado.rechazadas.length > 0 && (
         <Aviso tipo="error">{t("rechazadas", { n: resultado.rechazadas.length, nombres: resultado.rechazadas.join(", ") })}</Aviso>
       )}
