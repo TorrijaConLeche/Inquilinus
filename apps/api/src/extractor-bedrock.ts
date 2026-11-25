@@ -53,8 +53,8 @@ const MAXIMO_TOKENS = 4000;
 
 const INSTRUCCIONES = `Lees facturas de suministros de una vivienda en España (luz, agua, gas, internet, comunidad…) y devuelves solo tres datos y una sugerencia.
 
-- inicio y fin: el periodo que cubre la factura (periodo de consumo o de facturación), en formato AAAA-MM-DD. No son la fecha de emisión ni la de cargo.
-- importe: el importe total de la factura, copiado tal como aparece escrito (por ejemplo "87,45"), sin el símbolo del euro.
+- inicio y fin: el periodo de consumo que cubre la factura, en formato AAAA-MM-DD. Si la factura indica el periodo de facturación o de consumo con fechas, usa exactamente esas fechas. Solo si no lo indica, pero sí da las fechas de la lectura anterior y de la lectura actual, el periodo va de la lectura anterior a la actual. No son la fecha de emisión ni la de cargo, ni una etiqueta del periodo como "2025/4" o "4.º trimestre".
+- importe: lo que de verdad se paga, es decir, el total a pagar con IVA después de descuentos, abonos, compensaciones y créditos. Cópialo tal como aparece escrito (por ejemplo "87,45"), sin el símbolo del euro. Si el total a pagar es cero, devuelve "0,00".
 - tipoGasto: cuál de los tipos de gasto de la lista que te pasan corresponde a la factura, copiado exactamente como está en la lista.
 
 Si un dato no aparece en la factura o no estás seguro de él, devuelve null en ese campo: la propietaria lo rellenará a mano, así que es mejor un null que un dato deducido. Si ningún tipo de la lista encaja con la factura, tipoGasto es null.`;
@@ -70,7 +70,7 @@ const ESQUEMA = {
   properties: {
     inicio: fechaONula("Primer día del periodo de la factura"),
     fin: fechaONula("Último día del periodo de la factura"),
-    importe: textoONulo("Importe total tal como aparece escrito"),
+    importe: textoONulo("Total a pagar tal como aparece escrito"),
     tipoGasto: textoONulo("Tipo de gasto copiado de la lista, o null si ninguno encaja"),
   },
   required: ["inicio", "fin", "importe", "tipoGasto"],

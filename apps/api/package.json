@@ -14,6 +14,7 @@
     "bd:migrar:previsualizaciones": "drizzle-kit migrate --config drizzle.previsualizaciones.config.ts",
     "bd:migrar:todo": "pnpm bd:migrar && pnpm bd:migrar:previsualizaciones",
     "test": "vitest run",
+    "evaluar:lectura": "node --env-file-if-exists=.env evaluacion/evaluar-lectura.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
