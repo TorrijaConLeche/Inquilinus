@@ -110,6 +110,8 @@ Eventos: `peticion`, `error_no_controlado`, `base_datos_no_responde` y, del proc
 
 `src/extractor.ts` define `ExtractorFacturas`: recibe solo el PDF y los nombres de los tipos de gasto del inmueble (R10) y devuelve lo que ha leído. `src/facturas.ts` lee las facturas de un lote en paralelo con un límite de 60 s y deja solo lo que se ha leído bien (`normalizarLectura` en el dominio). `src/extractor-bedrock.ts` lo implementa con Claude en Amazon Bedrock, solo en la UE (R10b; de momento con Haiku 4.5, provisional). Sin `APP_BEDROCK_MODELO` no hay extractor en `dependenciasDesdeEntorno` y las facturas quedan en `subida`, para rellenarlas a mano (R8b). Los tests usan uno simulado.
 
+**Evaluación con facturas reales** (tarea 5.6): `pnpm --filter @inquilinus/api evaluar:lectura <carpeta> [modelo]` lee con Bedrock los PDF de una carpeta fuera del repositorio y los compara con su `esperado.csv` (`fichero;inicio;fin;importe;tipo`). Por pantalla solo sale si acierta y el tipo de fallo, nunca lo que dice la factura; el detalle queda en `resultado.csv`, en la misma carpeta. Si Bedrock frena por cuota (429), espera y reintenta. Sirve para comprobar un modelo nuevo antes de cambiar `APP_BEDROCK_MODELO`.
+
 ## Ficheros (spec 007, R6b y R6c)
 
 Bucket privado de S3 en Estocolmo (`APP_S3_BUCKET`; uno para producción y otro, `…-preview`, para las previsualizaciones y local), con las mismas credenciales que SES. `src/almacen.ts` define la interfaz `Almacen` (en los tests, `test/almacen-memoria.ts`):

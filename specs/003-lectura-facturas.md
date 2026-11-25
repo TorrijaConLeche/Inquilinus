@@ -13,6 +13,7 @@ La usuaria sube uno o varios PDF de facturas de un inmueble de una sola vez. La 
 
 - **R1** — El sistema solo aceptará ficheros PDF de hasta 10 MB cada uno, y hasta **20 PDF por subida**. Un PDF es una sola factura. Un fichero no válido se rechaza sin afectar al resto del lote.
 - **R2** — La IA extraerá únicamente: fecha de inicio del periodo, fecha de fin del periodo e importe total. No se extrae compañía ni consumo. Además **sugerirá el tipo de gasto** entre los tipos que existen en el inmueble (por ejemplo, "Luz" si la factura es de electricidad).
+- **R2b** — El **periodo** es el del consumo: el que la factura indica con fechas (periodo de facturación o de consumo); si no lo indica pero da las fechas de lectura anterior y actual, va de una a otra. Nunca es una etiqueta como «2025/4» ni la fecha de emisión o de cargo. El **importe** es lo que de verdad se paga: el total con IVA y después de descuentos, abonos y créditos. Si sale 0 €, se queda vacío; una factura de 0 € no se reparte (R9) y la usuaria la descarta.
 - **R3** — El tipo de gasto sale de la lista de tipos del inmueble (texto libre que define la usuaria: "Luz", "Agua", "Comunidad"…). La sugerencia de la IA es solo una propuesta: la usuaria la confirma o la cambia, y puede crear un tipo nuevo en ese momento. Si ningún tipo encaja, la IA deja el campo vacío.
 - **R4** — Si la IA no encuentra un campo, lo dejará vacío y la usuaria deberá rellenarlo antes de confirmar. Nunca se inventa un valor.
 - **R5** — La usuaria podrá editar cualquier campo antes de confirmar. Nada se reparte sin su confirmación.
@@ -93,4 +94,4 @@ Con un extractor de IA simulado (interfaz `ExtractorFacturas`), salvo C10.
 - [x] Reparto de lecturas de IA según el plan (R15), con la tarea 8.6
 - [x] Modelo provisional Claude Haiku 4.5 mientras AWS no habilite Haiku 5.5 (R10b, C24b)
 - [x] Tests C1–C24b
-- [ ] Evaluación con PDF reales
+- [x] Evaluación con PDF reales: 16 facturas (9 de luz, 5 de gas y 2 de agua) con Haiku 4.5, periodo, importe y tipo bien en 16 de 16 en dos pasadas, tras aclarar el periodo y el importe (R2b). Se repite con `pnpm --filter @inquilinus/api evaluar:lectura <carpeta>` (`apps/api/evaluacion/`)

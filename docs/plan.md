@@ -13,7 +13,7 @@ Cada fase termina con algo que la usuaria puede probar. Las tareas remiten a las
 | 2 · Cuenta e inicio de sesión | Registro y acceso con email o Google | ✅ Hecha (falta la revisión legal, 2.9) |
 | 3 · Inmuebles e inquilinos | Tus pisos dados de alta | ✅ Hecha |
 | 4 · Cobros y panel | Un mes de cobros gestionado con la app | ✅ Hecha |
-| 5 · Facturas con IA y reparto | Una factura real leída y repartida | ✅ Hecha, con la IA activada (falta la evaluación 5.6) |
+| 5 · Facturas con IA y reparto | Una factura real leída y repartida | ✅ Hecha, con la IA activada y evaluada (16 de 16) |
 | 6 · Timeline y enlace del inquilino | MVP para uso propio: `v0.1.0` | ✅ `v0.1.0` (faltan 6.6b y 6.7) |
 | 7 · Uso real y validación | Beta gratuita con otras propietarias | ⏳ Siguiente |
 | 8 · Planes y pagos | Primera suscripción real | Pendiente |
@@ -92,7 +92,7 @@ Depende de: fase 4. **Hecho cuando** subes una factura real, la revisas y se rep
 - [x] **5.3 · Claude** — Lista por revisar, confirmación una a una o "Confirmar todas", y aviso de solapes también dentro del lote · `feat/003-revision`
 - [x] **5.4 · Claude** — Reparto guardado como foto fija con su detalle por tramos, y pagos de cada parte · `feat/001-reparto-guardado`
 - [x] **5.5 · Claude** — Liquidaciones: dominio, API, propuesta al confirmar un lote y vista agrupada en el panel y en los cobros del inmueble (spec 011) · `feat/011-liquidaciones`
-- [ ] **5.6 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos · `test/003-evaluacion`
+- [x] **5.6 · Tú + Claude** — Evaluación con 15-20 PDF reales: al menos un 90 % de aciertos. Con 16 facturas reales, 16 de 16 (25-11-2026) · `test/003-evaluacion`
 
 ## Fase 6 · Timeline y enlace del inquilino (specs 006 y 004) → `v0.1.0`
 
